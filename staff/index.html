@@ -184,6 +184,14 @@ button.bk-danger{border-color:var(--bad);color:var(--bad)}
 .bk-code{font-family:ui-monospace,Menlo,Consolas,monospace;word-break:break-all}
 @media(max-width:560px){.bk-dl{grid-template-columns:1fr}.bk-dl dt{margin-top:8px}.bk-row{flex-direction:column}}
 .bk-bar{padding:14px 18px;margin-bottom:20px}.bk-bar .bk-tabs{margin:12px 0 0}.bk-bar .bk-top{margin-bottom:0}
+/* Staff login gate */
+body:not(.ag-in) .app{display:none}
+body.ag-in #bkg{display:none}
+#bkg{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;gap:18px}
+#bkg .bk-narrow{width:100%}
+.ag-gate-brand{font-weight:800;font-size:1.5rem;letter-spacing:.04em;text-transform:uppercase;text-align:center}
+.ag-gate-brand small{display:block;font-size:.8rem;font-weight:600;letter-spacing:.14em;opacity:.7}
+.ag-signout{margin-left:auto}
 </style></head><body>
 <div class="app"><nav aria-label="Main">
 <div class="brand"><svg viewBox="0 0 48 48" fill="none" stroke="#ff7a1a" stroke-width="2.4"><ellipse cx="24" cy="24" rx="20" ry="8"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(60 24 24)"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(120 24 24)"/><circle cx="24" cy="24" r="3.5" fill="#ff7a1a"/></svg><b>Atomic<br>Garage</b></div>
@@ -337,9 +345,9 @@ function refresh(id){var jobs=[loadList()];if(id)jobs.push(loadEvents(id));if(is
 
 /* ---------- views ---------- */
 function authHtml(){var up=ST.authMode==="up";
-  return'<div class="card bk-narrow">'+sec("✉","Staff sign-in","Bookings are only for Atomic Garage staff")+
+  return'<div class="card bk-narrow">'+sec("✉","Staff sign-in","Atomic Garage staff only")+
   '<div class="bk-tabs"><button type="button" class="'+(up?"alt":"")+'" data-bk="mode" data-m="in">Sign in</button><button type="button" class="'+(up?"":"alt")+'" data-bk="mode" data-m="up">Create account</button></div>'+
-  '<form data-bkform="'+(up?"signup":"signin")+'" novalidate><label for="bk-email">Email</label><input id="bk-email" type="email" autocomplete="username" maxlength="120" required>'+
+  '<form data-bkform="'+(up?"signup":"signin")+'" novalidate><label for="bk-email">Email</label><input id="bk-email" type="email" autocomplete="username" maxlength="120" value="'+esc(ST.email||"")+'" required>'+
   '<label for="bk-pass">Password'+(up?" (8+ characters)":"")+'</label><input id="bk-pass" type="password" autocomplete="'+(up?"new-password":"current-password")+'" maxlength="100" required>'+
   '<div id="bk-err" class="bk-note bad" role="alert"'+(ST.err?"":" hidden")+'>'+esc(ST.err)+'</div><div id="bk-info" class="bk-note" role="status"'+(ST.info?"":" hidden")+'>'+esc(ST.info)+'</div>'+
   '<div class="sp"><button type="submit">'+(up?"Create account":"Sign in")+'</button></div></form>'+
@@ -412,9 +420,13 @@ function teamHtml(){
    '<div class="g g2"><div><label for="bk-s-loc">Location</label><textarea id="bk-s-loc" maxlength="300" rows="3">'+esc(s.location_text||"")+'</textarea></div><div><label for="bk-s-hours">Opening hours</label><textarea id="bk-s-hours" maxlength="500" rows="3">'+esc(s.hours_text||"")+'</textarea></div>'+
    '<div><label for="bk-s-contact">Contact details</label><textarea id="bk-s-contact" maxlength="500" rows="3">'+esc(s.contact_text||"")+'</textarea></div><div><label for="bk-s-map">Map link (https)</label><input id="bk-s-map" maxlength="500" value="'+esc(s.map_url||"")+'"><label for="bk-s-discord">Discord link (https)</label><input id="bk-s-discord" maxlength="300" value="'+esc(s.discord_url||"")+'"></div></div>'+
    '<div class="sp"><button data-bk="settings">Save public details</button></div></div>'}
-function render(){var root=$b("#bk");if(!root)return;var h;
+function render(){var h;
   if(!sess)h=authHtml();else if(ST.me===undefined)h=ST.err?'<div class="card bk-narrow">'+sec("\u26A0","Could not load bookings","")+'<div class="bk-note bad" role="alert">'+esc(ST.err)+'</div><div class="sp"><button data-bk="retry">Try again</button> <button class="alt" data-bk="signout">Sign out</button></div></div>':'<div class="sk" style="height:220px"></div>';else if(ST.me===null)h=redeemHtml();else if(!ST.me.active)h=inactiveHtml();else h=appHtml();
-  root.innerHTML=h}
+  var authed=!!(sess&&ST.me&&ST.me.active);
+  document.body.classList.toggle("ag-in",authed);
+  var g=$b("#bkg"),root=$b("#bk");
+  if(g)g.innerHTML=authed?"":'<div class="ag-gate-brand">Atomic Garage<small>Staff portal</small></div>'+h;
+  if(root)root.innerHTML=authed?h:""}
 
 /* ---------- actions ---------- */
 function doAct(id,action,extra){if(ST.busy)return;ST.busy=true;ST.err="";var p=extra||{},m=val("bk-msg");if(m)p.message=m;
@@ -426,7 +438,7 @@ function doAct(id,action,extra){if(ST.busy)return;ST.busy=true;ST.err="";var p=e
 function signOut(){var t=sess&&sess.access_token;saveSess(null);if(t)raw("/auth/v1/logout",{method:"POST",token:t}).catch(function(){});
   ST.me=undefined;ST.list=[];ST.staff=[];ST.events={};ST.open=null;ST.err="";ST.info="";ST.newCode=null;render()}
 function submitForm(kind){ST.err="";ST.info="";
-  if(kind==="signin"||kind==="signup"){var em=val("bk-email"),pw=document.getElementById("bk-pass").value;
+  if(kind==="signin"||kind==="signup"){var em=val("bk-email");ST.email=em;var pw=document.getElementById("bk-pass").value;
     if(!/^\S+@\S+\.\S+$/.test(em)){ST.err="Enter a valid email address.";return render()}
     if(pw.length<(kind==="signup"?8:1)){ST.err=kind==="signup"?"Use a password of at least 8 characters.":"Enter your password.";return render()}
     var p=kind==="signin"?authCall("password",{email:em,password:pw}):raw("/auth/v1/signup",{method:"POST",body:{email:em,password:pw}}).then(function(r){
@@ -439,7 +451,7 @@ function submitForm(kind){ST.err="";ST.info="";
       if(r&&r.ok){say("Staff access activated");ST.me=undefined;render();boot()}else{ST.err=(r&&r.message)||"Could not activate.";render()}}).catch(function(e){authErr(e);render()})}}
 
 document.addEventListener("submit",function(e){var f=e.target.closest&&e.target.closest("[data-bkform]");if(!f)return;e.preventDefault();submitForm(f.dataset.bkform)});
-document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-bk]");if(!b||!$b("#bk"))return;var a=b.dataset.bk;
+document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-bk]");if(!b||!($b("#bk")||$b("#bkg")))return;var a=b.dataset.bk;
   if(a==="retry"){ST.err="";render();boot()}
   else if(a==="mode"){ST.authMode=b.dataset.m;ST.err="";ST.info="";render()}
   else if(a==="signout")signOut();
@@ -467,6 +479,9 @@ document.addEventListener("click",function(e){var b=e.target.closest&&e.target.c
 V.bookings=function(){setTimeout(function(){render();if(sess&&ST.me===undefined)boot()},0);return'<div id="bk"></div>'};
 setInterval(function(){if(location.hash!=="#bookings"||!sess||!ST.me||!ST.me.active||ST.open||ST.busy||document.hidden||ST.tab!=="bookings")return;
   loadList().then(function(){if(!ST.open&&$b("#bk")&&!(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)))render()}).catch(authErr)},45000);
+document.body.insertAdjacentHTML("beforeend",'<div id="bkg"></div>');
+var bar=$b(".bar");if(bar)bar.insertAdjacentHTML("beforeend",'<button type="button" class="alt ag-signout" data-bk="signout">Sign out</button>');
+render();if(sess)boot();
 if(location.hash==="#bookings")route();
 })();
 </script></body></html>
