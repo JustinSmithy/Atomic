@@ -192,10 +192,12 @@ body.ag-in #bkg{display:none}
 .ag-gate-brand{font-weight:800;font-size:1.5rem;letter-spacing:.04em;text-transform:uppercase;text-align:center}
 .ag-gate-brand small{display:block;font-size:.8rem;font-weight:600;letter-spacing:.14em;opacity:.7}
 .ag-signout{margin-left:auto}
+.ag-back{color:inherit;opacity:.8;text-decoration:underline;font-size:.95rem}
+nav a.ag-public{margin-top:auto}
 </style></head><body>
 <div class="app"><nav aria-label="Main">
 <div class="brand"><svg viewBox="0 0 48 48" fill="none" stroke="#ff7a1a" stroke-width="2.4"><ellipse cx="24" cy="24" rx="20" ry="8"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(60 24 24)"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(120 24 24)"/><circle cx="24" cy="24" r="3.5" fill="#ff7a1a"/></svg><b>Atomic<br>Garage</b></div>
-<a href="#home" data-v="home"><i aria-hidden="true">⌂</i>Home</a><a href="#dashboard" data-v="dashboard"><i aria-hidden="true">◫</i>Dashboard</a><a href="#bookings" data-v="bookings"><i aria-hidden="true">✉</i>Bookings</a><a href="#handbook" data-v="handbook"><i aria-hidden="true">☰</i>Handbook</a><a href="#parts" data-v="parts"><i aria-hidden="true">▦</i>Parts store</a><a href="#loa" data-v="loa"><i aria-hidden="true">✈</i>Leave of absence</a><a href="#id" data-v="id"><i aria-hidden="true">▣</i>Staff ID</a></nav>
+<a href="#home" data-v="home"><i aria-hidden="true">⌂</i>Home</a><a href="#dashboard" data-v="dashboard"><i aria-hidden="true">◫</i>Dashboard</a><a href="#bookings" data-v="bookings"><i aria-hidden="true">✉</i>Bookings</a><a href="#handbook" data-v="handbook"><i aria-hidden="true">☰</i>Handbook</a><a href="#parts" data-v="parts"><i aria-hidden="true">▦</i>Parts store</a><a href="#loa" data-v="loa"><i aria-hidden="true">✈</i>Leave of absence</a><a href="#id" data-v="id"><i aria-hidden="true">▣</i>Staff ID</a><a href="../" class="ag-public"><i aria-hidden="true">↗</i>Customer site</a></nav>
 <main><div class="bar"><span class="clock" id="ck"></span><div class="who" id="me"></div></div><div id="v"></div></main></div>
 <script>
 var D={name:"New Mechanic",rank:"Mechanic",dos:"",phone:"",addr:"",photo:"",hours:0,life:0,shifts:0,start:null,
@@ -337,8 +339,13 @@ function loadStaff(){return api("staff_profiles?select=user_id,display_name,role
 function loadEvents(id){return api("booking_events?select=id,action,actor_type,actor_name,message,internal,at&booking_id=eq."+encodeURIComponent(id)+"&order=at.asc,id.asc").then(function(r){ST.events[id]=r||[]})}
 function loadInvites(){return api("staff_invites?select=id,role,label,created_at,expires_at,used_at&order=created_at.desc&limit=50").then(function(r){ST.invites=r||[]})}
 function loadSettings(){return api("site_settings?select=location_text,map_url,hours_text,contact_text,discord_url&id=eq.1").then(function(r){ST.settings=(r&&r[0])||{}})}
+/* Use the signed-in staff member's real name and role in the portal profile (only replaces the placeholder defaults) */
+function syncProfile(m){if(!m||!m.active||typeof S==="undefined")return;var ch=false;
+  if(m.display_name&&(!S.name||S.name==="New Mechanic")){S.name=m.display_name;ch=true}
+  if(m.role==="manager"&&(!S.rank||S.rank==="Mechanic")){S.rank="Manager";ch=true}
+  if(ch){try{save();route()}catch(e){}}}
 function boot(){if(ST.booting)return;ST.booting=true;ST.err="";
-  rpc("staff_me").then(function(m){ST.me=m;if(m&&m.active)return Promise.all([loadList(),m.role==="manager"?loadStaff():0])})
+  rpc("staff_me").then(function(m){ST.me=m;syncProfile(m);if(m&&m.active)return Promise.all([loadList(),m.role==="manager"?loadStaff():0])})
    .catch(authErr).then(function(){ST.booting=false;render()});}
 function refresh(id){var jobs=[loadList()];if(id)jobs.push(loadEvents(id));if(isMgr())jobs.push(loadStaff());
   return Promise.all(jobs).catch(authErr).then(render)}
@@ -425,7 +432,7 @@ function render(){var h;
   var authed=!!(sess&&ST.me&&ST.me.active);
   document.body.classList.toggle("ag-in",authed);
   var g=$b("#bkg"),root=$b("#bk");
-  if(g)g.innerHTML=authed?"":'<div class="ag-gate-brand">Atomic Garage<small>Staff portal</small></div>'+h;
+  if(g)g.innerHTML=authed?"":'<div class="ag-gate-brand">Atomic Garage<small>Staff portal</small></div>'+h+'<a href="../" class="ag-back">← Back to customer site</a>';
   if(root)root.innerHTML=authed?h:""}
 
 /* ---------- actions ---------- */
