@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Atomic Garage — Repairs, Tuning, Custom Builds &amp; Towing</title>
+<meta name="description" content="Atomic Garage: repairs, tuning, custom builds and towing. Request a service appointment online.">
+<meta name="referrer" content="no-referrer">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600&family=Big+Shoulders+Display:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <div class="in">
+    <a class="brand" href="#home" aria-label="Atomic Garage home">
+      <svg viewBox="0 0 48 48" fill="none" stroke="#ffc400" stroke-width="2.6" aria-hidden="true">
+        <ellipse cx="24" cy="24" rx="20" ry="8"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(60 24 24)"/>
+        <ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(120 24 24)"/><circle cx="24" cy="24" r="3.4" fill="#ffc400" stroke="none"/>
+      </svg>
+      <b>Atomic<br>Garage</b>
+    </a>
+    <button class="menu" id="menuBtn" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav id="nav" aria-label="Main">
+      <ul>
+        <li><a href="#home" data-r="home">Home</a></li>
+        <li><a href="#services" data-r="services">Our Services</a></li>
+        <li><a href="#gallery" data-r="gallery">Gallery</a></li>
+        <li><a href="#book" data-r="book">Book a Service</a></li>
+        <li><a href="#contact" data-r="contact">Contact</a></li>
+        <li><a href="#track" data-r="track">Track Booking</a></li>
+        <li><a class="staff" id="staffLink" href="staff/">Staff Login</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main" tabindex="-1"></main>
+
+<footer>
+  <div class="in">
+    <span>© Atomic Garage · GTA World roleplay business</span>
+    <span><a href="#book">Book a service</a> · <a href="#track">Track a booking</a> · <a href="staff/">Staff login</a></span>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="config.js"></script>
+<script>
+(function(){
+"use strict";
+var CFG = window.AG_CONFIG || {};
+var $ = function(s,r){return (r||document).querySelector(s)};
+var main = $("#main");
+
+/* ---------- helpers: build DOM, never inject user text as HTML ---------- */
+function el(tag, attrs, kids){
+  var n = document.createElement(tag);
+  if(attrs) Object.keys(attrs).forEach(function(k){
+    var v = attrs[k];
+    if(v===null||v===undefined||v===false) return;
+    if(k==="class") n.className=v;
+    else if(k==="text") n.textContent=v;
+    else if(k==="html") n.innerHTML=v;           /* only ever used with static strings below */
+    else if(k.slice(0,2)==="on") n.addEventListener(k.slice(2),v);
+    else n.setAttribute(k, v===true?"":v);
+  });
+  (kids||[]).forEach(function(c){ if(c==null) return; n.appendChild(typeof c==="string"?document.createTextNode(c):c); });
+  return n;
+}
+function toast(msg){
+  var t=$("#toast"); t.textContent=msg; t.classList.add("on");
+  clearTimeout(toast._t); toast._t=setTimeout(function(){t.classList.remove("on")},2600);
+}
+function safeUrl(u){ try{ var x=new URL(u); return x.protocol==="https:"?x.href:null }catch(e){return null} }
+var LS = {
+  get:function(k){try{return localStorage.getItem(k)}catch(e){return null}},
+  set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}},
+  del:function(k){try{localStorage.removeItem(k)}catch(e){}}
+};
+var SVC = {
+  repairs:"Repairs", tuning:"Tuning", custom_builds:"Custom builds", towing:"Towing", other:"Other"
+};
+var STATUS = {
+  pending:"Pending — awaiting review",
+  approved:"Approved",
+  declined:"Declined",
+  alternative_proposed:"New time proposed",
+  alternative_accepted:"Time accepted — awaiting final approval",
+  in_progress:"In progress",
+  completed:"Completed",
+  cancelled:"Cancelled"
+};
+var STATUS_TEXT = {
+  pending:"Your request has been received. It is NOT confirmed until the garage management approves it.",
+  approved:"Management has approved this appointment.",
+  declined:"Unfortunately this request was declined.",
+  alternative_proposed:"Management has suggested a different time. Please accept or decline it below. Nothing is confirmed yet.",
+  alternative_accepted:"You accepted the proposed time. It is NOT confirmed until management gives final approval.",
+  in_progress:"Work on your vehicle is in progress.",
+  completed:"This job is complete.",
+  cancelled:"This booking was cancelled."
+};
+var EVENT = {
+  submitted:"Request submitted", approved:"Approved by management", declined:"Declined",
+  alternative_proposed:"New time proposed", alternative_accepted:"You accepted the proposed time",
+  alternative_declined:"You declined the proposed time", cancelled:"Cancelled",
+  status_changed:"Status updated", in_progress:"Work started", completed:"Work completed"
+};
+function fmt(d){
+  if(!d) return "—";
+  var x=new Date(d); if(isNaN(x)) return "—";
+  return x.toLocaleString(undefined,{dateStyle:"medium",timeStyle:"short"});
+}
+
+/* ---------- Supabase REST (publishable key; only 3 RPCs + settings read) ---------- */
+function api(path, opts){
+  opts = opts||{};
+  var h = {"apikey":CFG.SUPABASE_KEY,"Content-Type":"application/json"};
+  return fetch(CFG.SUPABASE_URL.replace(/\/$/,"")+"/rest/v1/"+path,{
+    method:opts.method||"GET", headers:h, body:opts.body?JSON.stringify(opts.body):undefined, cache:"no-store", credentials:"omit"
+  }).then(function(r){
+    return r.text().then(function(t){
+      var j=null; try{j=t?JSON.parse(t):null}catch(e){}
+      if(!r.ok) throw new Error((j&&j.message)||("Request failed ("+r.status+")"));
+      return j;
+    });
+  });
+}
+function rpc(name, args){ return api("rpc/"+name,{method:"POST",body:args}); }
+function configured(){ return CFG.SUPABASE_URL && CFG.SUPABASE_KEY && CFG.SUPABASE_KEY.indexOf("PASTE")<0; }
+
+var settingsCache=null;
+function loadSettings(){
+  if(settingsCache) return Promise.resolve(settingsCache);
+  if(!configured()) return Promise.resolve({});
+  return api("site_settings?select=location_text,map_url,hours_text,contact_text,discord_url&id=eq.1")
+    .then(function(r){ settingsCache=(r&&r[0])||{}; return settingsCache; })
+    .catch(function(){ return null; });
+}
+
+/* ---------- icons (static markup) ---------- */
+var ICON = {
+  repairs:'<svg viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5 5L3 18l3 3 6.7-6.7a4 4 0 0 0 5-5l-2.4 2.4-2.6-.6-.6-2.6z"/></svg>',
+  tuning:'<svg viewBox="0 0 24 24"><path d="M4 20a8 8 0 1 1 16 0"/><path d="M12 20l4-7"/><circle cx="12" cy="20" r="1"/></svg>',
+  custom_builds:'<svg viewBox="0 0 24 24"><path d="M12 3l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5L4.8 8.3l5-.7z"/></svg>',
+  towing:'<svg viewBox="0 0 24 24"><path d="M3 15V9h9l3 3h4l2 3v0"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M9 17h6"/></svg>'
+};
+function icon(k){ return el("div",{class:"ico",html:ICON[k]}); }
+
+/* ---------- pages ---------- */
+function head(t,p){ return el("div",{class:"head"},[el("h2",{text:t}), p?el("p",{text:p}):null]); }
+
+function serviceCard(key,title,desc,items){
+  return el("article",{class:"card svc"},[
+    icon(key), el("h3",{text:title}), el("p",{text:desc}),
+    el("ul",null,items.map(function(i){return el("li",{text:i})})),
+    el("a",{class:"btn sm",href:"#book?service="+key,text:"Request "+title.toLowerCase()})
+  ]);
+}
+var SERVICES=[
+  ["repairs","Repairs","Diagnosis and repair to get your vehicle back on the road.",["Mechanical and body repair","Fault finding","Parts replacement"]],
+  ["tuning","Tuning","Performance and handling upgrades for your vehicle.",["Engine and performance work","Suspension and handling","Fitment of upgrades"]],
+  ["custom_builds","Custom builds","One-off projects built to your brief.",["Bespoke modifications","Appearance and finish","Project consultation"]],
+  ["towing","Towing","Recovery of broken-down or stranded vehicles.",["Vehicle recovery","Transport to the garage","Arrange by booking request"]]
+];
+
+function pageHome(){
+  var f=document.createDocumentFragment();
+  f.appendChild(el("section",{class:"hero"},[
+    el("div",{class:"chips"},[el("span",{class:"pill a",text:"GTA World"}),el("span",{class:"pill",text:"Repairs · Tuning · Builds · Towing"})]),
+    el("h1",{html:"Atomic<br><span>Garage</span>"}),
+    el("p",{text:"Your vehicle in expert hands. Send us a private service request and we'll come back to you with a decision."}),
+    el("div",{class:"btns"},[el("a",{class:"btn",href:"#book",text:"Book a service"}),el("a",{class:"btn alt",href:"#track",text:"Track my booking"})])
+  ]));
+  f.appendChild(el("div",{class:"hazard","aria-hidden":"true"}));
+  f.appendChild(head("What we do"));
+  f.appendChild(el("div",{class:"grid g4"},SERVICES.map(function(s){return serviceCard.apply(null,s)})));
+  f.appendChild(el("div",{class:"hazard","aria-hidden":"true"}));
+  f.appendChild(head("How booking works"));
+  var steps=[["1","Send a request","Tell us about you, your vehicle and the work. You receive a booking reference and a private access code."],
+             ["2","Management reviews","Every request starts as Pending. It is only confirmed once management approves it."],
+             ["3","Track privately","Use your reference and access code to see approvals, or a new time we propose."]];
+  f.appendChild(el("div",{class:"grid g3"},steps.map(function(s){
+    return el("div",{class:"card step"},[el("div",{class:"n",text:s[0]}),el("div",null,[el("h3",{text:s[1]}),el("p",{text:s[2]})])]);
+  })));
+  return f;
+}
+function pageServices(){
+  var f=document.createDocumentFragment();
+  f.appendChild(head("Our services","Four ways we can help. Pricing and availability are agreed with management when your request is reviewed."));
+  f.appendChild(el("div",{class:"grid g2"},SERVICES.map(function(s){return serviceCard.apply(null,s)})));
+  return f;
+}
+function pageGallery(){
+  var f=document.createDocumentFragment();
+  f.appendChild(head("Gallery","The workshop and our recent work."));
+  var items=Array.isArray(CFG.GALLERY)?CFG.GALLERY:[];
+  if(items.length){
+    f.appendChild(el("div",{class:"grid gf"},items.map(function(g){
+      var src=String(g.src||"");
+      if(!/^(assets\/|https:\/\/)/.test(src)) return null;
+      return el("figure",{class:"tile"},[el("img",{src:src,alt:g.alt||"",loading:"lazy"}), g.caption?el("figcaption",{text:g.caption}):null]);
+    })));
+  } else {
+    f.appendChild(el("p",{class:"notice",text:"Photos of our work will appear here. For now, here's a look around the garage."}));
+    f.appendChild(el("div",{class:"grid gf sp"},["t1","t2","t3","t4","t5","t6"].map(function(c){
+      return el("div",{class:"tile "+c,role:"img","aria-label":"Atomic Garage workshop"});
+    })));
+  }
+  return f;
+}
+function pageContact(){
+  var f=document.createDocumentFragment();
+  f.appendChild(head("Contact","Find us and get in touch."));
+  var box=el("div",{class:"grid g2"});
+  var loading=el("div",{class:"skel"});
+  f.appendChild(loading); f.appendChild(box);
+  loadSettings().then(function(s){
+    loading.remove();
+    if(s===null){ box.appendChild(el("div",{class:"card"},[el("p",{class:"notice bad",text:"Garage details couldn't be loaded right now. Please try again shortly."})])); return; }
+    function row(title,val,link){
+      var body=link?el("a",{href:link,rel:"noopener noreferrer",target:"_blank",text:val}):el("p",{text:val,style:"white-space:pre-line;margin:0"});
+      return el("div",{class:"card"},[el("h3",{text:title,style:"font-size:26px;margin-bottom:10px"}),body]);
+    }
+    var any=false;
+    if(s.location_text){any=true;var m=safeUrl(s.map_url);box.appendChild(row("Location",s.location_text)); if(m) box.lastChild.appendChild(el("p",{class:"sp"},[el("a",{class:"btn sm",href:m,target:"_blank",rel:"noopener noreferrer",text:"Open map"})]));}
+    if(s.hours_text){any=true;box.appendChild(row("Opening hours",s.hours_text));}
+    if(s.contact_text){any=true;box.appendChild(row("Contact",s.contact_text));}
+    var d=safeUrl(s.discord_url); if(d){any=true;box.appendChild(row("Discord",d,d));}
+    if(!any) box.appendChild(el("div",{class:"card"},[el("h3",{text:"Details coming soon",style:"font-size:26px;margin-bottom:10px"}),el("p",{class:"muted",text:"The garage hasn't published its location or opening hours yet. In the meantime, send a booking request and we'll respond to you directly."}),el("a",{class:"btn sm",href:"#book",text:"Book a service"})]));
+  });
+  return f;
+}
+
+/* ---------- booking ---------- */
+var submitting=false;
+function newKey(){
+  var a=new Uint8Array(16); (window.crypto||window.msCrypto).getRandomValues(a);
+  return Array.prototype.map.call(a,function(b){return ("0"+b.toString(16)).slice(-2)}).join("");
+}
+function localInputMin(){
+  var d=new Date(Date.now()+15*60000); d.setSeconds(0,0);
+  var p=function(n){return ("0"+n).slice(-2)};
+  return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+"T"+p(d.getHours())+":"+p(d.getMinutes());
+}
+function field(id,label,node,opt,hint){
+  return el("div",null,[
+    el("label",{for:id},[label,opt?el("span",{class:"opt",text:" (optional)"}):null]),
+    node, hint?el("p",{class:"hint",text:hint,id:id+"-h"}):null, el("p",{class:"err",id:id+"-e",role:"alert"})
+  ]);
+}
+function pageBook(q){
+  var f=document.createDocumentFragment();
+  f.appendChild(head("Book a service","Send a private request. Nothing is confirmed until management approves it."));
+  if(!configured()){ f.appendChild(el("p",{class:"notice bad",text:"Booking isn't available yet: the website hasn't been connected to its booking service."})); return f; }
+
+  var key=newKey();
+  var card=el("div",{class:"card"});
+  var form=el("form",{novalidate:true,autocomplete:"off"});
+  var sel=el("select",{id:"f-service",name:"service_type",required:true},
+    [el("option",{value:"",text:"Choose…"})].concat(Object.keys(SVC).map(function(k){return el("option",{value:k,text:SVC[k]})})));
+  if(q.service&&SVC[q.service]) sel.value=q.service;
+  var I={
+    name:el("input",{id:"f-name",name:"character_name",maxlength:"60",required:true,autocomplete:"off"}),
+    contact:el("input",{id:"f-contact",name:"contact",maxlength:"120",required:true,autocomplete:"off","aria-describedby":"f-contact-h"}),
+    vehicle:el("input",{id:"f-vehicle",name:"vehicle",maxlength:"80",required:true,autocomplete:"off",placeholder:"e.g. Karin Sultan"}),
+    reg:el("input",{id:"f-reg",name:"vehicle_reg",maxlength:"16",autocomplete:"off"}),
+    service:sel,
+    when:el("input",{id:"f-when",name:"preferred_at",type:"datetime-local",required:true,min:localInputMin()}),
+    desc:el("textarea",{id:"f-desc",name:"description",maxlength:"2000",required:true})
+  };
+  var hp=el("div",{class:"hp","aria-hidden":"true"},[el("label",{for:"f-web",text:"Leave this empty"}),el("input",{id:"f-web",name:"website",tabindex:"-1",autocomplete:"off"})]);
+  var msg=el("div",{id:"formMsg",role:"alert"});
+  var btn=el("button",{class:"btn",type:"submit",text:"Send request"});
+
+  form.appendChild(el("div",{class:"row2"},[
+    field("f-name","Character name",I.name),
+    field("f-contact","Contact information",I.contact,false,"In-character: phone number, email or other way to reach you.")]));
+  form.appendChild(el("div",{class:"row2"},[
+    field("f-vehicle","Vehicle make and model",I.vehicle),
+    field("f-reg","Vehicle registration",I.reg,true)]));
+  form.appendChild(el("div",{class:"row2"},[
+    field("f-service","Type of service",I.service),
+    field("f-when","Preferred date and time",I.when,false,"Your local time. This is a request, not a guaranteed slot.")]));
+  form.appendChild(field("f-desc","Description of the work required",I.desc,false,"10 to 2000 characters."));
+  form.appendChild(hp); form.appendChild(msg);
+  form.appendChild(el("div",{class:"sp"},[btn]));
+  card.appendChild(form); f.appendChild(card);
+
+  var map={name:["f-name","Enter your character name (2 to 60 characters)."],contact:["f-contact","Enter in-character contact details (3 to 120 characters)."],
+    vehicle:["f-vehicle","Enter the vehicle make and model (2 to 80 characters)."],service:["f-service","Choose a type of service."],
+    when:["f-when","Choose a future date and time."],desc:["f-desc","Describe the work required (10 to 2000 characters)."],reg:["f-reg","Registration is too long (16 characters maximum)."]};
+  var codeMap={invalid_name:"name",invalid_contact:"contact",invalid_vehicle:"vehicle",invalid_reg:"reg",invalid_service:"service",invalid_description:"desc",invalid_date:"when"};
+  function setErr(k,text){
+    var inp=I[k], e=$("#"+map[k][0]+"-e"); if(!inp||!e) return;
+    e.textContent=text||""; if(text) inp.setAttribute("aria-invalid","true"); else inp.removeAttribute("aria-invalid");
+  }
+  function clean(s){return String(s).replace(/\s+/g," ").trim()}
+  function validate(){
+    var bad=[], v={
+      name:clean(I.name.value), contact:clean(I.contact.value), vehicle:clean(I.vehicle.value),
+      reg:clean(I.reg.value), service:I.service.value, desc:I.desc.value.trim()
+    };
+    Object.keys(map).forEach(function(k){setErr(k,"")});
+    if(v.name.length<2||v.name.length>60) bad.push("name");
+    if(v.contact.length<3||v.contact.length>120) bad.push("contact");
+    if(v.vehicle.length<2||v.vehicle.length>80) bad.push("vehicle");
+    if(v.reg.length>16) bad.push("reg");
+    if(!SVC[v.service]) bad.push("service");
+    var t=I.when.value?new Date(I.when.value):null;
+    if(!t||isNaN(t)||t.getTime()<=Date.now()) bad.push("when");
+    if(v.desc.length<10||v.desc.length>2000) bad.push("desc");
+    bad.forEach(function(k){setErr(k,map[k][1])});
+    if(bad.length){ I[bad[0]].focus(); return null; }
+    return {character_name:v.name,contact:v.contact,vehicle:v.vehicle,vehicle_reg:v.reg,service_type:v.service,
+            preferred_at:t.toISOString(),description:v.desc,idempotency_key:key,website:$("#f-web").value};
+  }
+  form.addEventListener("submit",function(ev){
+    ev.preventDefault();
+    if(submitting) return;                    /* blocks double-clicks */
+    msg.textContent=""; msg.className="";
+    var payload=validate(); if(!payload) return;
+    submitting=true; btn.disabled=true; btn.textContent="Sending…";
+    rpc("submit_booking",{p:payload}).then(function(r){
+      if(r&&r.ok){ showReceipt(card,r); return; }
+      var k=r&&codeMap[r.error];
+      if(k){ setErr(k,r.message); I[k].focus(); }
+      else { msg.className="notice bad"; msg.textContent=(r&&r.message)||"We couldn't send your request. Please try again."; }
+    }).catch(function(){
+      msg.className="notice bad";
+      msg.textContent="We couldn't reach the booking service. Your request has not been lost if you retry: pressing Send again will not create a duplicate.";
+    }).then(function(){ submitting=false; btn.disabled=false; btn.textContent="Send request"; });
+  });
+  return f;
+}
+function trackLink(ref,code){
+  return location.href.split("#")[0]+"#track?ref="+encodeURIComponent(ref)+"&code="+encodeURIComponent(code);
+}
+function copyBtn(text,label){
+  return el("button",{class:"btn sm alt",type:"button",text:label,onclick:function(){
+    (navigator.clipboard?navigator.clipboard.writeText(text):Promise.reject()).then(function(){toast("Copied")},function(){toast("Select the text and copy it manually")});
+  }});
+}
+function showReceipt(card,r){
+  card.textContent="";
+  if(r.duplicate){
+    card.appendChild(el("p",{class:"notice",text:"This request had already been received, so no second booking was created."}));
+  }
+  card.appendChild(el("span",{class:"badge pending",text:"Pending — not confirmed"}));
+  card.appendChild(el("p",{class:"muted sp",text:"Your booking reference"}));
+  card.appendChild(el("div",{class:"ref",text:r.reference}));
+  if(r.token){
+    LS.set("ag_booking_"+r.reference,r.token);
+    var mine=JSON.parse(LS.get("ag_mine")||"[]"); if(mine.indexOf(r.reference)<0){mine.push(r.reference);LS.set("ag_mine",JSON.stringify(mine));}
+    card.appendChild(el("p",{class:"notice sp",text:"Save your private access code now. It is shown only once and is needed (with your reference) to check this booking. Anyone with it can view your booking."}));
+    card.appendChild(el("p",{class:"muted",text:"Private access code"}));
+    card.appendChild(el("code",{class:"code",text:r.token}));
+    var link=trackLink(r.reference,r.token);
+    card.appendChild(el("div",{class:"copyrow"},[copyBtn(r.token,"Copy code"),copyBtn(link,"Copy private link")]));
+    card.appendChild(el("div",{class:"sp"},[el("a",{class:"btn",href:"#track?ref="+encodeURIComponent(r.reference)+"&code="+encodeURIComponent(r.token),text:"Check status"})]));
+  } else {
+    card.appendChild(el("p",{class:"muted sp",text:"The access code was shown when you first submitted. Use it with your reference on the Track Booking page."}));
+    card.appendChild(el("div",{class:"sp"},[el("a",{class:"btn",href:"#track",text:"Track Booking"})]));
+  }
+  card.appendChild(el("p",{class:"muted sp",text:"Management will review your request. It isn't an appointment until you see it marked Approved."}));
+  card.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+/* ---------- tracking ---------- */
+var trackTimer=null;
+function pageTrack(q){
+  var f=document.createDocumentFragment();
+  f.appendChild(head("Track your booking","Enter your booking reference and private access code."));
+  if(!configured()){ f.appendChild(el("p",{class:"notice bad",text:"Tracking isn't available yet."})); return f; }
+  var out=el("div",{class:"sp",role:"region","aria-live":"polite"});
+  var ref=el("input",{id:"t-ref",maxlength:"20",autocomplete:"off",placeholder:"AG-XXXXXX",value:q.ref||"",style:"text-transform:uppercase"});
+  var code=el("input",{id:"t-code",maxlength:"80",autocomplete:"off",type:"password",value:q.code||""});
+  var go=el("button",{class:"btn",type:"submit",text:"Check status"});
+  var form=el("form",{novalidate:true},[
+    el("div",{class:"row2"},[el("div",null,[el("label",{for:"t-ref",text:"Booking reference"}),ref]),el("div",null,[el("label",{for:"t-code",text:"Private access code"}),code])]),
+    el("div",{class:"sp"},[go])]);
+  f.appendChild(el("div",{class:"card"},[form])); f.appendChild(out);
+
+  var mine=[]; try{mine=JSON.parse(LS.get("ag_mine")||"[]")}catch(e){}
+  if(mine.length){
+    var m=el("div",{class:"sp"},[el("p",{class:"muted",text:"Bookings saved in this browser"})]);
+    mine.forEach(function(r){
+      m.appendChild(el("div",{class:"mine"},[el("strong",{text:r}),el("span",null,[
+        el("button",{class:"btn sm",type:"button",text:"Open",onclick:function(){ref.value=r;code.value=LS.get("ag_booking_"+r)||"";load();}}),
+        " ",el("button",{class:"btn sm alt",type:"button",text:"Forget",onclick:function(){
+          LS.del("ag_booking_"+r); LS.set("ag_mine",JSON.stringify(mine.filter(function(x){return x!==r}))); route();
+        }})])]));
+    });
+    f.appendChild(m);
+  }
+
+  function render(b){
+    out.textContent="";
+    var c=el("div",{class:"card"});
+    c.appendChild(el("div",{class:"ref",text:b.reference}));
+    c.appendChild(el("p",null,[el("span",{class:"badge "+b.status,text:STATUS[b.status]||b.status})]));
+    c.appendChild(el("p",{class:"notice",text:STATUS_TEXT[b.status]||""}));
+    if(b.customer_message) c.appendChild(el("p",{class:"notice good"},[el("strong",{text:"Message from the garage: "}),b.customer_message]));
+    var dl=el("dl");
+    function add(k,v){ if(v==null||v==="") return; dl.appendChild(el("dt",{text:k})); dl.appendChild(el("dd",{text:v})); }
+    add("Name",b.character_name); add("Service",SVC[b.service_type]||b.service_type); add("Vehicle",b.vehicle);
+    add("Registration",b.vehicle_reg); add("Requested time",fmt(b.preferred_at));
+    if(b.proposed_at) add("Proposed time",fmt(b.proposed_at));
+    if(b.scheduled_at) add("Approved appointment",fmt(b.scheduled_at));
+    add("Work requested",b.description); add("Last update",fmt(b.updated_at));
+    c.appendChild(dl);
+
+    var act=el("div",{class:"sp"}), note=el("div",{role:"alert"});
+    function call(a,confirmText){
+      if(confirmText&&!confirm(confirmText)) return;
+      act.querySelectorAll("button").forEach(function(x){x.disabled=true});
+      rpc("customer_action",{p_ref:b.reference,p_token:code.value.trim(),p_action:a,p_note:null}).then(function(r){
+        if(r&&r.ok){ toast("Updated"); load(); }
+        else { note.className="notice bad"; note.textContent=(r&&r.message)||"That didn't work."; act.querySelectorAll("button").forEach(function(x){x.disabled=false}); }
+      }).catch(function(){ note.className="notice bad"; note.textContent="Couldn't reach the booking service."; act.querySelectorAll("button").forEach(function(x){x.disabled=false}); });
+    }
+    if(b.status==="alternative_proposed"){
+      act.appendChild(el("div",{class:"btns"},[
+        el("button",{class:"btn",type:"button",text:"Accept "+fmt(b.proposed_at),onclick:function(){call("accept_alternative")}}),
+        el("button",{class:"btn alt",type:"button",text:"Decline this time",onclick:function(){call("decline_alternative")}})]));
+    }
+    if(["pending","alternative_proposed","alternative_accepted","approved"].indexOf(b.status)>=0){
+      act.appendChild(el("p",null,[el("button",{class:"btn sm alt",type:"button",text:"Cancel booking",onclick:function(){call("cancel","Cancel this booking?")}})]));
+    }
+    c.appendChild(act); c.appendChild(note);
+    out.appendChild(c);
+
+    if(b.timeline&&b.timeline.length){
+      var tl=el("ol",{class:"tl"});
+      b.timeline.forEach(function(e){
+        tl.appendChild(el("li",null,[el("strong",{text:EVENT[e.action]||e.action}),el("small",{text:fmt(e.at)}),e.message?el("span",{text:e.message}):null]));
+      });
+      out.appendChild(el("div",{class:"card sp"},[el("h3",{text:"History",style:"font-size:26px;margin-bottom:14px"}),tl]));
+    }
+  }
+  function load(){
+    var r=ref.value.trim(), t=code.value.trim();
+    if(!r||!t){ out.textContent=""; out.appendChild(el("p",{class:"notice bad",text:"Enter both your reference and access code."})); return; }
+    out.textContent=""; out.appendChild(el("div",{class:"skel"}));
+    rpc("track_booking",{p_ref:r,p_token:t}).then(function(b){
+      if(b&&b.ok){ render(b); LS.set("ag_booking_"+b.reference,t);
+        var mm=[];try{mm=JSON.parse(LS.get("ag_mine")||"[]")}catch(e){} if(mm.indexOf(b.reference)<0){mm.push(b.reference);LS.set("ag_mine",JSON.stringify(mm));} }
+      else { out.textContent=""; out.appendChild(el("p",{class:"notice bad",text:(b&&b.error==="rate_limited"&&b.message)?b.message:"No booking matches that reference and access code. Check both and try again."})); }
+    }).catch(function(){ out.textContent=""; out.appendChild(el("p",{class:"notice bad",text:"Couldn't reach the booking service. Please try again."})); });
+  }
+  form.addEventListener("submit",function(e){e.preventDefault();load();});
+  if(q.ref&&q.code){
+    /* remove the secret from the address bar / history once read */
+    try{ history.replaceState(null,"",location.pathname+location.search+"#track"); }catch(e){}
+    load();
+  }
+  return f;
+}
+
+/* ---------- router ---------- */
+var PAGES={home:pageHome,services:pageServices,gallery:pageGallery,book:pageBook,contact:pageContact,track:pageTrack};
+var TITLES={home:"Atomic Garage",services:"Our Services",gallery:"Gallery",book:"Book a Service",contact:"Contact",track:"Track Booking"};
+function route(){
+  var h=location.hash.replace(/^#/,"")||"home";
+  var parts=h.split("?"), r=parts[0], q={};
+  (parts[1]||"").split("&").forEach(function(kv){ if(!kv) return; var i=kv.indexOf("="); try{ q[decodeURIComponent(kv.slice(0,i<0?kv.length:i))]=i<0?"":decodeURIComponent(kv.slice(i+1)); }catch(e){} });
+  if(!PAGES[r]) r="home";
+  main.textContent=""; main.appendChild(PAGES[r](q));
+  document.title=(r==="home"?"Atomic Garage — Repairs, Tuning, Custom Builds & Towing":TITLES[r]+" — Atomic Garage");
+  document.querySelectorAll("nav a[data-r]").forEach(function(a){ if(a.dataset.r===r) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); });
+  $("#nav").classList.remove("open"); $("#menuBtn").setAttribute("aria-expanded","false");
+  window.scrollTo(0,0);
+}
+window.addEventListener("hashchange",route);
+$("#menuBtn").addEventListener("click",function(){
+  var o=$("#nav").classList.toggle("open"); this.setAttribute("aria-expanded",o?"true":"false");
+});
+if(CFG.STAFF_PORTAL_URL) $("#staffLink").setAttribute("href",CFG.STAFF_PORTAL_URL);
+route();
+})();
+</script>
+</body>
+</html>
