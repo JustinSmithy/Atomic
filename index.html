@@ -543,28 +543,47 @@ function pageTrack(q){
 /* ---------- router ---------- */
 function pageCareers(){
   var f=document.createDocumentFragment();
-  f.appendChild(head("Careers","Join the Atomic Garage team. Tell us about yourself and management will review your application."));
-  var R=[["mechanic","Mechanic"],["bodywork_paint","Bodywork and paint"],["tow_driver","Tow driver"],["apprentice","Apprentice"],["other","Something else"]];
-  var card=el("div",{class:"card"}),form=el("form",{novalidate:true,autocomplete:"off"}),busy=false;
-  var role=el("select",{id:"c-role"},[el("option",{value:"",text:"Choose\u2026"})].concat(R.map(function(r){return el("option",{value:r[0],text:r[1]})})));
+  f.appendChild(head("Careers","Join the Atomic Garage team. Pick a role, tell us about yourself and management will review your application."));
+  var ROLES=[
+   ["mechanic_apprentice","Mechanic Apprentice","\uD83D\uDD29","New to the trade and keen to learn.",["No experience needed","Learn on the job","Work beside our mechanics"],"What experience, if any, do you have with vehicles?","What do you want to learn with us?"],
+   ["mechanic","Mechanic","\uD83D\uDD27","Experienced hands for repairs, tuning and builds.",["Repairs and servicing","Tuning and custom builds","Work to the garage guide"],"Tell us about your mechanical experience and specialities.","Why do you want to join Atomic Garage?"],
+   ["human_resources","Human Resources","\uD83D\uDCCB","Keep our team organised, recruited and supported.",["Review applications","Support and train staff","Keep the team running smoothly"],"Describe your experience managing, recruiting or supporting staff.","Why would you be a good fit for Human Resources?"]];
+  var card=el("div",{class:"card"}),form=el("form",{novalidate:true,autocomplete:"off"}),busy=false,cur=0,role=null;
   var nm=el("input",{id:"c-name",maxlength:"60"}),ct=el("input",{id:"c-contact",maxlength:"120"}),av=el("input",{id:"c-av",maxlength:"300"}),
       ex=el("textarea",{id:"c-exp",maxlength:"1500",rows:"4"}),why=el("textarea",{id:"c-why",maxlength:"1500",rows:"4"}),
       hp=el("div",{class:"hp","aria-hidden":"true"},[el("label",{for:"c-web",text:"Leave this empty"}),el("input",{id:"c-web",tabindex:"-1",autocomplete:"off"})]),
-      msg=el("div",{role:"alert"}),btn=el("button",{class:"btn",type:"submit",text:"Submit application"});
-  form.appendChild(el("div",{class:"row2"},[field("c-name","Character name",nm),field("c-contact","Contact information",ct,false,"In-character: phone number, email or other way to reach you.")]));
-  form.appendChild(field("c-role","Role you are applying for",role));
-  form.appendChild(field("c-exp","Experience",ex,false,"Previous work, skills and qualifications (10 to 1500 characters)."));
-  form.appendChild(field("c-why","Why do you want to join us?",why,false,"10 to 1500 characters."));
-  form.appendChild(field("c-av","Availability",av,true,"For example: evenings and weekends."));
-  form.appendChild(hp);form.appendChild(msg);form.appendChild(el("div",{class:"sp"},[btn]));card.appendChild(form);f.appendChild(card);
-  form.addEventListener("submit",function(ev){ev.preventDefault();if(busy)return;msg.className="";msg.textContent="";
-    var v=function(e){return e.value.replace(/\s+/g," ").trim()},bad="";
-    if(v(nm).length<2)bad="Enter your character name.";else if(v(ct).length<3)bad="Enter in-character contact details.";
-    else if(!role.value)bad="Choose a role.";else if(ex.value.trim().length<10)bad="Describe your experience (at least 10 characters).";
-    else if(why.value.trim().length<10)bad="Tell us why you want to join (at least 10 characters).";
-    if(bad){msg.className="notice bad";msg.textContent=bad;return}
-    busy=true;btn.disabled=true;btn.textContent="Sending\u2026";
-    rpc("submit_application",{p:{character_name:v(nm),contact:v(ct),role:role.value,experience:ex.value.trim(),motivation:why.value.trim(),availability:v(av),website:$("#c-web").value}}).then(function(r){
+      msg=el("div",{role:"alert"}),sum=el("dl",{class:"wz-sum"}),P=[0,1,2].map(function(){return el("div",{class:"wz-p"})}),cards={},
+      back=el("button",{type:"button",class:"btn alt",text:"Back"}),next=el("button",{type:"button",class:"btn",text:"Continue"}),btn=el("button",{type:"submit",class:"btn",text:"Submit application"});
+  var prog=el("ol",{class:"wz-prog","aria-label":"Application progress"},["Choose a role","Your details","Review"].map(function(t,i){return el("li",null,[el("b",{text:String(i+1)}),el("span",{text:t})])}));
+  var grid=el("div",{class:"car-roles",role:"group","aria-label":"Role"});
+  ROLES.forEach(function(r){var b=el("button",{type:"button",class:"wz-svc","aria-pressed":"false"},[el("span",{class:"wz-ic","aria-hidden":"true",text:r[2]}),el("strong",{text:r[1]}),el("span",{class:"muted",text:r[3]}),
+      el("ul",null,r[4].map(function(x){return el("li",{text:x})}))]);
+    b.onclick=function(){role=r;Object.keys(cards).forEach(function(k){cards[k].setAttribute("aria-pressed",String(k===r[0]))});msg.textContent="";
+      document.querySelector('label[for="c-exp"]').firstChild.textContent=r[5];document.querySelector('label[for="c-why"]').firstChild.textContent=r[6]};
+    cards[r[0]]=b;grid.appendChild(b)});
+  P[0].appendChild(el("h2",{class:"wz-h",text:"Which role are you applying for?"}));P[0].appendChild(grid);
+  P[1].appendChild(el("h2",{class:"wz-h",text:"Tell us about you"}));
+  P[1].appendChild(el("div",{class:"row2"},[field("c-name","Character name",nm),field("c-contact","Contact information",ct,false,"In-character: phone number, email or other way to reach you.")]));
+  P[1].appendChild(field("c-exp","Experience",ex,false,"At least 10 characters."));P[1].appendChild(field("c-why","Why us?",why,false,"At least 10 characters."));
+  P[1].appendChild(field("c-av","Availability",av,true,"For example: evenings and weekends."));
+  P[2].appendChild(el("h2",{class:"wz-h",text:"Check your application"}));P[2].appendChild(sum);
+  P[2].appendChild(el("p",{class:"notice",text:"Management reviews every application. If you are successful you will be contacted using the details above."}));P[2].appendChild(hp);
+  var v=function(e){return e.value.replace(/\s+/g," ").trim()};
+  function show(i,quiet){cur=i;msg.className="";msg.textContent="";P.forEach(function(x,j){x.hidden=j!==i});
+    [].forEach.call(prog.children,function(li,j){li.className=j===i?"on":j<i?"done":""});
+    back.style.display=i?"":"none";next.style.display=i<2?"":"none";btn.style.display=i===2?"":"none";
+    if(i===2){sum.textContent="";[["Role",role?role[1]:""],["Character",v(nm)],["Contact",v(ct)],["Experience",ex.value.trim()],["Why us",why.value.trim()],["Availability",v(av)||"Not given"]].forEach(function(r){sum.appendChild(el("dt",{text:r[0]}));sum.appendChild(el("dd",{text:r[1]}))})}
+    if(!quiet&&card.scrollIntoView)card.scrollIntoView({behavior:"smooth",block:"start"})}
+  function bad(){if(cur===0)return role?"":"Choose a role to continue.";
+    if(v(nm).length<2)return"Enter your character name.";if(v(ct).length<3)return"Enter in-character contact details.";
+    if(ex.value.trim().length<10)return"Tell us a little more about your experience (at least 10 characters).";
+    if(why.value.trim().length<10)return"Tell us why you want to join (at least 10 characters).";return""}
+  back.onclick=function(){show(cur-1)};
+  next.onclick=function(){var e=bad();if(e){msg.className="notice bad";msg.textContent=e;return}show(cur+1)};
+  form.appendChild(prog);P.forEach(function(x){form.appendChild(x)});form.appendChild(msg);form.appendChild(el("div",{class:"wz-nav"},[back,next,btn]));card.appendChild(form);f.appendChild(card);show(0,true);
+  form.addEventListener("submit",function(ev){ev.preventDefault();if(cur<2){next.click();return}if(busy)return;
+    busy=true;btn.disabled=true;btn.textContent="Sending\u2026";msg.textContent="";msg.className="";
+    rpc("submit_application",{p:{character_name:v(nm),contact:v(ct),role:role[0],experience:ex.value.trim(),motivation:why.value.trim(),availability:v(av),website:$("#c-web").value}}).then(function(r){
       if(r&&r.ok){card.textContent="";card.appendChild(el("span",{class:"badge pending",text:"Application received"}));
         card.appendChild(el("p",{class:"muted sp",text:"Your application reference"}));card.appendChild(el("div",{class:"ref",text:r.reference}));
         card.appendChild(el("p",{class:"sp",text:"Thank you for applying. Management will review it and contact you using the details you gave. Keep this reference in case you need to ask about it."}))}
