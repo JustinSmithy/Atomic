@@ -181,3 +181,7 @@ footer a{color:var(--mute)}footer a:hover{color:var(--acc)}
 .cal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:10px 0}
 .cal-g .btn{padding:10px 0;min-width:0}
 @media(max-width:600px){.cal-g{gap:4px}}
+
+.car-roles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 6px}
+.car-roles .wz-svc ul{margin:6px 0 0;padding-left:18px;font-size:.9rem}
+@media(max-width:700px){.car-roles{grid-template-columns:1fr}}
