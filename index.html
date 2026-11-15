@@ -137,7 +137,7 @@ var settingsCache=null;
 function loadSettings(){
   if(settingsCache) return Promise.resolve(settingsCache);
   if(!configured()) return Promise.resolve({});
-  return api("site_settings?select=location_text,map_url,hours_text,contact_text,discord_url&id=eq.1")
+  return api("site_settings?select=location_text,map_url,hours_text,contact_text,discord_url,service_prices&id=eq.1")
     .then(function(r){ settingsCache=(r&&r[0])||{}; return settingsCache; })
     .catch(function(){ return null; });
 }
@@ -303,18 +303,50 @@ function pageBook(q){
   var msg=el("div",{id:"formMsg",role:"alert"});
   var btn=el("button",{class:"btn",type:"submit",text:"Send request"});
 
-  form.appendChild(el("div",{class:"row2"},[
-    field("f-name","Character name",I.name),
+  /* ----- three-step wizard (same fields, validation and submit as before) ----- */
+  var SI={repairs:"\uD83D\uDD27",tuning:"\u2699\uFE0F",custom_builds:"\uD83C\uDFA8",towing:"\uD83D\uDE9B"},prices={},cards={},cur=0;
+  var alt=el("input",{id:"f-alt",type:"datetime-local",min:localInputMin()}); I.alt=alt;
+  var sum=el("dl",{class:"wz-sum"}),P=[0,1,2].map(function(){return el("div",{class:"wz-p"})});
+  var stepKeys=[["name","contact","vehicle","reg"],["service","desc"],["when","alt"]];
+  var prog=el("ol",{class:"wz-prog","aria-label":"Booking progress"},["Your details","Service","Appointment"].map(function(t,i){return el("li",null,[el("b",{text:String(i+1)}),el("span",{text:t})])}));
+  var cg=el("div",{class:"wz-svcs",role:"group","aria-label":"Type of service"});
+  SERVICES.forEach(function(sv){var b=el("button",{type:"button",class:"wz-svc","aria-pressed":"false"},[
+      el("span",{class:"wz-ic","aria-hidden":"true",text:SI[sv[0]]||"\u2022"}),el("strong",{text:sv[1]}),el("span",{class:"muted",text:sv[2]}),el("em",{class:"wz-price"})]);
+    b.onclick=function(){sel.value=sv[0];setErr("service","");Object.keys(cards).forEach(function(k){cards[k].setAttribute("aria-pressed",String(k===sv[0]))})};
+    cards[sv[0]]=b;cg.appendChild(b)});
+  if(sel.value&&cards[sel.value])cards[sel.value].setAttribute("aria-pressed","true");
+  loadSettings().then(function(st){prices=(st&&st.service_prices)||{};Object.keys(cards).forEach(function(k){var t=prices[k];
+    if(typeof t==="string"&&t.trim())cards[k].querySelector(".wz-price").textContent=t.trim()})}).catch(function(){});
+
+  P[0].appendChild(el("h2",{class:"wz-h",text:"Your details"}));
+  P[0].appendChild(el("div",{class:"row2"},[field("f-name","Character name",I.name),
     field("f-contact","Contact information",I.contact,false,"In-character: phone number, email or other way to reach you.")]));
-  form.appendChild(el("div",{class:"row2"},[
-    field("f-vehicle","Vehicle make and model",I.vehicle),
-    field("f-reg","Vehicle registration",I.reg,true)]));
-  form.appendChild(el("div",{class:"row2"},[
-    field("f-service","Type of service",I.service),
-    field("f-when","Date and time",whenBox,false,"Your local time. This is a request, not a guaranteed slot.")]));
-  form.appendChild(field("f-desc","Description of the work required",I.desc,false,"10 to 2000 characters."));
-  form.appendChild(hp); form.appendChild(msg);
-  form.appendChild(el("div",{class:"sp"},[btn]));
+  P[0].appendChild(el("div",{class:"row2"},[field("f-vehicle","Vehicle make and model",I.vehicle),field("f-reg","Vehicle registration",I.reg,true)]));
+  P[1].appendChild(el("h2",{class:"wz-h",text:"Choose a service"}));
+  P[1].appendChild(el("div",null,[cg,el("p",{class:"err",id:"f-service-e",role:"alert"})]));
+  P[1].appendChild(field("f-desc","Describe the work required",I.desc,false,"10 to 1950 characters."));
+  P[2].appendChild(el("h2",{class:"wz-h",text:"Appointment preferences"}));
+  P[2].appendChild(field("f-when","Preferred date and time",whenBox,false,"Your local time. This is a request, not a guaranteed slot."));
+  P[2].appendChild(field("f-alt","Alternative date and time",alt,true,"A backup in case your first choice isn't possible."));
+  P[2].appendChild(el("h3",{class:"wz-h",text:"Check your booking"}));P[2].appendChild(sum);
+  P[2].appendChild(el("p",{class:"notice",text:"Every appointment needs management approval. After you submit, your booking shows as Pending approval and is only confirmed once management approves it."}));
+  P[2].appendChild(hp);P[2].appendChild(msg);
+  var back=el("button",{type:"button",class:"btn alt",text:"Back"}),next=el("button",{type:"button",class:"btn",text:"Continue"});
+  function stepOf(k){for(var i=0;i<3;i++)if(stepKeys[i].indexOf(k)>-1)return i;return 0}
+  function fmtD(d){return d&&!isNaN(d)?d.toLocaleString([],{dateStyle:"full",timeStyle:"short"}):"\u2013"}
+  function summary(){sum.textContent="";var pr=prices[sel.value];
+    [["Character",clean(I.name.value)],["Contact",clean(I.contact.value)],["Vehicle",clean(I.vehicle.value)+(clean(I.reg.value)?" ("+clean(I.reg.value)+")":"")],
+     ["Service",(SVC[sel.value]||"\u2013")+(typeof pr==="string"&&pr.trim()?" \u2013 "+pr.trim():"")],["Work required",I.desc.value.trim()],
+     ["Preferred time",fmtD(I.when.value?new Date(I.when.value):null)],["Alternative time",alt.value?fmtD(new Date(alt.value)):"None"]
+    ].forEach(function(r){sum.appendChild(el("dt",{text:r[0]}));sum.appendChild(el("dd",{text:r[1]}))})}
+  function show(i,quiet){cur=i;P.forEach(function(x,j){x.hidden=j!==i});
+    [].forEach.call(prog.children,function(li,j){li.className=j===i?"on":j<i?"done":""});
+    back.style.display=i?"":"none";next.style.display=i<2?"":"none";btn.style.display=i===2?"":"none";
+    if(i===2)summary();if(!quiet&&card.scrollIntoView)card.scrollIntoView({behavior:"smooth",block:"start"})}
+  function altText(){return alt.value&&!isNaN(new Date(alt.value))?"\n\nAlternative time requested: "+new Date(alt.value).toUTCString():""}
+  back.onclick=function(){show(cur-1)};next.onclick=function(){if(validate(stepKeys[cur]))show(cur+1)};
+  form.appendChild(prog);P.forEach(function(x){form.appendChild(x)});
+  form.appendChild(el("div",{class:"wz-nav"},[back,next,btn]));show(0,true);
   card.appendChild(form); f.appendChild(card);
   rpc("available_slots",{p_from:null,p_to:null}).then(function(r){
     if(!r||!r.ok||!r.enabled)return;   /* calendar not set up: keep the plain date box */
@@ -325,14 +357,14 @@ function pageBook(q){
 
   var map={name:["f-name","Enter your character name (2 to 60 characters)."],contact:["f-contact","Enter in-character contact details (3 to 120 characters)."],
     vehicle:["f-vehicle","Enter the vehicle make and model (2 to 80 characters)."],service:["f-service","Choose a type of service."],
-    when:["f-when","Choose a future date and time."],desc:["f-desc","Describe the work required (10 to 2000 characters)."],reg:["f-reg","Registration is too long (16 characters maximum)."]};
+    when:["f-when","Choose a future date and time."],desc:["f-desc","Describe the work required (10 to 1950 characters)."],reg:["f-reg","Registration is too long (16 characters maximum)."],alt:["f-alt","Choose a future date and time, or leave this empty."]};
   var codeMap={invalid_name:"name",invalid_contact:"contact",invalid_vehicle:"vehicle",invalid_reg:"reg",invalid_service:"service",invalid_description:"desc",invalid_date:"when"};
   function setErr(k,text){
     var inp=I[k], e=$("#"+map[k][0]+"-e"); if(!inp||!e) return;
     e.textContent=text||""; if(text) inp.setAttribute("aria-invalid","true"); else inp.removeAttribute("aria-invalid");
   }
   function clean(s){return String(s).replace(/\s+/g," ").trim()}
-  function validate(){
+  function validate(only){
     var bad=[], v={
       name:clean(I.name.value), contact:clean(I.contact.value), vehicle:clean(I.vehicle.value),
       reg:clean(I.reg.value), service:I.service.value, desc:I.desc.value.trim()
@@ -345,14 +377,18 @@ function pageBook(q){
     if(!SVC[v.service]) bad.push("service");
     var t=I.when.value?new Date(I.when.value):null;
     if(!t||isNaN(t)||t.getTime()<=Date.now()) bad.push("when");
-    if(v.desc.length<10||v.desc.length>2000) bad.push("desc");
+    if(v.desc.length<10||v.desc.length>1950) bad.push("desc");
+    if(alt.value){var at=new Date(alt.value);if(isNaN(at)||at.getTime()<=Date.now())bad.push("alt")}
+    if(only)bad=bad.filter(function(k){return only.indexOf(k)>-1});
     bad.forEach(function(k){setErr(k,map[k][1])});
-    if(bad.length){ I[bad[0]].focus(); return null; }
+    if(bad.length){ show(stepOf(bad[0])); I[bad[0]].focus(); return null; }
+    if(only)return true;
     return {character_name:v.name,contact:v.contact,vehicle:v.vehicle,vehicle_reg:v.reg,service_type:v.service,
-            preferred_at:t.toISOString(),description:v.desc,idempotency_key:key,website:$("#f-web").value};
+            preferred_at:t.toISOString(),description:v.desc+altText(),idempotency_key:key,website:$("#f-web").value};
   }
   form.addEventListener("submit",function(ev){
     ev.preventDefault();
+    if(cur<2){next.click();return}
     if(submitting) return;                    /* blocks double-clicks */
     msg.textContent=""; msg.className="";
     var payload=validate(); if(!payload) return;
@@ -360,7 +396,7 @@ function pageBook(q){
     rpc("submit_booking",{p:payload}).then(function(r){
       if(r&&r.ok){ showReceipt(card,r); return; }
       var k=r&&codeMap[r.error];
-      if(k){ setErr(k,r.message); I[k].focus(); }
+      if(k){ show(stepOf(k)); setErr(k,r.message); I[k].focus(); }
       else { msg.className="notice bad"; msg.textContent=(r&&r.message)||"We couldn't send your request. Please try again."; }
     }).catch(function(){
       msg.className="notice bad";
@@ -382,7 +418,7 @@ function showReceipt(card,r){
   if(r.duplicate){
     card.appendChild(el("p",{class:"notice",text:"This request had already been received, so no second booking was created."}));
   }
-  card.appendChild(el("span",{class:"badge pending",text:"Pending — not confirmed"}));
+  card.appendChild(el("span",{class:"badge pending",text:"Pending approval"}));
   card.appendChild(el("p",{class:"muted sp",text:"Your booking reference"}));
   card.appendChild(el("div",{class:"ref",text:r.reference}));
   if(r.token){
