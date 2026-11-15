@@ -333,6 +333,53 @@ function filters(){return isMgr()?MGR_FILTERS:MECH_FILTERS}
 function curFilter(){var f=filters();if(!ST.filter||!f.some(function(x){return x[0]===ST.filter}))ST.filter=f[0][0];return f.filter(function(x){return x[0]===ST.filter})[0]}
 function pill(s){return'<span class="pill bk-s bk-'+esc(s)+'">'+esc(STAT[s]||s)+'</span>'}
 
+
+/* ---------- booking calendar settings (managers) ---------- */
+var WD=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+function loadSched(){return Promise.all([api("booking_config?select=*&id=eq.1"),api("booking_hours?select=*&order=weekday"),api("booking_blocks?select=id,day,reason&order=day&limit=100")])
+  .then(function(r){ST.sched={c:(r[0]&&r[0][0])||{},h:r[1]||[],b:r[2]||[]}}).catch(function(e){if(e&&e.message==="auth")throw e;ST.sched={missing:true}})}
+function schedHtml(){var s=ST.sched;if(!s)return"";
+  var h='<div class="card sp">'+sec("\u25A6","Booking calendar","Opening hours, slot length and days off");
+  if(s.missing)return h+'<p class="note">The calendar is not set up yet. Run supabase/002_calendar.sql in the Supabase SQL Editor, then reload.</p></div>';
+  var c=s.c||{},hm={};s.h.forEach(function(x){hm[x.weekday]=x});
+  h+='<div class="g g2"><div><label for="bk-sl">Slot length</label><select id="bk-sl">'+[15,20,30,45,60,90,120,180,240].map(function(n){return'<option value="'+n+'"'+(n===c.slot_minutes?" selected":"")+'>'+n+' minutes</option>'}).join("")+'</select>'+
+    '<label for="bk-cap">Jobs per slot</label><input id="bk-cap" type="number" min="1" max="20" value="'+esc(c.capacity||1)+'"></div>'+
+    '<div><label for="bk-tz">Time zone</label><input id="bk-tz" maxlength="60" value="'+esc(c.timezone||"UTC")+'"><label for="bk-mn">Minimum notice (hours)</label><input id="bk-mn" type="number" min="0" max="168" value="'+esc(c.min_notice_hours==null?2:c.min_notice_hours)+'">'+
+    '<label for="bk-md">Book up to (days ahead)</label><input id="bk-md" type="number" min="1" max="180" value="'+esc(c.max_days_ahead||60)+'"></div></div>';
+  h+='<div class="tw sp"><table><tr><th>Day</th><th>Open</th><th>From</th><th>To</th></tr>'+[1,2,3,4,5,6,0].map(function(n){var x=hm[n]||{};
+    return'<tr><td>'+WD[n]+'</td><td><input type="checkbox" id="bk-o-'+n+'" aria-label="'+WD[n]+' open"'+(x.is_open?" checked":"")+'></td><td><input type="time" id="bk-ot-'+n+'" value="'+esc((x.open_time||"10:00").slice(0,5))+'"></td><td><input type="time" id="bk-ct-'+n+'" value="'+esc((x.close_time||"18:00").slice(0,5))+'"></td></tr>'}).join("")+'</table></div>'+
+    '<div class="sp"><button data-bk="sched">Save calendar</button></div><p class="note">Customers see the calendar once at least one day is open. Until then they use the plain date box.</p>'+
+    '<h3 class="hd bk-h3">Days off</h3><div class="bk-inline"><input id="bk-bd-day" type="date" aria-label="Day off"><input id="bk-bd-why" maxlength="100" placeholder="Reason (optional)"><button class="alt" data-bk="block">Block day</button></div>'+
+    (s.b.length?s.b.map(function(x){return'<div class="bk-inline sp"><span>'+esc(x.day)+(x.reason?" \u2013 "+esc(x.reason):"")+'</span><button class="alt sm" data-bk="unblock" data-id="'+esc(x.id)+'">Remove</button></div>'}).join(""):"");
+  return h+'</div>'}
+function schedDone(r,msg){if(r&&r.ok){say(msg);return loadSched()}ST.err=(r&&r.message)||"Not saved."}
+
+
+/* ---------- parts (managers) ---------- */
+function loadParts(){return Promise.all([api("parts?select=*&order=sort.asc,created_at.asc"),api("part_orders?select=*&order=created_at.desc&limit=50")])
+  .then(function(r){ST.parts=r[0]||[];ST.porders=r[1]||[];ST.partsMissing=false}).catch(function(e){if(e&&e.message==="auth")throw e;ST.partsMissing=true})}
+function partRow(p){var i=p.id||"new";
+  return'<div class="card sp"><h3 class="hd bk-h3">'+(p.id?esc(p.name):"Add a part")+'</h3>'+
+  (p.image_url?'<img src="'+esc(p.image_url)+'" alt="" style="max-width:160px;max-height:110px;border-radius:8px;object-fit:cover">':"")+
+  '<label for="bk-pn-'+i+'">Name</label><input id="bk-pn-'+i+'" maxlength="80" value="'+esc(p.name||"")+'">'+
+  '<label for="bk-pp-'+i+'">Price ($)</label><input id="bk-pp-'+i+'" type="number" min="0" step="0.01" value="'+esc(p.price==null?"":p.price)+'">'+
+  '<label for="bk-pi-'+i+'">Image link (https://...)</label><input id="bk-pi-'+i+'" maxlength="500" value="'+esc(p.image_url||"")+'">'+
+  '<label for="bk-pd-'+i+'">Description</label><textarea id="bk-pd-'+i+'" maxlength="400" rows="2">'+esc(p.description||"")+'</textarea>'+
+  '<label for="bk-ps-'+i+'">Sort order (lower shows first)</label><input id="bk-ps-'+i+'" type="number" value="'+esc(p.sort||0)+'">'+
+  '<label><input type="checkbox" id="bk-pa-'+i+'"'+(p.active===false?"":" checked")+'> Visible on the website</label>'+
+  '<div class="sp"><button data-bk="part-save" data-id="'+(p.id||"")+'">'+(p.id?"Save":"Add part")+'</button>'+
+  (p.id?' <button class="alt" data-bk="part-del" data-id="'+esc(p.id)+'">Remove</button>':"")+'</div></div>'}
+function partsHtml(){
+  if(ST.partsMissing)return'<div class="card sp"><p class="note">Parts are not set up yet. Run supabase/003_parts.sql in the Supabase SQL Editor, then reload.</p></div>';
+  var h=partRow({})+(ST.parts||[]).map(partRow).join("")+'<div class="card sp"><h3 class="hd bk-h3">Part orders</h3>';
+  var o=ST.porders||[];
+  h+=o.length?'<div class="tw"><table><tr><th>Ref</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th></tr>'+o.map(function(x){
+    return'<tr><td>'+esc(x.reference)+'</td><td>'+esc(x.character_name)+'<br><small>'+esc(x.contact)+'</small>'+(x.note?'<br><small>'+esc(x.note)+'</small>':"")+'</td><td>'+
+    (x.items||[]).map(function(i){return esc(i.qty)+" \u00D7 "+esc(i.name)}).join("<br>")+'</td><td>$'+esc(Number(x.total).toFixed(2))+'</td><td><select id="bk-os-'+esc(x.id)+'" aria-label="Status for '+esc(x.reference)+'">'+
+    ["new","ready","collected","cancelled"].map(function(s){return'<option'+(s===x.status?" selected":"")+'>'+s+'</option>'}).join("")+'</select> <button class="alt sm" data-bk="order-set" data-id="'+esc(x.id)+'">Update</button></td></tr>'}).join("")+'</table></div>':'<p class="note">No part orders yet.</p>';
+  return h+'</div>'}
+function partsDone(r,msg){if(r&&r.ok){say(msg);return loadParts()}ST.err=(r&&r.message)||"Not saved."}
+
 /* ---------- data ---------- */
 function loadList(){return api("bookings?select="+COLS+"&order=created_at.desc&limit=500").then(function(r){ST.list=r||[]})}
 function loadStaff(){return api("staff_profiles?select=user_id,display_name,role,active&order=display_name").then(function(r){ST.staff=r||[]})}
@@ -370,10 +417,10 @@ function chips(){var f=filters(),cur=curFilter()[0];
     return'<button type="button" class="sm '+(x[0]===cur?"":"alt")+'" data-bk="filter" data-f="'+x[0]+'" aria-pressed="'+(x[0]===cur)+'">'+esc(x[1])+' <b>'+n+'</b></button>'}).join("")+'</div>'}
 function appHtml(){var mgr=isMgr();
   var h='<div class="card bk-bar"><div class="bk-top"><div><b>'+esc(ST.me.display_name)+'</b> <span class="pill a">'+(mgr?"Manager":"Mechanic")+'</span></div><div class="bk-btns"><button class="alt sm" data-bk="reload">Refresh</button><button class="alt sm" data-bk="signout">Sign out</button></div></div>';
-  if(mgr)h+='<div class="bk-tabs"><button type="button" class="'+(ST.tab==="bookings"?"":"alt")+'" data-bk="tab" data-t="bookings">Bookings</button><button type="button" class="'+(ST.tab==="team"?"":"alt")+'" data-bk="tab" data-t="team">Team and site settings</button></div>';
+  if(mgr)h+='<div class="bk-tabs"><button type="button" class="'+(ST.tab==="bookings"?"":"alt")+'" data-bk="tab" data-t="bookings">Bookings</button><button type="button" class="'+(ST.tab==="team"?"":"alt")+'" data-bk="tab" data-t="team">Team and site settings</button><button type="button" class="'+(ST.tab==="parts"?"":"alt")+'" data-bk="tab" data-t="parts">Parts</button></div>';
   h+='</div>';
   if(ST.err)h+='<div class="bk-note bad" role="alert">'+esc(ST.err)+'</div>';
-  return h+(mgr&&ST.tab==="team"?teamHtml():listHtml())}
+  return h+(mgr&&ST.tab==="parts"?partsHtml():mgr&&ST.tab==="team"?teamHtml():listHtml())}
 function listHtml(){var f=curFilter(),rows=f[2]?ST.list.filter(function(b){return f[2].indexOf(b.status)>=0}):ST.list;
   var head=sec("✉","Bookings",isMgr()?"Review requests, propose times, assign mechanics":"Jobs assigned to you");
   var body=rows.length?rows.map(cardHtml).join(""):'<div class="empty">'+(ST.list.length?"Nothing in this view.":(isMgr()?"No bookings yet. Requests from the public website appear here as Pending.":"No bookings are assigned to you yet. A manager will assign work to you."))+'</div>';
@@ -426,7 +473,7 @@ function teamHtml(){
   '<div class="card sp">'+sec("⌂","Public site details","Shown on the public Contact page. Leave a box empty to hide it.")+
    '<div class="g g2"><div><label for="bk-s-loc">Location</label><textarea id="bk-s-loc" maxlength="300" rows="3">'+esc(s.location_text||"")+'</textarea></div><div><label for="bk-s-hours">Opening hours</label><textarea id="bk-s-hours" maxlength="500" rows="3">'+esc(s.hours_text||"")+'</textarea></div>'+
    '<div><label for="bk-s-contact">Contact details</label><textarea id="bk-s-contact" maxlength="500" rows="3">'+esc(s.contact_text||"")+'</textarea></div><div><label for="bk-s-map">Map link (https)</label><input id="bk-s-map" maxlength="500" value="'+esc(s.map_url||"")+'"><label for="bk-s-discord">Discord link (https)</label><input id="bk-s-discord" maxlength="300" value="'+esc(s.discord_url||"")+'"></div></div>'+
-   '<div class="sp"><button data-bk="settings">Save public details</button></div></div>'}
+   '<div class="sp"><button data-bk="settings">Save public details</button></div></div>'+schedHtml()}
 function render(){var h;
   if(!sess)h=authHtml();else if(ST.me===undefined)h=ST.err?'<div class="card bk-narrow">'+sec("\u26A0","Could not load bookings","")+'<div class="bk-note bad" role="alert">'+esc(ST.err)+'</div><div class="sp"><button data-bk="retry">Try again</button> <button class="alt" data-bk="signout">Sign out</button></div></div>':'<div class="sk" style="height:220px"></div>';else if(ST.me===null)h=redeemHtml();else if(!ST.me.active)h=inactiveHtml();else h=appHtml();
   var authed=!!(sess&&ST.me&&ST.me.active);
@@ -462,8 +509,12 @@ document.addEventListener("click",function(e){var b=e.target.closest&&e.target.c
   if(a==="retry"){ST.err="";render();boot()}
   else if(a==="mode"){ST.authMode=b.dataset.m;ST.err="";ST.info="";render()}
   else if(a==="signout")signOut();
-  else if(a==="reload"){ST.err="";refresh(ST.open).then(function(){if(isMgr()&&ST.tab==="team")return Promise.all([loadInvites(),loadSettings()]).then(render)}).catch(function(){})}
-  else if(a==="tab"){ST.tab=b.dataset.t;ST.err="";ST.newCode=null;render();if(ST.tab==="team")Promise.all([loadStaff(),loadInvites(),loadSettings()]).then(render).catch(function(er){authErr(er);render()})}
+  else if(a==="reload"){ST.err="";refresh(ST.open).then(function(){if(isMgr()&&ST.tab==="team")return Promise.all([loadInvites(),loadSettings(),loadSched()]).then(render)}).catch(function(){})}
+  else if(a==="part-save"){var i=b.dataset.id||"new";
+    rpc("staff_save_part",{p:{id:b.dataset.id||"",name:val("bk-pn-"+i),price:val("bk-pp-"+i),image_url:val("bk-pi-"+i),description:val("bk-pd-"+i),sort:+val("bk-ps-"+i)||0,active:document.getElementById("bk-pa-"+i).checked}}).then(function(r){return partsDone(r,"Part saved")}).catch(authErr).then(render)}
+  else if(a==="part-del"){if(!confirm("Remove this part from the website?"))return;rpc("staff_delete_part",{p_id:b.dataset.id}).then(function(r){return partsDone(r,"Part removed")}).catch(authErr).then(render)}
+  else if(a==="order-set"){rpc("staff_set_part_order",{p_id:b.dataset.id,p_status:val("bk-os-"+b.dataset.id)}).then(function(r){return partsDone(r,"Order updated")}).catch(authErr).then(render)}
+  else if(a==="tab"){ST.tab=b.dataset.t;ST.err="";ST.newCode=null;render();if(ST.tab==="parts")loadParts().then(render).catch(function(er){authErr(er);render()});if(ST.tab==="team")Promise.all([loadStaff(),loadInvites(),loadSettings(),loadSched()]).then(render).catch(function(er){authErr(er);render()})}
   else if(a==="filter"){ST.filter=b.dataset.f;ST.open=null;ST.armed=null;render()}
   else if(a==="toggle"){var id=b.dataset.id;ST.armed=null;if(ST.open===id){ST.open=null;render()}else{ST.open=id;render();loadEvents(id).then(render).catch(function(er){authErr(er);render()})}}
   else if(a==="arm"){ST.armed=b.dataset.key;render();var k=ST.armed;setTimeout(function(){if(ST.armed===k){ST.armed=null;render()}},5000)}
@@ -475,6 +526,10 @@ document.addEventListener("click",function(e){var b=e.target.closest&&e.target.c
     doAct(bid,act,x)}
   else if(a==="member"){var u=b.dataset.uid;rpc("staff_update_member",{p_user:u,p_role:val("bk-r-"+u),p_active:val("bk-a-"+u)==="1"}).then(function(r){if(r&&r.ok){say("Saved");return loadStaff()}ST.err=(r&&r.message)||"Not saved.";}).catch(authErr).then(render)}
   else if(a==="invite"){rpc("staff_create_invite",{p_role:val("bk-inv-role"),p_label:val("bk-inv-label")}).then(function(r){if(r&&r.ok){ST.newCode=r.code;return loadInvites()}ST.err=(r&&r.message)||"Could not create the code."}).catch(authErr).then(render)}
+  else if(a==="sched"){var hrs=[0,1,2,3,4,5,6].map(function(n){return{weekday:n,is_open:document.getElementById("bk-o-"+n).checked,open_time:val("bk-ot-"+n)||"10:00",close_time:val("bk-ct-"+n)||"18:00"}});
+    rpc("staff_save_schedule",{p:{slot_minutes:+val("bk-sl"),capacity:+val("bk-cap"),timezone:val("bk-tz")||"UTC",min_notice_hours:+val("bk-mn"),max_days_ahead:+val("bk-md"),hours:hrs}}).then(function(r){return schedDone(r,"Calendar saved")}).catch(authErr).then(render)}
+  else if(a==="block"){rpc("staff_block_day",{p_day:val("bk-bd-day")||null,p_reason:val("bk-bd-why")}).then(function(r){return schedDone(r,"Day blocked")}).catch(authErr).then(render)}
+  else if(a==="unblock"){rpc("staff_unblock_day",{p_id:b.dataset.id}).then(function(r){return schedDone(r,"Day reopened")}).catch(authErr).then(render)}
   else if(a==="revoke"){rpc("staff_revoke_invite",{p_id:b.dataset.id}).then(loadInvites).catch(authErr).then(render)}
   else if(a==="copycode"){var t=ST.newCode||"";(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){say("Copied")},function(){say("Select the code and copy it")})}
   else if(a==="settings"){var body={location_text:val("bk-s-loc")||null,hours_text:val("bk-s-hours")||null,contact_text:val("bk-s-contact")||null,map_url:val("bk-s-map")||null,discord_url:val("bk-s-discord")||null,updated_at:new Date().toISOString()};
