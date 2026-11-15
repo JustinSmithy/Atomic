@@ -194,10 +194,22 @@ body.ag-in #bkg{display:none}
 .ag-signout{margin-left:auto}
 .ag-back{color:inherit;opacity:.8;text-decoration:underline;font-size:.95rem}
 nav a.ag-public{margin-top:auto}
+.cl-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0}.cl-bar strong{flex:1;min-width:140px;text-align:center}
+.cl-g{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}.cl-w{text-align:center;font-size:.8rem;opacity:.7}
+.cl-d{all:unset;box-sizing:border-box;cursor:pointer;min-height:78px;padding:6px;border:1px solid rgba(255,255,255,.14);border-radius:10px;display:flex;flex-direction:column;gap:3px;overflow:hidden}
+.cl-d b{font-size:.85rem}.cl-d.out{opacity:.4}.cl-d.today b{color:var(--acc,#ffc400)}.cl-d.sel{border-color:var(--acc,#ffc400);box-shadow:0 0 0 1px var(--acc,#ffc400) inset}
+.cl-d:focus-visible{outline:2px solid var(--acc,#ffc400)}.cl-d i{font-size:.72rem;opacity:.7}
+.cl-c{font-size:.7rem;line-height:1.2;padding:2px 4px;border-radius:4px;background:rgba(255,255,255,.1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cl-c.s-pending,.cl-c.s-alternative_proposed{background:var(--acc,#ffc400);color:#111}.cl-c.s-approved,.cl-c.s-alternative_accepted,.cl-c.s-in_progress{background:#2e7d32;color:#fff}
+.cl-r{display:flex;gap:12px;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid rgba(255,255,255,.1)}
+@media(max-width:600px){.cl-d{min-height:56px;padding:4px}.cl-c{display:none}}
+.gd-s summary{cursor:pointer;font-size:1.05rem;text-transform:uppercase;letter-spacing:.03em}
+.gd-s h4{margin:16px 0 6px;color:var(--acc,#ffc400)}.gd-s ul{margin:6px 0 10px 20px}.gd-s p{margin:8px 0}
+#gd-q{width:100%;margin-top:12px}
 </style></head><body>
 <div class="app"><nav aria-label="Main">
 <div class="brand"><svg viewBox="0 0 48 48" fill="none" stroke="#ff7a1a" stroke-width="2.4"><ellipse cx="24" cy="24" rx="20" ry="8"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(60 24 24)"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(120 24 24)"/><circle cx="24" cy="24" r="3.5" fill="#ff7a1a"/></svg><b>Atomic<br>Garage</b></div>
-<a href="#home" data-v="home"><i aria-hidden="true">⌂</i>Home</a><a href="#dashboard" data-v="dashboard"><i aria-hidden="true">◫</i>Dashboard</a><a href="#bookings" data-v="bookings"><i aria-hidden="true">✉</i>Bookings</a><a href="#handbook" data-v="handbook"><i aria-hidden="true">☰</i>Handbook</a><a href="#parts" data-v="parts"><i aria-hidden="true">▦</i>Parts store</a><a href="#loa" data-v="loa"><i aria-hidden="true">✈</i>Leave of absence</a><a href="#id" data-v="id"><i aria-hidden="true">▣</i>Staff ID</a><a href="../" class="ag-public"><i aria-hidden="true">↗</i>Customer site</a></nav>
+<a href="#home" data-v="home"><i aria-hidden="true">⌂</i>Home</a><a href="#dashboard" data-v="dashboard"><i aria-hidden="true">◫</i>Dashboard</a><a href="#calendar" data-v="calendar"><i aria-hidden="true">▦</i>Calendar</a><a href="#bookings" data-v="bookings"><i aria-hidden="true">✉</i>Bookings</a><a href="#handbook" data-v="handbook"><i aria-hidden="true">☰</i>Handbook</a><a href="#guide" data-v="guide"><i aria-hidden="true">▤</i>Guide</a><a href="#parts" data-v="parts"><i aria-hidden="true">▦</i>Parts store</a><a href="#loa" data-v="loa"><i aria-hidden="true">✈</i>Leave of absence</a><a href="#id" data-v="id"><i aria-hidden="true">▣</i>Staff ID</a><a href="../" class="ag-public"><i aria-hidden="true">↗</i>Customer site</a></nav>
 <main><div class="bar"><span class="clock" id="ck"></span><div class="who" id="me"></div></div><div id="v"></div></main></div>
 <script>
 var D={name:"New Mechanic",rank:"Mechanic",dos:"",phone:"",addr:"",photo:"",hours:0,life:0,shifts:0,start:null,
@@ -424,10 +436,10 @@ function chips(){var f=filters(),cur=curFilter()[0];
     return'<button type="button" class="sm '+(x[0]===cur?"":"alt")+'" data-bk="filter" data-f="'+x[0]+'" aria-pressed="'+(x[0]===cur)+'">'+esc(x[1])+' <b>'+n+'</b></button>'}).join("")+'</div>'}
 function appHtml(){var mgr=isMgr();
   var h='<div class="card bk-bar"><div class="bk-top"><div><b>'+esc(ST.me.display_name)+'</b> <span class="pill a">'+(mgr?"Manager":"Mechanic")+'</span></div><div class="bk-btns"><button class="alt sm" data-bk="reload">Refresh</button><button class="alt sm" data-bk="signout">Sign out</button></div></div>';
-  if(mgr)h+='<div class="bk-tabs"><button type="button" class="'+(ST.tab==="bookings"?"":"alt")+'" data-bk="tab" data-t="bookings">Bookings</button><button type="button" class="'+(ST.tab==="team"?"":"alt")+'" data-bk="tab" data-t="team">Team and site settings</button><button type="button" class="'+(ST.tab==="parts"?"":"alt")+'" data-bk="tab" data-t="parts">Parts</button></div>';
+  if(mgr)h+='<div class="bk-tabs"><button type="button" class="'+(ST.tab==="bookings"?"":"alt")+'" data-bk="tab" data-t="bookings">Bookings</button><button type="button" class="'+(ST.tab==="team"?"":"alt")+'" data-bk="tab" data-t="team">Team and site settings</button><button type="button" class="'+(ST.tab==="parts"?"":"alt")+'" data-bk="tab" data-t="parts">Parts</button><button type="button" class="'+(ST.tab==="apps"?"":"alt")+'" data-bk="tab" data-t="apps">Applications</button></div>';
   h+='</div>';
   if(ST.err)h+='<div class="bk-note bad" role="alert">'+esc(ST.err)+'</div>';
-  return h+(mgr&&ST.tab==="parts"?partsHtml():mgr&&ST.tab==="team"?teamHtml():listHtml())}
+  return h+(mgr&&ST.tab==="apps"?appsHtml():mgr&&ST.tab==="parts"?partsHtml():mgr&&ST.tab==="team"?teamHtml():listHtml())}
 function listHtml(){var f=curFilter(),rows=f[2]?ST.list.filter(function(b){return f[2].indexOf(b.status)>=0}):ST.list;
   var head=sec("✉","Bookings",isMgr()?"Review requests, propose times, assign mechanics":"Jobs assigned to you");
   var body=rows.length?rows.map(cardHtml).join(""):'<div class="empty">'+(ST.list.length?"Nothing in this view.":(isMgr()?"No bookings yet. Requests from the public website appear here as Pending.":"No bookings are assigned to you yet. A manager will assign work to you."))+'</div>';
@@ -517,11 +529,21 @@ document.addEventListener("click",function(e){var b=e.target.closest&&e.target.c
   else if(a==="mode"){ST.authMode=b.dataset.m;ST.err="";ST.info="";render()}
   else if(a==="signout")signOut();
   else if(a==="reload"){ST.err="";refresh(ST.open).then(function(){if(isMgr()&&ST.tab==="team")return Promise.all([loadInvites(),loadSettings(),loadSched()]).then(render)}).catch(function(){})}
+  else if(a==="cal-nav"){var m=ST.cm=ST.cm||{mode:"month",a:Date.now(),sel:null},x=new Date(m.a),dd=+b.dataset.d;if(m.mode==="week")x.setDate(x.getDate()+7*dd);else{x.setDate(1);x.setMonth(x.getMonth()+dd)}m.a=x.getTime();m.sel=null;calRender()}
+  else if(a==="cal-mode"){ST.cm=ST.cm||{a:Date.now(),sel:null};ST.cm.mode=b.dataset.m;calRender()}
+  else if(a==="cal-today"){ST.cm=ST.cm||{mode:"month"};ST.cm.a=Date.now();ST.cm.sel=null;calRender()}
+  else if(a==="cal-day"){ST.cm.sel=ST.cm.sel===b.dataset.k?null:b.dataset.k;calRender()}
+  else if(a==="cal-open"){ST.tab="bookings";ST.filter=null;ST.armed=null;ST.open=b.dataset.id;location.hash="#bookings";loadEvents(b.dataset.id).then(render).catch(function(er){authErr(er);render()})}
+  else if(a==="gd-import"){var secs=gdParse(document.getElementById("gd-in").value);
+    if(!secs.length){say("No sections found. Each section must start with a line like :auto_exotic: ALARM");return}
+    if(!confirm("Replace the whole guide with "+secs.length+" sections?"))return;
+    rpc("staff_import_guide",{p:secs}).then(function(r){if(r&&r.ok){say("Guide imported ("+r.count+" sections)");return gdLoad()}say((r&&r.message)||"Import failed")}).catch(authErr).then(gdRender)}
+  else if(a==="app-set"){rpc("staff_set_application",{p_id:b.dataset.id,p_status:val("bk-as-"+b.dataset.id),p_note:val("bk-an-"+b.dataset.id)}).then(function(r){if(r&&r.ok){say("Application updated");return loadApps()}ST.err=(r&&r.message)||"Not saved."}).catch(authErr).then(render)}
   else if(a==="part-save"){var i=b.dataset.id||"new";
     rpc("staff_save_part",{p:{id:b.dataset.id||"",name:val("bk-pn-"+i),price:val("bk-pp-"+i),image_url:val("bk-pi-"+i),description:val("bk-pd-"+i),sort:+val("bk-ps-"+i)||0,active:document.getElementById("bk-pa-"+i).checked}}).then(function(r){return partsDone(r,"Part saved")}).catch(authErr).then(render)}
   else if(a==="part-del"){if(!confirm("Remove this part from the website?"))return;rpc("staff_delete_part",{p_id:b.dataset.id}).then(function(r){return partsDone(r,"Part removed")}).catch(authErr).then(render)}
   else if(a==="order-set"){rpc("staff_set_part_order",{p_id:b.dataset.id,p_status:val("bk-os-"+b.dataset.id)}).then(function(r){return partsDone(r,"Order updated")}).catch(authErr).then(render)}
-  else if(a==="tab"){ST.tab=b.dataset.t;ST.err="";ST.newCode=null;render();if(ST.tab==="parts")loadParts().then(render).catch(function(er){authErr(er);render()});if(ST.tab==="team")Promise.all([loadStaff(),loadInvites(),loadSettings(),loadSched()]).then(render).catch(function(er){authErr(er);render()})}
+  else if(a==="tab"){ST.tab=b.dataset.t;ST.err="";ST.newCode=null;render();if(ST.tab==="apps")loadApps().then(render).catch(function(er){authErr(er);render()});if(ST.tab==="parts")loadParts().then(render).catch(function(er){authErr(er);render()});if(ST.tab==="team")Promise.all([loadStaff(),loadInvites(),loadSettings(),loadSched()]).then(render).catch(function(er){authErr(er);render()})}
   else if(a==="filter"){ST.filter=b.dataset.f;ST.open=null;ST.armed=null;render()}
   else if(a==="toggle"){var id=b.dataset.id;ST.armed=null;if(ST.open===id){ST.open=null;render()}else{ST.open=id;render();loadEvents(id).then(render).catch(function(er){authErr(er);render()})}}
   else if(a==="arm"){ST.armed=b.dataset.key;render();var k=ST.armed;setTimeout(function(){if(ST.armed===k){ST.armed=null;render()}},5000)}
@@ -545,6 +567,78 @@ document.addEventListener("click",function(e){var b=e.target.closest&&e.target.c
 });
 
 /* ---------- hook into the existing portal router without touching it ---------- */
+/* ---------- mechanical guide ---------- */
+function gdParse(t){var secs=[],cur=null,blk=null,H=/^(tools required|disassembly|installation\s*\/\s*replacement|attention)$/i;
+  String(t).split(/\r?\n/).forEach(function(raw){var l=raw.replace(/\u00a0/g," ").trim();
+    if(!l||l==="."||l==="OP"||/^\[[^\]]+\]\s/.test(l)||/^[\u2014\u2013-]\s*\d{1,2}\/\d{1,2}\/\d{4}/.test(l))return;
+    var m=l.match(/^:[a-z0-9_]+:\s*(.+)$/i);
+    if(m){cur={title:m[1].trim().replace(/&I NSTALLATION/,"& INSTALLATION"),body:[]};secs.push(cur);blk=null;return}
+    if(!cur)return;
+    if(H.test(l)){blk={h:l,lines:[]};cur.body.push(blk);return}
+    if(!blk){blk={h:"",lines:[]};cur.body.push(blk)}
+    blk.lines.push(l)});
+  return secs}
+function gdLines(b){var o="",ul=false,tools=/tools/i.test(b.h);
+  b.lines.forEach(function(l){var it=tools||(l.length<=70&&!/[.!?:]$/.test(l));
+    if(it&&!ul){o+="<ul>";ul=true}if(!it&&ul){o+="</ul>";ul=false}
+    o+=it?"<li>"+esc(l)+"</li>":"<p>"+esc(l)+"</p>"});
+  return o+(ul?"</ul>":"")}
+function gdLoad(){return api("guide_sections?select=id,sort,title,body&order=sort.asc").then(function(r){ST.guide=r||[]}).catch(function(e){if(e&&e.message==="auth")throw e;ST.guide=[]})}
+function gdRender(){var d=document.getElementById("gd");if(!d)return;var g=ST.guide,h='<div class="card">'+sec("\u25A4","Mechanical guide","Removal, replacement and installation procedures")+
+    '<input id="gd-q" type="search" placeholder="Search the guide (for example: brakes, torque, airbag)" aria-label="Search the guide"></div>';
+  if(!g)h+='<div class="skel sp"></div>';
+  else if(!g.length)h+='<div class="card sp"><p class="note">The guide has not been added yet.'+(isMgr()?" Use the import box below.":" Ask a manager to add it.")+'</p></div>';
+  else h+=g.map(function(s){return'<details class="card sp gd-s"><summary><strong>'+esc(s.title)+'</strong></summary>'+(s.body||[]).map(function(b){return(b.h?'<h4>'+esc(b.h)+'</h4>':"")+gdLines(b)}).join("")+'</details>'}).join("");
+  if(isMgr())h+='<details class="card sp"><summary><strong>Import or replace the guide (managers)</strong></summary><p class="note">Paste the full guide text. Every section must start with a heading line such as <em>:auto_exotic: ALARM</em>. This replaces the current guide.</p><textarea id="gd-in" rows="8" aria-label="Guide text"></textarea><div class="sp"><button data-bk="gd-import">Import guide</button></div></details>';
+  d.innerHTML=h}
+document.addEventListener("input",function(e){if(e.target.id!=="gd-q")return;var q=e.target.value.trim().toLowerCase();
+  document.querySelectorAll("#gd .gd-s").forEach(function(x){var hit=!q||x.textContent.toLowerCase().indexOf(q)>-1;x.hidden=!hit;x.open=!!q&&hit})});
+V.guide=function(){setTimeout(function(){gdRender();if(!ST.guide&&sess&&ST.me&&ST.me.active)gdLoad().then(gdRender).catch(function(er){authErr(er);gdRender()})},0);return'<div id="gd"></div>'};
+/* ---------- applications (managers) ---------- */
+var RL={mechanic:"Mechanic",bodywork_paint:"Bodywork and paint",tow_driver:"Tow driver",apprentice:"Apprentice",other:"Something else"};
+function loadApps(){return api("applications?select=*&order=created_at.desc&limit=100").then(function(r){ST.apps=r||[];ST.appsMissing=false}).catch(function(e){if(e&&e.message==="auth")throw e;ST.appsMissing=true})}
+function appsHtml(){if(ST.appsMissing)return'<div class="card sp"><p class="note">Applications could not be loaded.</p></div>';
+  var a=ST.apps||[];if(!a.length)return'<div class="card sp"><p class="note">No applications yet.</p></div>';
+  return a.map(function(x){var i=esc(x.id);return'<div class="card sp"><h3 class="hd bk-h3">'+esc(x.character_name)+' <small>'+esc(x.reference)+" \u00B7 "+esc(RL[x.role]||x.role)+'</small></h3>'+
+    '<p><strong>Contact:</strong> '+esc(x.contact)+'</p><p><strong>Experience:</strong> '+esc(x.experience)+'</p><p><strong>Why join:</strong> '+esc(x.motivation)+'</p>'+
+    (x.availability?'<p><strong>Availability:</strong> '+esc(x.availability)+'</p>':"")+
+    '<label for="bk-as-'+i+'">Status</label><select id="bk-as-'+i+'">'+["new","reviewing","interview","accepted","rejected"].map(function(s){return'<option'+(s===x.status?" selected":"")+'>'+s+'</option>'}).join("")+'</select>'+
+    '<label for="bk-an-'+i+'">Internal note</label><textarea id="bk-an-'+i+'" maxlength="500" rows="2">'+esc(x.manager_note||"")+'</textarea><div class="sp"><button data-bk="app-set" data-id="'+i+'">Save</button></div></div>'}).join("")}
+/* ---------- staff calendar ---------- */
+var CL={pending:"Pending",alternative_proposed:"Time proposed",alternative_accepted:"New time accepted",approved:"Approved",in_progress:"In progress",completed:"Completed",declined:"Declined",cancelled:"Cancelled"};
+function calWhen(b){return b.status==="alternative_proposed"?b.proposed_at:(b.scheduled_at||b.preferred_at)}
+function calRender(){var d=document.getElementById("cl");if(!d)return;
+  var c=ST.cm=ST.cm||{mode:"month",a:Date.now(),sel:null},tz=ST.tz||undefined,wk=c.mode==="week",by={};
+  function lk(x){return x.getFullYear()+"-"+("0"+(x.getMonth()+1)).slice(-2)+"-"+("0"+x.getDate()).slice(-2)}
+  function tm(t){return new Date(t).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",timeZone:tz})}
+  (ST.list||[]).forEach(function(b){if(b.status==="declined"||b.status==="cancelled")return;var t=calWhen(b);if(!t)return;
+    var k=new Date(t).toLocaleDateString("en-CA",{timeZone:tz});(by[k]=by[k]||[]).push(b)});
+  Object.keys(by).forEach(function(k){by[k].sort(function(x,y){return new Date(calWhen(x))-new Date(calWhen(y))})});
+  var A=new Date(c.a),st,n,f=new Date(A.getFullYear(),A.getMonth(),1),today=new Date().toLocaleDateString("en-CA",{timeZone:tz});
+  if(wk){st=new Date(A.getFullYear(),A.getMonth(),A.getDate());st.setDate(st.getDate()-(st.getDay()+6)%7);n=7}
+  else{st=new Date(f);st.setDate(1-(f.getDay()+6)%7);n=Math.ceil(((f.getDay()+6)%7+new Date(A.getFullYear(),A.getMonth()+1,0).getDate())/7)*7}
+  var e=new Date(st);e.setDate(e.getDate()+6);
+  var label=wk?st.toLocaleDateString([],{day:"numeric",month:"short"})+" \u2013 "+e.toLocaleDateString([],{day:"numeric",month:"short",year:"numeric"}):A.toLocaleDateString([],{month:"long",year:"numeric"});
+  var h='<div class="card">'+sec("\u25A6","Calendar","Upcoming bookings, mechanics and statuses \u2013 times in "+(ST.tz||"your local time"))+
+    '<div class="cl-bar"><button class="alt sm" data-bk="cal-nav" data-d="-1" aria-label="Previous">\u2039</button><strong>'+esc(label)+'</strong><button class="alt sm" data-bk="cal-nav" data-d="1" aria-label="Next">\u203A</button>'+
+    '<button class="'+(wk?"alt ":"")+'sm" data-bk="cal-mode" data-m="month">Month</button><button class="'+(wk?"":"alt ")+'sm" data-bk="cal-mode" data-m="week">Week</button><button class="alt sm" data-bk="cal-today">Today</button></div>'+
+    '<div class="cl-g">'+["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(function(w){return'<span class="cl-w">'+w+'</span>'}).join("");
+  for(var i=0;i<n;i++){var dt=new Date(st);dt.setDate(st.getDate()+i);var k=lk(dt),it=by[k]||[],max=wk?8:2;
+    h+='<button type="button" class="cl-d'+(k===today?" today":"")+(k===c.sel?" sel":"")+(!wk&&dt.getMonth()!==A.getMonth()?" out":"")+'" data-bk="cal-day" data-k="'+k+'"><b>'+dt.getDate()+'</b>'+
+      it.slice(0,max).map(function(b){return'<span class="cl-c s-'+esc(b.status)+'">'+esc(tm(calWhen(b)))+" "+esc(b.character_name)+'</span>'}).join("")+(it.length>max?'<i>+'+(it.length-max)+' more</i>':"")+'</button>'}
+  h+='</div></div>';
+  var rows=[],ttl;
+  if(c.sel){rows=by[c.sel]||[];ttl=new Date(c.sel+"T12:00:00").toLocaleDateString([],{weekday:"long",day:"numeric",month:"long"})}
+  else{ttl="Upcoming appointments";Object.keys(by).filter(function(k){return k>=today}).sort().forEach(function(k){rows=rows.concat(by[k])});rows=rows.slice(0,10)}
+  h+='<div class="card sp"><h3 class="hd bk-h3">'+esc(ttl)+'</h3>'+(rows.length?rows.map(function(b){
+    return'<div class="cl-r"><div><strong>'+esc(new Date(calWhen(b)).toLocaleString([],{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit",timeZone:tz}))+'</strong> \u00B7 '+esc(b.character_name)+' \u00B7 '+esc(b.reference)+
+      '<br><small>'+esc(SVC[b.service_type]||b.service_type)+" \u2013 "+esc(b.vehicle)+" \u00B7 "+esc(CL[b.status]||b.status)+" \u00B7 "+(b.assigned_to?"Mechanic: "+esc(nameOf(b.assigned_to)||"assigned"):"Unassigned")+'</small></div>'+
+      '<button class="alt sm" data-bk="cal-open" data-id="'+esc(b.id)+'">Open</button></div>'}).join(""):'<p class="note">Nothing booked.</p>')+
+    '<p class="note">Open a booking to approve it, assign a mechanic or propose another time.</p></div>';
+  d.innerHTML=h}
+V.calendar=function(){setTimeout(function(){calRender();if(sess&&ST.me&&ST.me.active){
+  if(ST.tz===undefined){ST.tz=null;rpc("available_slots",{}).then(function(r){if(r&&r.tz){ST.tz=r.tz;calRender()}}).catch(function(){})}
+  loadList().then(calRender).catch(function(er){authErr(er);calRender()})}},0);return'<div id="cl"></div>'};
 V.bookings=function(){setTimeout(function(){render();if(sess&&ST.me===undefined)boot()},0);return'<div id="bk"></div>'};
 setInterval(function(){if(location.hash!=="#bookings"||!sess||!ST.me||!ST.me.active||ST.open||ST.busy||document.hidden||ST.tab!=="bookings")return;
   loadList().then(function(){if(!ST.open&&$b("#bk")&&!(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)))render()}).catch(authErr)},45000);
