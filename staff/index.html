@@ -380,12 +380,19 @@ function partsHtml(){
   return h+'</div>'}
 function partsDone(r,msg){if(r&&r.ok){say(msg);return loadParts()}ST.err=(r&&r.message)||"Not saved."}
 
+
+function priceInputs(){var pr=(ST.settings||{}).service_prices||{};
+  return'<h3 class="hd bk-h3">Service prices (optional)</h3><p class="note">Shown on the booking page only when filled in, for example "From $500". Leave empty to hide.</p><div class="g g2">'+
+  [["repairs","Repairs"],["tuning","Tuning"],["custom_builds","Custom builds"],["towing","Towing"]].map(function(x){
+    return'<div><label for="bk-pr-'+x[0]+'">'+x[1]+'</label><input id="bk-pr-'+x[0]+'" maxlength="40" value="'+esc(pr[x[0]]||"")+'"></div>'}).join("")+'</div>'}
+function collectPrices(){var o={};["repairs","tuning","custom_builds","towing"].forEach(function(k){var v=val("bk-pr-"+k);if(v)o[k]=v});return o}
+
 /* ---------- data ---------- */
 function loadList(){return api("bookings?select="+COLS+"&order=created_at.desc&limit=500").then(function(r){ST.list=r||[]})}
 function loadStaff(){return api("staff_profiles?select=user_id,display_name,role,active&order=display_name").then(function(r){ST.staff=r||[]})}
 function loadEvents(id){return api("booking_events?select=id,action,actor_type,actor_name,message,internal,at&booking_id=eq."+encodeURIComponent(id)+"&order=at.asc,id.asc").then(function(r){ST.events[id]=r||[]})}
 function loadInvites(){return api("staff_invites?select=id,role,label,created_at,expires_at,used_at&order=created_at.desc&limit=50").then(function(r){ST.invites=r||[]})}
-function loadSettings(){return api("site_settings?select=location_text,map_url,hours_text,contact_text,discord_url&id=eq.1").then(function(r){ST.settings=(r&&r[0])||{}})}
+function loadSettings(){return api("site_settings?select=location_text,map_url,hours_text,contact_text,discord_url,service_prices&id=eq.1").then(function(r){ST.settings=(r&&r[0])||{}})}
 /* Use the signed-in staff member's real name and role in the portal profile (only replaces the placeholder defaults) */
 function syncProfile(m){if(!m||!m.active||typeof S==="undefined")return;var ch=false;
   if(m.display_name&&(!S.name||S.name==="New Mechanic")){S.name=m.display_name;ch=true}
@@ -473,7 +480,7 @@ function teamHtml(){
   '<div class="card sp">'+sec("⌂","Public site details","Shown on the public Contact page. Leave a box empty to hide it.")+
    '<div class="g g2"><div><label for="bk-s-loc">Location</label><textarea id="bk-s-loc" maxlength="300" rows="3">'+esc(s.location_text||"")+'</textarea></div><div><label for="bk-s-hours">Opening hours</label><textarea id="bk-s-hours" maxlength="500" rows="3">'+esc(s.hours_text||"")+'</textarea></div>'+
    '<div><label for="bk-s-contact">Contact details</label><textarea id="bk-s-contact" maxlength="500" rows="3">'+esc(s.contact_text||"")+'</textarea></div><div><label for="bk-s-map">Map link (https)</label><input id="bk-s-map" maxlength="500" value="'+esc(s.map_url||"")+'"><label for="bk-s-discord">Discord link (https)</label><input id="bk-s-discord" maxlength="300" value="'+esc(s.discord_url||"")+'"></div></div>'+
-   '<div class="sp"><button data-bk="settings">Save public details</button></div></div>'+schedHtml()}
+   ''+priceInputs()+'<div class="sp"><button data-bk="settings">Save public details</button></div></div>'+schedHtml()}
 function render(){var h;
   if(!sess)h=authHtml();else if(ST.me===undefined)h=ST.err?'<div class="card bk-narrow">'+sec("\u26A0","Could not load bookings","")+'<div class="bk-note bad" role="alert">'+esc(ST.err)+'</div><div class="sp"><button data-bk="retry">Try again</button> <button class="alt" data-bk="signout">Sign out</button></div></div>':'<div class="sk" style="height:220px"></div>';else if(ST.me===null)h=redeemHtml();else if(!ST.me.active)h=inactiveHtml();else h=appHtml();
   var authed=!!(sess&&ST.me&&ST.me.active);
@@ -532,7 +539,7 @@ document.addEventListener("click",function(e){var b=e.target.closest&&e.target.c
   else if(a==="unblock"){rpc("staff_unblock_day",{p_id:b.dataset.id}).then(function(r){return schedDone(r,"Day reopened")}).catch(authErr).then(render)}
   else if(a==="revoke"){rpc("staff_revoke_invite",{p_id:b.dataset.id}).then(loadInvites).catch(authErr).then(render)}
   else if(a==="copycode"){var t=ST.newCode||"";(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){say("Copied")},function(){say("Select the code and copy it")})}
-  else if(a==="settings"){var body={location_text:val("bk-s-loc")||null,hours_text:val("bk-s-hours")||null,contact_text:val("bk-s-contact")||null,map_url:val("bk-s-map")||null,discord_url:val("bk-s-discord")||null,updated_at:new Date().toISOString()};
+  else if(a==="settings"){var body={location_text:val("bk-s-loc")||null,hours_text:val("bk-s-hours")||null,contact_text:val("bk-s-contact")||null,map_url:val("bk-s-map")||null,discord_url:val("bk-s-discord")||null,service_prices:collectPrices(),updated_at:new Date().toISOString()};
     if((body.map_url&&!/^https:\/\//.test(body.map_url))||(body.discord_url&&!/^https:\/\//.test(body.discord_url))){ST.err="Links must start with https://";return render()}
     api("site_settings?id=eq.1",{method:"PATCH",body:body,prefer:"return=representation"}).then(function(r){if(r&&r.length===1){ST.settings=r[0];ST.err="";say("Public details saved")}else ST.err="Not saved. Only managers can change these."}).catch(authErr).then(render)}
 });
