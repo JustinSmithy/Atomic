@@ -28,7 +28,7 @@
       <ul>
         <li><a href="#home" data-r="home">Home</a></li>
         <li><a href="#services" data-r="services">Our Services</a></li>
-        <li><a href="#gallery" data-r="gallery">Gallery</a></li>
+        <li><a href="#parts" data-r="parts">Parts</a><a href="#gallery" data-r="gallery">Gallery</a></li>
         <li><a href="#book" data-r="book">Book a Service</a></li>
         <li><a href="#contact" data-r="contact">Contact</a></li>
         <li><a href="#track" data-r="track">Track Booking</a></li>
@@ -253,6 +253,31 @@ function field(id,label,node,opt,hint){
     node, hint?el("p",{class:"hint",text:hint,id:id+"-h"}):null, el("p",{class:"err",id:id+"-e",role:"alert"})
   ]);
 }
+/* calendar slot picker */
+function slotPicker(box,d,onPick){
+  var days=d.days||{},keys=Object.keys(days).sort(),tz=d.tz,sel=null;
+  if(!keys.length){box.appendChild(el("p",{class:"notice",text:"No free slots in the coming weeks. Please check back soon."}));return}
+  var f=keys[0].split("-"),y=+f[0],m=+f[1]-1,l=keys[keys.length-1].split("-"),end=(+l[0])*12+(+l[1]-1),start=y*12+m;
+  var bar=el("div",{class:"btns"}),grid=el("div",{style:"display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:10px 0"}),
+      slots=el("div",{class:"btns",style:"flex-wrap:wrap"}),note=el("p",{class:"hint"});
+  function p2(n){return("0"+n).slice(-2)}
+  function mk(t,cls,fn,dis){var b=el("button",{type:"button",class:"btn sm"+cls,text:t});b.disabled=!!dis;b.onclick=fn;return b}
+  function tm(i){return new Date(i).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",timeZone:tz})}
+  function draw(){
+    bar.innerHTML="";grid.innerHTML="";slots.innerHTML="";
+    var cur=y*12+m;
+    bar.appendChild(mk("‹"," alt",function(){m--;if(m<0){m=11;y--}draw()},cur<=start));
+    bar.appendChild(el("strong",{text:new Date(y,m,1).toLocaleDateString([],{month:"long",year:"numeric"}),style:"flex:1;text-align:center"}));
+    bar.appendChild(mk("›"," alt",function(){m++;if(m>11){m=0;y++}draw()},cur>=end));
+    ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].forEach(function(w){grid.appendChild(el("span",{class:"hint",text:w,style:"text-align:center"}))});
+    for(var i=0;i<(new Date(y,m,1).getDay()+6)%7;i++)grid.appendChild(el("span"));
+    for(var n=1;n<=new Date(y,m+1,0).getDate();n++){(function(n){var k=y+"-"+p2(m+1)+"-"+p2(n),has=!!days[k];
+      grid.appendChild(mk(n,k===sel?"":" alt",function(){sel=k;onPick("");note.textContent="";draw()},!has))})(n)}
+    if(sel&&days[sel])days[sel].forEach(function(i){slots.appendChild(mk(tm(i),"",function(){onPick(i);
+      note.textContent="Selected: "+new Date(i).toLocaleDateString([],{weekday:"long",day:"numeric",month:"long",timeZone:tz})+" at "+tm(i)+" ("+tz+")"}))});
+  }
+  box.appendChild(bar);box.appendChild(grid);box.appendChild(slots);box.appendChild(note);draw();
+}
 function pageBook(q){
   var f=document.createDocumentFragment();
   f.appendChild(head("Book a service","Send a private request. Nothing is confirmed until management approves it."));
@@ -273,6 +298,7 @@ function pageBook(q){
     when:el("input",{id:"f-when",name:"preferred_at",type:"datetime-local",required:true,min:localInputMin()}),
     desc:el("textarea",{id:"f-desc",name:"description",maxlength:"2000",required:true})
   };
+  var whenBox=el("div",null,[I.when]);
   var hp=el("div",{class:"hp","aria-hidden":"true"},[el("label",{for:"f-web",text:"Leave this empty"}),el("input",{id:"f-web",name:"website",tabindex:"-1",autocomplete:"off"})]);
   var msg=el("div",{id:"formMsg",role:"alert"});
   var btn=el("button",{class:"btn",type:"submit",text:"Send request"});
@@ -285,11 +311,17 @@ function pageBook(q){
     field("f-reg","Vehicle registration",I.reg,true)]));
   form.appendChild(el("div",{class:"row2"},[
     field("f-service","Type of service",I.service),
-    field("f-when","Preferred date and time",I.when,false,"Your local time. This is a request, not a guaranteed slot.")]));
+    field("f-when","Date and time",whenBox,false,"Your local time. This is a request, not a guaranteed slot.")]));
   form.appendChild(field("f-desc","Description of the work required",I.desc,false,"10 to 2000 characters."));
   form.appendChild(hp); form.appendChild(msg);
   form.appendChild(el("div",{class:"sp"},[btn]));
   card.appendChild(form); f.appendChild(card);
+  rpc("available_slots",{p_from:null,p_to:null}).then(function(r){
+    if(!r||!r.ok||!r.enabled)return;   /* calendar not set up: keep the plain date box */
+    I.when.type="hidden";I.when.value="";I.when.removeAttribute("min");
+    slotPicker(whenBox,r,function(iso){I.when.value=iso});
+    var h=$("#f-when-h");if(h)h.textContent="Pick a day, then a free time. Times are shown in "+r.tz+".";
+  }).catch(function(){});
 
   var map={name:["f-name","Enter your character name (2 to 60 characters)."],contact:["f-contact","Enter in-character contact details (3 to 120 characters)."],
     vehicle:["f-vehicle","Enter the vehicle make and model (2 to 80 characters)."],service:["f-service","Choose a type of service."],
@@ -462,8 +494,46 @@ function pageTrack(q){
 }
 
 /* ---------- router ---------- */
-var PAGES={home:pageHome,services:pageServices,gallery:pageGallery,book:pageBook,contact:pageContact,track:pageTrack};
-var TITLES={home:"Atomic Garage",services:"Our Services",gallery:"Gallery",book:"Book a Service",contact:"Contact",track:"Track Booking"};
+function pageParts(){
+  var f=document.createDocumentFragment(),basket={},money=function(n){return"$"+Number(n).toFixed(2)};
+  f.appendChild(head("Parts","Order parts and collect them from the garage. We confirm using the contact details you give."));
+  var wrap=el("div"),sum=el("p",{class:"notice",text:"Your basket is empty."}),form=el("div",{class:"card sp"}),done=el("div");
+  var inp=function(id,t,max){return el("input",{id:id,type:"text",maxlength:max,autocomplete:"off"})};
+  var nm=inp("p-name",0,60),ct=inp("p-contact",0,120),nt=el("textarea",{id:"p-note",maxlength:500,rows:3}),err=el("p",{class:"notice",style:"display:none"});
+  var send=el("button",{type:"button",class:"btn",text:"Send order"});
+  form.appendChild(field("p-name","Character name",nm));form.appendChild(field("p-contact","Contact (in character)",ct));
+  form.appendChild(field("p-note","Note (optional)",nt,true));form.appendChild(err);form.appendChild(send);form.style.display="none";
+  var parts=[];
+  function upd(){var ids=Object.keys(basket).filter(function(k){return basket[k]>0}),t=0,n=0;
+    ids.forEach(function(k){var p=parts.filter(function(x){return x.id===k})[0];if(p){t+=p.price*basket[k];n+=basket[k]}});
+    sum.textContent=n?n+" item"+(n>1?"s":"")+" \u2013 total "+money(t):"Your basket is empty.";form.style.display=n?"":"none"}
+  send.onclick=function(){err.style.display="none";send.disabled=true;
+    var items=Object.keys(basket).filter(function(k){return basket[k]>0}).map(function(k){return{id:k,qty:basket[k]}});
+    rpc("submit_part_order",{p:{character_name:nm.value,contact:ct.value,note:nt.value,website:"",items:items}}).then(function(r){
+      send.disabled=false;
+      if(r&&r.ok){wrap.style.display=form.style.display=sum.style.display="none";
+        done.appendChild(el("div",{class:"notice",text:"Order "+r.reference+" received \u2013 total "+money(r.total)+". Save this reference. We will contact you to arrange collection."}))}
+      else{err.textContent=(r&&r.message)||"Could not send your order.";err.style.display=""}
+    }).catch(function(){send.disabled=false;err.textContent="Could not reach the server. Try again.";err.style.display=""})};
+  f.appendChild(wrap);f.appendChild(sum);f.appendChild(form);f.appendChild(done);
+  wrap.appendChild(el("div",{class:"skel"}));
+  rpc("list_parts",{}).then(function(r){wrap.innerHTML="";
+    if(!Array.isArray(r)||!r.length){wrap.appendChild(el("p",{class:"notice",text:"No parts are listed right now. Please check back soon."}));return}
+    parts=r;var g=el("div",{class:"grid g2"});
+    r.forEach(function(p){var c=el("div",{class:"card"}),q=el("strong",{text:"0",style:"min-width:2ch;text-align:center"});
+      if(p.image_url)c.appendChild(el("img",{src:p.image_url,alt:p.name,loading:"lazy",style:"width:100%;height:170px;object-fit:cover;border-radius:8px;margin-bottom:10px"}));
+      c.appendChild(el("h3",{text:p.name}));if(p.description)c.appendChild(el("p",{text:p.description}));
+      c.appendChild(el("p",{style:"font-weight:700",text:money(p.price)}));
+      var row=el("div",{class:"btns"}),m=el("button",{type:"button",class:"btn sm alt",text:"\u2212"}),a=el("button",{type:"button",class:"btn sm",text:"+"});
+      m.setAttribute("aria-label","Remove one "+p.name);a.setAttribute("aria-label","Add one "+p.name);
+      m.onclick=function(){basket[p.id]=Math.max((basket[p.id]||0)-1,0);q.textContent=basket[p.id];upd()};
+      a.onclick=function(){basket[p.id]=Math.min((basket[p.id]||0)+1,50);q.textContent=basket[p.id];upd()};
+      row.appendChild(m);row.appendChild(q);row.appendChild(a);c.appendChild(row);g.appendChild(c)});
+    wrap.appendChild(g)}).catch(function(){wrap.innerHTML="";wrap.appendChild(el("p",{class:"notice",text:"Parts could not be loaded. Please try again later."}))});
+  return f;
+}
+var PAGES={home:pageHome,services:pageServices,parts:pageParts,gallery:pageGallery,book:pageBook,contact:pageContact,track:pageTrack};
+var TITLES={home:"Atomic Garage",services:"Our Services",parts:"Parts",gallery:"Gallery",book:"Book a Service",contact:"Contact",track:"Track Booking"};
 function route(){
   var h=location.hash.replace(/^#/,"")||"home";
   var parts=h.split("?"), r=parts[0], q={};
