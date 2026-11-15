@@ -157,3 +157,23 @@ footer a{color:var(--mute)}footer a:hover{color:var(--acc)}
   .btns .btn{width:100%}
 }
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+/* booking wizard */
+.wz-p[hidden]{display:none}.wz-p{animation:wzIn .28s ease}
+@keyframes wzIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.wz-h{margin:0 0 14px;font-size:1.25rem}h3.wz-h{margin-top:22px;font-size:1.05rem}
+.wz-prog{list-style:none;display:flex;gap:8px;margin:0 0 22px;padding:0}
+.wz-prog li{flex:1;display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--line);border-radius:var(--r);color:var(--mute);font-size:14px;transition:border-color .2s,color .2s}
+.wz-prog b{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;border:1px solid currentColor;font-size:13px;flex:none}
+.wz-prog li.on{border-color:var(--acc);color:var(--acc)}
+.wz-prog li.done{color:inherit}.wz-prog li.done b{background:var(--acc);border-color:var(--acc);color:#111}
+.wz-svcs{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:0 0 6px}
+.wz-svc{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:6px;padding:16px;border:1px solid var(--line);border-radius:var(--r);background:var(--panel);transition:border-color .2s,transform .2s}
+.wz-svc:hover{transform:translateY(-2px);border-color:var(--acc)}
+.wz-svc:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.wz-svc[aria-pressed=true]{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc) inset;background:rgba(255,196,0,.08)}
+.wz-ic{font-size:26px}.wz-price{color:var(--acc);font-style:normal;font-weight:700}.wz-price:empty{display:none}
+.wz-sum{display:grid;grid-template-columns:max-content 1fr;gap:8px 16px;margin:0 0 16px}
+.wz-sum dt{color:var(--mute)}.wz-sum dd{margin:0;overflow-wrap:anywhere;white-space:pre-wrap}
+.wz-nav{display:flex;gap:10px;justify-content:flex-end;margin-top:22px}.wz-nav .alt{margin-right:auto}
+@media(max-width:600px){.wz-svcs{grid-template-columns:1fr}.wz-prog span{display:none}.wz-prog li.on span{display:inline}.wz-sum{grid-template-columns:1fr}}
