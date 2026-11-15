@@ -31,7 +31,7 @@
         <li><a href="#parts" data-r="parts">Parts</a><a href="#gallery" data-r="gallery">Gallery</a></li>
         <li><a href="#book" data-r="book">Book a Service</a></li>
         <li><a href="#contact" data-r="contact">Contact</a></li>
-        <li><a href="#track" data-r="track">Track Booking</a></li>
+        <li><a href="#careers" data-r="careers">Careers</a><a href="#track" data-r="track">Track Booking</a></li>
         <li><a class="staff" id="staffLink" href="staff/">Staff Login</a></li>
       </ul>
     </nav>
@@ -253,30 +253,41 @@ function field(id,label,node,opt,hint){
     node, hint?el("p",{class:"hint",text:hint,id:id+"-h"}):null, el("p",{class:"err",id:id+"-e",role:"alert"})
   ]);
 }
-/* calendar slot picker */
+/* calendar slot picker: month and week views, checked against real availability */
 function slotPicker(box,d,onPick){
-  var days=d.days||{},keys=Object.keys(days).sort(),tz=d.tz,sel=null;
+  var days=d.days||{},keys=Object.keys(days).sort(),tz=d.tz,sel=null,mode="month";
   if(!keys.length){box.appendChild(el("p",{class:"notice",text:"No free slots in the coming weeks. Please check back soon."}));return}
-  var f=keys[0].split("-"),y=+f[0],m=+f[1]-1,l=keys[keys.length-1].split("-"),end=(+l[0])*12+(+l[1]-1),start=y*12+m;
-  var bar=el("div",{class:"btns"}),grid=el("div",{style:"display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:10px 0"}),
-      slots=el("div",{class:"btns",style:"flex-wrap:wrap"}),note=el("p",{class:"hint"});
   function p2(n){return("0"+n).slice(-2)}
+  function kf(x){return x.getFullYear()+"-"+p2(x.getMonth()+1)+"-"+p2(x.getDate())}
+  function kd(k){var a=k.split("-");return new Date(+a[0],+a[1]-1,+a[2])}
+  function mon(x){var y=new Date(x.getFullYear(),x.getMonth(),x.getDate());y.setDate(y.getDate()-(y.getDay()+6)%7);return y}
+  var first=kd(keys[0]),last=kd(keys[keys.length-1]),view=new Date(first.getFullYear(),first.getMonth(),1),ws=mon(first);
+  var bar=el("div",{class:"btns"}),tog=el("div",{class:"btns",style:"margin-top:8px"}),grid=el("div",{class:"cal-g"}),
+      slots=el("div",{class:"btns",style:"flex-wrap:wrap"}),note=el("p",{class:"hint"});
   function mk(t,cls,fn,dis){var b=el("button",{type:"button",class:"btn sm"+cls,text:t});b.disabled=!!dis;b.onclick=fn;return b}
   function tm(i){return new Date(i).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",timeZone:tz})}
+  function setMode(m){if(m===mode)return;var b=sel?kd(sel):(m==="week"?(view>first?view:first):ws);
+    if(m==="week")ws=mon(b);else view=new Date(b.getFullYear(),b.getMonth(),1);mode=m;draw()}
   function draw(){
-    bar.innerHTML="";grid.innerHTML="";slots.innerHTML="";
-    var cur=y*12+m;
-    bar.appendChild(mk("‹"," alt",function(){m--;if(m<0){m=11;y--}draw()},cur<=start));
-    bar.appendChild(el("strong",{text:new Date(y,m,1).toLocaleDateString([],{month:"long",year:"numeric"}),style:"flex:1;text-align:center"}));
-    bar.appendChild(mk("›"," alt",function(){m++;if(m>11){m=0;y++}draw()},cur>=end));
+    bar.innerHTML="";tog.innerHTML="";grid.innerHTML="";slots.innerHTML="";
+    var wk=mode==="week",we=new Date(ws),label,pd,nd;we.setDate(we.getDate()+6);
+    if(wk){label=ws.toLocaleDateString([],{day:"numeric",month:"short"})+" \u2013 "+we.toLocaleDateString([],{day:"numeric",month:"short",year:"numeric"});
+      pd=kf(ws)<=kf(mon(first));nd=kf(we)>=keys[keys.length-1]}
+    else{label=view.toLocaleDateString([],{month:"long",year:"numeric"});
+      pd=view.getTime()<=new Date(first.getFullYear(),first.getMonth(),1).getTime();nd=view.getTime()>=new Date(last.getFullYear(),last.getMonth(),1).getTime()}
+    bar.appendChild(mk("\u2039"," alt",function(){if(wk)ws.setDate(ws.getDate()-7);else view.setMonth(view.getMonth()-1);draw()},pd));
+    bar.appendChild(el("strong",{text:label,style:"flex:1;text-align:center"}));
+    bar.appendChild(mk("\u203A"," alt",function(){if(wk)ws.setDate(ws.getDate()+7);else view.setMonth(view.getMonth()+1);draw()},nd));
+    tog.appendChild(mk("Month",wk?" alt":"",function(){setMode("month")}));tog.appendChild(mk("Week",wk?"":" alt",function(){setMode("week")}));
     ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].forEach(function(w){grid.appendChild(el("span",{class:"hint",text:w,style:"text-align:center"}))});
-    for(var i=0;i<(new Date(y,m,1).getDay()+6)%7;i++)grid.appendChild(el("span"));
-    for(var n=1;n<=new Date(y,m+1,0).getDate();n++){(function(n){var k=y+"-"+p2(m+1)+"-"+p2(n),has=!!days[k];
-      grid.appendChild(mk(n,k===sel?"":" alt",function(){sel=k;onPick("");note.textContent="";draw()},!has))})(n)}
+    var st,n;if(wk){st=new Date(ws);n=7}else{st=new Date(view);st.setDate(1-(view.getDay()+6)%7);n=Math.ceil(((view.getDay()+6)%7+new Date(view.getFullYear(),view.getMonth()+1,0).getDate())/7)*7}
+    for(var i=0;i<n;i++){(function(){var dt=new Date(st);dt.setDate(st.getDate()+i);var k=kf(dt),has=!!days[k],out=!wk&&dt.getMonth()!==view.getMonth();
+      var b=mk(dt.getDate(),k===sel?"":" alt",function(){sel=k;onPick("");note.textContent="";draw()},!has);if(out)b.style.opacity=".35";
+      b.setAttribute("aria-label",dt.toLocaleDateString([],{weekday:"long",day:"numeric",month:"long"})+(has?"":" (no free slots)"));grid.appendChild(b)})()}
     if(sel&&days[sel])days[sel].forEach(function(i){slots.appendChild(mk(tm(i),"",function(){onPick(i);
       note.textContent="Selected: "+new Date(i).toLocaleDateString([],{weekday:"long",day:"numeric",month:"long",timeZone:tz})+" at "+tm(i)+" ("+tz+")"}))});
-  }
-  box.appendChild(bar);box.appendChild(grid);box.appendChild(slots);box.appendChild(note);draw();
+    else if(!sel)note.textContent="Choose a day to see its free times. Greyed days have no free slots or are in the past."}
+  box.appendChild(bar);box.appendChild(tog);box.appendChild(grid);box.appendChild(slots);box.appendChild(note);draw();
 }
 function pageBook(q){
   var f=document.createDocumentFragment();
@@ -304,7 +315,7 @@ function pageBook(q){
   var btn=el("button",{class:"btn",type:"submit",text:"Send request"});
 
   /* ----- three-step wizard (same fields, validation and submit as before) ----- */
-  var SI={repairs:"\uD83D\uDD27",tuning:"\u2699\uFE0F",custom_builds:"\uD83C\uDFA8",towing:"\uD83D\uDE9B"},prices={},cards={},cur=0;
+  var SI={repairs:"\uD83D\uDD27",tuning:"\u2699\uFE0F",custom_builds:"\uD83C\uDFA8",towing:"\uD83D\uDE9B"},prices={},cards={},cur=0,calOn=false;
   var alt=el("input",{id:"f-alt",type:"datetime-local",min:localInputMin()}); I.alt=alt;
   var sum=el("dl",{class:"wz-sum"}),P=[0,1,2].map(function(){return el("div",{class:"wz-p"})});
   var stepKeys=[["name","contact","vehicle","reg"],["service","desc"],["when","alt"]];
@@ -326,7 +337,7 @@ function pageBook(q){
   P[1].appendChild(el("div",null,[cg,el("p",{class:"err",id:"f-service-e",role:"alert"})]));
   P[1].appendChild(field("f-desc","Describe the work required",I.desc,false,"10 to 1950 characters."));
   P[2].appendChild(el("h2",{class:"wz-h",text:"Appointment preferences"}));
-  P[2].appendChild(field("f-when","Preferred date and time",whenBox,false,"Your local time. This is a request, not a guaranteed slot."));
+  P[2].appendChild(field("f-when","Preferred time (request only)",whenBox,false,"Availability is not checked for this time. Management will confirm it or propose another time."));
   P[2].appendChild(field("f-alt","Alternative date and time",alt,true,"A backup in case your first choice isn't possible."));
   P[2].appendChild(el("h3",{class:"wz-h",text:"Check your booking"}));P[2].appendChild(sum);
   P[2].appendChild(el("p",{class:"notice",text:"Every appointment needs management approval. After you submit, your booking shows as Pending approval and is only confirmed once management approves it."}));
@@ -337,7 +348,7 @@ function pageBook(q){
   function summary(){sum.textContent="";var pr=prices[sel.value];
     [["Character",clean(I.name.value)],["Contact",clean(I.contact.value)],["Vehicle",clean(I.vehicle.value)+(clean(I.reg.value)?" ("+clean(I.reg.value)+")":"")],
      ["Service",(SVC[sel.value]||"\u2013")+(typeof pr==="string"&&pr.trim()?" \u2013 "+pr.trim():"")],["Work required",I.desc.value.trim()],
-     ["Preferred time",fmtD(I.when.value?new Date(I.when.value):null)],["Alternative time",alt.value?fmtD(new Date(alt.value)):"None"]
+     [calOn?"Appointment slot":"Preferred time (request only)",fmtD(I.when.value?new Date(I.when.value):null)],["Alternative time",alt.value?fmtD(new Date(alt.value)):"None"]
     ].forEach(function(r){sum.appendChild(el("dt",{text:r[0]}));sum.appendChild(el("dd",{text:r[1]}))})}
   function show(i,quiet){cur=i;P.forEach(function(x,j){x.hidden=j!==i});
     [].forEach.call(prog.children,function(li,j){li.className=j===i?"on":j<i?"done":""});
@@ -351,7 +362,7 @@ function pageBook(q){
   rpc("available_slots",{p_from:null,p_to:null}).then(function(r){
     if(!r||!r.ok||!r.enabled)return;   /* calendar not set up: keep the plain date box */
     I.when.type="hidden";I.when.value="";I.when.removeAttribute("min");
-    slotPicker(whenBox,r,function(iso){I.when.value=iso});
+    slotPicker(whenBox,r,function(iso){I.when.value=iso});calOn=true;var lb=document.querySelector('label[for="f-when"]');if(lb)lb.firstChild.textContent="Choose an available time";
     var h=$("#f-when-h");if(h)h.textContent="Pick a day, then a free time. Times are shown in "+r.tz+".";
   }).catch(function(){});
 
@@ -530,6 +541,38 @@ function pageTrack(q){
 }
 
 /* ---------- router ---------- */
+function pageCareers(){
+  var f=document.createDocumentFragment();
+  f.appendChild(head("Careers","Join the Atomic Garage team. Tell us about yourself and management will review your application."));
+  var R=[["mechanic","Mechanic"],["bodywork_paint","Bodywork and paint"],["tow_driver","Tow driver"],["apprentice","Apprentice"],["other","Something else"]];
+  var card=el("div",{class:"card"}),form=el("form",{novalidate:true,autocomplete:"off"}),busy=false;
+  var role=el("select",{id:"c-role"},[el("option",{value:"",text:"Choose\u2026"})].concat(R.map(function(r){return el("option",{value:r[0],text:r[1]})})));
+  var nm=el("input",{id:"c-name",maxlength:"60"}),ct=el("input",{id:"c-contact",maxlength:"120"}),av=el("input",{id:"c-av",maxlength:"300"}),
+      ex=el("textarea",{id:"c-exp",maxlength:"1500",rows:"4"}),why=el("textarea",{id:"c-why",maxlength:"1500",rows:"4"}),
+      hp=el("div",{class:"hp","aria-hidden":"true"},[el("label",{for:"c-web",text:"Leave this empty"}),el("input",{id:"c-web",tabindex:"-1",autocomplete:"off"})]),
+      msg=el("div",{role:"alert"}),btn=el("button",{class:"btn",type:"submit",text:"Submit application"});
+  form.appendChild(el("div",{class:"row2"},[field("c-name","Character name",nm),field("c-contact","Contact information",ct,false,"In-character: phone number, email or other way to reach you.")]));
+  form.appendChild(field("c-role","Role you are applying for",role));
+  form.appendChild(field("c-exp","Experience",ex,false,"Previous work, skills and qualifications (10 to 1500 characters)."));
+  form.appendChild(field("c-why","Why do you want to join us?",why,false,"10 to 1500 characters."));
+  form.appendChild(field("c-av","Availability",av,true,"For example: evenings and weekends."));
+  form.appendChild(hp);form.appendChild(msg);form.appendChild(el("div",{class:"sp"},[btn]));card.appendChild(form);f.appendChild(card);
+  form.addEventListener("submit",function(ev){ev.preventDefault();if(busy)return;msg.className="";msg.textContent="";
+    var v=function(e){return e.value.replace(/\s+/g," ").trim()},bad="";
+    if(v(nm).length<2)bad="Enter your character name.";else if(v(ct).length<3)bad="Enter in-character contact details.";
+    else if(!role.value)bad="Choose a role.";else if(ex.value.trim().length<10)bad="Describe your experience (at least 10 characters).";
+    else if(why.value.trim().length<10)bad="Tell us why you want to join (at least 10 characters).";
+    if(bad){msg.className="notice bad";msg.textContent=bad;return}
+    busy=true;btn.disabled=true;btn.textContent="Sending\u2026";
+    rpc("submit_application",{p:{character_name:v(nm),contact:v(ct),role:role.value,experience:ex.value.trim(),motivation:why.value.trim(),availability:v(av),website:$("#c-web").value}}).then(function(r){
+      if(r&&r.ok){card.textContent="";card.appendChild(el("span",{class:"badge pending",text:"Application received"}));
+        card.appendChild(el("p",{class:"muted sp",text:"Your application reference"}));card.appendChild(el("div",{class:"ref",text:r.reference}));
+        card.appendChild(el("p",{class:"sp",text:"Thank you for applying. Management will review it and contact you using the details you gave. Keep this reference in case you need to ask about it."}))}
+      else{msg.className="notice bad";msg.textContent=(r&&r.message)||"We couldn't send your application. Please try again."}
+    }).catch(function(){msg.className="notice bad";msg.textContent="We couldn't reach the server. Please try again."}).then(function(){busy=false;btn.disabled=false;btn.textContent="Submit application"});
+  });
+  return f;
+}
 function pageParts(){
   var f=document.createDocumentFragment(),basket={},money=function(n){return"$"+Number(n).toFixed(2)};
   f.appendChild(head("Parts","Order parts and collect them from the garage. We confirm using the contact details you give."));
@@ -568,8 +611,8 @@ function pageParts(){
     wrap.appendChild(g)}).catch(function(){wrap.innerHTML="";wrap.appendChild(el("p",{class:"notice",text:"Parts could not be loaded. Please try again later."}))});
   return f;
 }
-var PAGES={home:pageHome,services:pageServices,parts:pageParts,gallery:pageGallery,book:pageBook,contact:pageContact,track:pageTrack};
-var TITLES={home:"Atomic Garage",services:"Our Services",parts:"Parts",gallery:"Gallery",book:"Book a Service",contact:"Contact",track:"Track Booking"};
+var PAGES={home:pageHome,services:pageServices,parts:pageParts,careers:pageCareers,gallery:pageGallery,book:pageBook,contact:pageContact,track:pageTrack};
+var TITLES={home:"Atomic Garage",services:"Our Services",parts:"Parts",careers:"Careers",gallery:"Gallery",book:"Book a Service",contact:"Contact",track:"Track Booking"};
 function route(){
   var h=location.hash.replace(/^#/,"")||"home";
   var parts=h.split("?"), r=parts[0], q={};
