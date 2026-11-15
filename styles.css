@@ -177,3 +177,7 @@ footer a{color:var(--mute)}footer a:hover{color:var(--acc)}
 .wz-sum dt{color:var(--mute)}.wz-sum dd{margin:0;overflow-wrap:anywhere;white-space:pre-wrap}
 .wz-nav{display:flex;gap:10px;justify-content:flex-end;margin-top:22px}.wz-nav .alt{margin-right:auto}
 @media(max-width:600px){.wz-svcs{grid-template-columns:1fr}.wz-prog span{display:none}.wz-prog li.on span{display:inline}.wz-sum{grid-template-columns:1fr}}
+
+.cal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:10px 0}
+.cal-g .btn{padding:10px 0;min-width:0}
+@media(max-width:600px){.cal-g{gap:4px}}
