@@ -202,11 +202,6 @@ nav a.ag-public{margin-top:auto}
 .cl-c{font-size:.7rem;line-height:1.2;padding:2px 4px;border-radius:4px;background:rgba(255,255,255,.1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cl-c.s-pending,.cl-c.s-alternative_proposed{background:var(--acc,#ffc400);color:#111}.cl-c.s-approved,.cl-c.s-alternative_accepted,.cl-c.s-in_progress{background:#2e7d32;color:#fff}
 .cl-r{display:flex;gap:12px;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid rgba(255,255,255,.1)}
-.cl-c.iv{background:#1565c0;color:#fff}.cl-c.iv.i-confirmed{background:#2e7d32}.cl-c.iv.i-reschedule_requested{background:var(--warn,#ffb020);color:#111}.cl-c.iv.i-completed,.cl-c.iv.i-no_show{opacity:.55}
-.cl-layers{margin-top:0}.cl-key{font-size:.8rem;opacity:.8;display:inline-flex;align-items:center;gap:6px;margin-left:auto}.cl-key i{display:inline-block;width:14px;height:10px;padding:0}
-.cl-iv{border:1px solid var(--line);border-left:4px solid #1565c0;border-radius:10px;background:var(--panel2);padding:12px 14px;margin:10px 0}.cl-iv.i-confirmed{border-left-color:#2e7d32}.cl-iv.i-reschedule_requested{border-left-color:var(--warn,#ffb020)}.cl-iv.i-completed,.cl-iv.i-no_show{opacity:.8}
-.cl-iv-h{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}.cl-iv-b small{display:block;color:var(--mute);overflow-wrap:anywhere}.cl-req{margin:6px 0;padding:8px 10px;border-radius:8px;background:var(--glow);border:1px solid var(--warn,#ffb020)}
-.cl-iv-a{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.cl-iv-a button:disabled{opacity:.45;cursor:not-allowed}.cl-form{margin-top:10px;border-top:1px solid var(--line);padding-top:4px}
 @media(max-width:600px){.cl-d{min-height:56px;padding:4px}.cl-c{display:none}}
 .app-c summary{cursor:pointer;list-style:none}.app-c summary small{opacity:.7}
 .app-b{display:inline-block;padding:2px 9px;border-radius:99px;font-size:.72rem;background:rgba(255,255,255,.14);text-transform:capitalize}
@@ -237,6 +232,11 @@ nav a.ag-public{margin-top:auto}
 .rc-card span{color:var(--mute);font-size:13px;font-weight:600}.rc-card b{font:800 34px "Barlow Condensed",sans-serif;font-variant-numeric:tabular-nums;line-height:1.1}.rc-card small{color:var(--mute);font-size:12px}
 .rc-pos.wide{grid-column:1/-1}.rc-pos{flex-direction:column;align-items:stretch}.rc-pos-t{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.rc-pos-b{display:flex;gap:8px;flex-wrap:wrap}
 .rc-vac-form{margin-top:10px;border-top:1px solid var(--line);padding-top:6px}.rc-chk{display:flex;gap:8px;align-items:center;color:var(--ink);font-size:15px}.rc-chk input{width:auto}
+.cl-c.iv{background:#1565c0;color:#fff}.cl-c.iv.i-confirmed{background:#2e7d32}.cl-c.iv.i-reschedule_requested{background:var(--warn,#ffb020);color:#111}.cl-c.iv.i-completed,.cl-c.iv.i-no_show{opacity:.55}
+.cl-layers{margin-top:0}.cl-key{margin-left:auto;font-size:.8rem;display:inline-flex;gap:6px;align-items:center}.cl-key i{display:inline-block;width:14px;height:10px;padding:0}
+.cl-iv{border:1px solid var(--line);border-left:4px solid #1565c0;border-radius:10px;background:var(--panel2);padding:12px 14px;margin:10px 0}.cl-iv.i-confirmed{border-left-color:#2e7d32}.cl-iv.i-reschedule_requested{border-left-color:var(--warn,#ffb020)}.cl-iv.i-completed,.cl-iv.i-no_show{opacity:.8}
+.cl-iv-h{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap}.cl-iv-b small{display:block;color:var(--mute);overflow-wrap:anywhere}.cl-req{margin:6px 0;padding:8px 10px;border-radius:8px;background:var(--glow);border:1px solid var(--warn,#ffb020)}
+.cl-iv-a{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.cl-form{margin-top:10px;border-top:1px solid var(--line);padding-top:6px}
 .rc-dates{align-items:center}.rc-dates label{margin:0}.rc-dates input{flex:0 1 160px}
 .rc-iv{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:8px 0;background:var(--panel)}.rc-iv small{display:block;color:var(--mute)}
 @media(max-width:560px){.rc-filters select,.rc-filters input{flex:1 1 100%}.rc-detail select{width:100%}}
@@ -567,11 +567,11 @@ document.addEventListener("click",function(e){var b=e.target.closest&&e.target.c
   else if(a==="signout")signOut();
   else if(a==="reload"){ST.err="";refresh(ST.open).then(function(){if(isMgr()&&ST.tab==="team")return Promise.all([loadInvites(),loadSettings(),loadSched()]).then(render)}).catch(function(){})}
   else if(a==="cal-nav"){var m=calSt(),x=new Date(m.a),dd=+b.dataset.d;if(m.mode==="week")x.setDate(x.getDate()+7*dd);else if(m.mode==="day")x.setDate(x.getDate()+dd);else{x.setDate(1);x.setMonth(x.getMonth()+dd)}m.a=x.getTime();m.sel=null;calRender()}
-  else if(a==="cal-mode"){var m2=calSt();if(b.dataset.m==="day"&&m2.sel)m2.a=new Date(m2.sel+"T12:00:00").getTime();m2.mode=b.dataset.m;if(m2.mode==="day")m2.sel=null;calRender()}
+  else if(a==="cal-mode"){var m2=calSt();m2.mode=b.dataset.m;if(m2.mode==="day"&&m2.sel)m2.a=new Date(m2.sel+"T12:00:00").getTime();m2.sel=null;calRender()}
   else if(a==="cal-today"){var m3=calSt();m3.a=Date.now();m3.sel=null;calRender()}
-  else if(a==="cal-day"){var m4=calSt();m4.sel=m4.sel===b.dataset.k?null:b.dataset.k;calRender()}
-  else if(a==="cal-goday"){var m5=calSt();m5.mode="day";m5.a=new Date(b.dataset.k+"T12:00:00").getTime();m5.sel=null;calRender()}
   else if(a==="cal-layer"){calSt().layer=b.dataset.l;calRender()}
+  else if(a==="cal-goday"){var m4=calSt();m4.mode="day";m4.a=new Date(b.dataset.k+"T12:00:00").getTime();m4.sel=null;calRender()}
+  else if(a==="cal-day"){var m5=calSt();m5.sel=m5.sel===b.dataset.k?null:b.dataset.k;calRender()}
   else if(a==="cal-open"){ST.tab="bookings";ST.filter=null;ST.armed=null;ST.open=b.dataset.id;location.hash="#bookings";loadEvents(b.dataset.id).then(render).catch(function(er){authErr(er);render()})}
   else if(a==="gd-import"){var secs=gdParse(document.getElementById("gd-in").value);
     if(!secs.length){say("No sections found. Each section must start with a line like :auto_exotic: ALARM");return}
@@ -789,8 +789,8 @@ function rcKick(){
   var l=document.querySelector('nav a[data-v="recruitment"]');if(l)l.hidden=!isRec();
   if(!$b("#rc"))return;
   if(!(sess&&ST.me&&ST.me.active&&isRec())){rcRender();return}
-  if(!RC.loaded&&!RC.busy){RC.busy=true;rcRender();rcLoad().catch(rcFail).then(function(){RC.busy=false;rcRender()})}else rcRender();
-  if(RC.open&&!RC.events[RC.open])rcEvents(RC.open).catch(rcFail).then(rcRender)}
+  var ev=function(){if(RC.open&&!RC.events[RC.open])rcEvents(RC.open).catch(rcFail).then(rcRender)};
+  if(!RC.loaded&&!RC.busy){RC.busy=true;rcRender();rcLoad().catch(rcFail).then(function(){RC.busy=false;rcRender();ev()})}else{rcRender();ev()}}
 function rcDo(p,okMsg,after){
   if(RC.busy)return;RC.busy=true;RC.err="";
   p.then(function(r){
@@ -936,14 +936,12 @@ function calRender(){var d=document.getElementById("cl");if(!d)return;
         it.slice(0,max).map(function(x){return x.k==="b"?'<span class="cl-c s-'+esc(x.b.status)+'">'+esc(tm(x.t))+" "+esc(x.b.character_name)+'</span>':'<span class="cl-c iv i-'+esc(x.i.status)+'">'+esc(tm(x.t))+" ★ "+esc((CI.apps[x.i.application_id]||{}).character_name||"Interview")+'</span>'}).join("")+(it.length>max?'<i>+'+(it.length-max)+' more</i>':"")+'</button>'}
     h+='</div>';
     if(c.sel){dkey=c.sel;rows=by[c.sel]||[];ttl=new Date(c.sel+"T12:00:00").toLocaleDateString([],{weekday:"long",day:"numeric",month:"long"})}
-    else{ttl="Upcoming";rows=[];Object.keys(by).filter(function(k){return k>=today}).sort().forEach(function(k){rows=rows.concat(by[k])});rows=rows.slice(0,10)}}
+    else{ttl="Upcoming";rows=[];Object.keys(by).filter(function(k){return k>=today}).sort().forEach(function(k){rows=rows.concat(by[k])});rows=rows.filter(function(x){return !(x.k==="i"&&x.i.status==="reschedule_requested")}).slice(0,10)}}
   h+='</div>';
   if(rec){var ask=CI.ivs.filter(function(i){return i.status==="reschedule_requested"&&new Date(i.scheduled_at)>Date.now()});
     if(ask.length)h+='<div class="card sp"><h3 class="hd bk-h3">Waiting for your reply ('+ask.length+')</h3><p class="note">These applicants asked for another time. Use their time, or reschedule.</p>'+ask.map(ivCard).join("")+'</div>'}
-  if(rec){var due=CI.ivs.filter(function(i){return IV_ACTIVE.indexOf(i.status)>=0&&new Date(i.scheduled_at)<=Date.now()});
-    if(due.length)h+='<div class="card sp"><h3 class="hd bk-h3">Needs an outcome ('+due.length+')</h3><p class="note">These interviews have taken place. Record the result, or mark a no show.</p>'+due.map(ivCard).join("")+'</div>'}
   h+='<div class="card sp">'+(ttl?'<h3 class="hd bk-h3">'+esc(ttl)+'</h3>':"")+
-    ((dkey&&!dy)||rec?'<div class="cl-bar">'+(dkey&&!dy?'<button class="alt sm" data-bk="cal-goday" data-k="'+esc(dkey)+'">Open day view</button>':"")+(rec?'<button class="alt sm" data-ci="sched-day" data-k="'+esc(dkey||today)+'">Schedule an interview on this day</button>':"")+'</div>':"")+
+    ((dkey&&!dy)||(dy&&rec)?'<div class="cl-bar">'+(dkey&&!dy?'<button class="alt sm" data-bk="cal-goday" data-k="'+esc(dkey)+'">Open day view</button>':"")+(rec?'<button class="alt sm" data-ci="sched-day" data-k="'+esc(dkey||today)+'">Schedule an interview on this day</button>':"")+'</div>':"")+
     (rows.length?rows.map(calRow).join(""):'<p class="note">Nothing booked.</p>')+
     '<p class="note">Open a booking to approve it, assign a mechanic or propose another time.</p></div>';
   if(rec)h+=ivNewForm();
@@ -996,6 +994,7 @@ setInterval(function(){if(location.hash!=="#bookings"||!sess||!ST.me||!ST.me.act
 document.body.insertAdjacentHTML("beforeend",'<div id="bkg"></div>');
 var bar=$b(".bar");if(bar)bar.insertAdjacentHTML("beforeend",'<button type="button" class="alt ag-signout" data-bk="signout">Sign out</button>');
 render();if(sess)boot();
-if(location.hash==="#bookings")route();
+/* a full page refresh on any section (Calendar, Recruitment, Parts...) must reopen that section: the views above are registered after the first route() call */
+if(location.hash&&location.hash!=="#home")route();
 })();
 </script></body></html>
