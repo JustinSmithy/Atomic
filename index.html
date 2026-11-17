@@ -23,16 +23,30 @@
       </svg>
       <b>Atomic<br>Garage</b>
     </a>
-    <button class="menu" id="menuBtn" aria-expanded="false" aria-controls="nav">Menu</button>
+    <button class="menu" id="menuBtn" type="button" aria-expanded="false" aria-controls="nav">
+      <span class="menu-ico" aria-hidden="true"><i></i><i></i><i></i></span><span>Menu</span>
+    </button>
     <nav id="nav" aria-label="Main">
-      <ul>
-        <li><a href="#home" data-r="home">Home</a></li>
-        <li><a href="#services" data-r="services">Our Services</a></li>
-        <li><a href="#parts" data-r="parts">Parts</a><a href="#gallery" data-r="gallery">Gallery</a></li>
-        <li><a href="#book" data-r="book">Book a Service</a></li>
-        <li><a href="#contact" data-r="contact">Contact</a></li>
-        <li><a href="#careers" data-r="careers">Careers</a><a href="#track" data-r="track">Track Booking</a></li>
-        <li><a class="staff" id="staffLink" href="staff/">Staff Login</a></li>
+      <ul class="nav-main">
+        <li><a class="nl" href="#home" data-r="home">Home</a></li>
+        <li><a class="nl" href="#services" data-r="services">Services</a></li>
+        <li><a class="nl" href="#gallery" data-r="gallery">Gallery</a></li>
+        <li><a class="nl" href="#careers" data-r="careers">Careers</a></li>
+        <li><a class="nl" href="#contact" data-r="contact">Contact</a></li>
+      </ul>
+      <ul class="nav-side">
+        <li class="dd" id="reqDd">
+          <button class="nl dd-btn" id="reqBtn" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="reqMenu" data-group="track application">
+            <span>My Requests</span>
+            <svg class="dd-caret" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M2 4.2l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <ul class="dd-menu" id="reqMenu">
+            <li><a href="#track" data-r="track"><b>Track Booking</b><small>Check a service request</small></a></li>
+            <li><a href="#application" data-r="application"><b>Track Application</b><small>Check a careers application</small></a></li>
+          </ul>
+        </li>
+        <li><a class="btn cta" href="#book" data-r="book">Book a Service</a></li>
+        <li class="nav-staff"><a class="nl staff" id="staffLink" data-staff href="staff/">Staff Login</a></li>
       </ul>
     </nav>
   </div>
@@ -42,8 +56,21 @@
 
 <footer>
   <div class="in">
-    <span>© Atomic Garage · GTA World roleplay business</span>
-    <span><a href="#book">Book a service</a> · <a href="#track">Track a booking</a> · <a href="#careers">Careers</a> · <a href="#application">Application status</a> · <a href="staff/">Staff login</a></span>
+    <div class="f-brand">
+      <b class="disp">Atomic Garage</b>
+      <span>GTA World roleplay business</span>
+    </div>
+    <nav class="f-links" aria-label="Footer">
+      <a href="#services">Services</a>
+      <a href="#parts">Parts</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#careers">Careers</a>
+      <a href="#contact">Contact</a>
+      <a href="#book">Book a service</a>
+      <a href="#track">Track booking</a>
+      <a href="#application">Track application</a>
+      <a href="staff/" data-staff>Staff login</a>
+    </nav>
   </div>
 </footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -193,6 +220,9 @@ function pageServices(){
   var f=document.createDocumentFragment();
   f.appendChild(head("Our services","Four ways we can help. Pricing and availability are agreed with management when your request is reviewed."));
   f.appendChild(el("div",{class:"grid g2"},SERVICES.map(function(s){return serviceCard.apply(null,s)})));
+  f.appendChild(el("div",{class:"card cta-strip sp2"},[
+    el("div",null,[el("h3",{text:"Need parts?"}),el("p",{class:"muted",text:"Order parts online and collect them from the garage. We confirm using the contact details you give."})]),
+    el("a",{class:"btn",href:"#parts",text:"Browse parts"})]));
   return f;
 }
 function pageGallery(){
@@ -591,7 +621,7 @@ function pageCareers(q){
   q=q||{};
   var f=document.createDocumentFragment(),role=null,open={},known=false,busy=false,cur=0;
   var vac=el("span",{class:"pill",text:"Checking vacancies…"});
-  var pos=el("section",{class:"c-anchor","aria-labelledby":"c-pos-h"}),card=el("div",{class:"card c-wiz"});
+  var pos=el("section",{class:"c-anchor c-pos","aria-labelledby":"c-pos-h"}),card=el("div",{class:"card c-wiz"});
 
   /* ----- cinematic hero ----- */
   f.appendChild(el("section",{class:"c-hero","aria-labelledby":"c-h1"},[
@@ -607,7 +637,7 @@ function pageCareers(q){
     ])]));
 
   /* ----- why join us ----- */
-  f.appendChild(el("section",{class:"c-anchor sp2"},[head("Why join us","More than a job: a crew, a craft and a story to be part of.")]));
+  f.appendChild(el("section",{class:"c-anchor c-sec"},[head("Why join us","More than a job: a crew, a craft and a story to be part of.")]));
   f.appendChild(el("div",{class:"grid g4 c-why"},WHY.map(function(w,i){
     return el("article",{class:"card c-why-c",style:"--d:"+(i*0.07)+"s"},[cico(w[0]),el("h3",{text:w[1]}),el("p",{text:w[2]})]);
   })));
@@ -764,7 +794,9 @@ function pageCareers(q){
     show(cur+1);
   };
   form.appendChild(prog);P.forEach(function(x){form.appendChild(x)});form.appendChild(msg);
-  form.appendChild(el("div",{class:"wz-nav"},[back,next,btn]));card.appendChild(form);pos.appendChild(card);show(0,true);
+  form.appendChild(el("div",{class:"wz-nav"},[back,next,btn]));
+  card.appendChild(el("div",{class:"c-apply-h"},[el("h3",{text:"Application form"}),el("p",{text:"Three short steps: choose a role, tell us about you, then review and submit."})]));
+  card.appendChild(form);pos.appendChild(card);show(0,true);
 
   var codeMap={invalid_name:["c-name",0],invalid_age:["c-age",1],invalid_contact:["c-contact",1],invalid_availability:["c-av",1],invalid_discord:["c-discord",1],invalid_timezone:["c-tz",1],
     invalid_answer_1:["c-q0",1],invalid_answer_2:["c-q1",1],invalid_answer_3:["c-q2",1]};
@@ -924,17 +956,36 @@ function route(){
   var parts=h.split("?"), r=parts[0], q={};
   (parts[1]||"").split("&").forEach(function(kv){ if(!kv) return; var i=kv.indexOf("="); try{ q[decodeURIComponent(kv.slice(0,i<0?kv.length:i))]=i<0?"":decodeURIComponent(kv.slice(i+1)); }catch(e){} });
   if(!PAGES[r]) r="home";
-  main.textContent=""; main.appendChild(PAGES[r](q));
+  main.textContent=""; main.className="pg-"+r+((r==="book"||r==="track"||r==="application")?" narrow":""); main.appendChild(PAGES[r](q));
   document.title=(r==="home"?"Atomic Garage — Repairs, Tuning, Custom Builds & Towing":TITLES[r]+" — Atomic Garage");
-  document.querySelectorAll("nav a[data-r]").forEach(function(a){ if(a.dataset.r===r||(r==="application"&&a.dataset.r==="careers")) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); });
-  $("#nav").classList.remove("open"); $("#menuBtn").setAttribute("aria-expanded","false");
+  var navR=(r==="parts")?"services":r;   /* Parts has no top-level link: it lives under Services */
+  document.querySelectorAll("#nav [data-r]").forEach(function(a){ if(a.dataset.r===navR) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); });
+  var grp=$("#reqBtn"); if(grp){ if((grp.dataset.group||"").split(" ").indexOf(navR)>-1) grp.setAttribute("aria-current","page"); else grp.removeAttribute("aria-current"); }
+  closeNav();
   window.scrollTo(0,0);
 }
 window.addEventListener("hashchange",route);
+function setDd(open){
+  var dd=$("#reqDd"),b=$("#reqBtn"); if(!dd||!b) return;
+  dd.classList.toggle("open",open); b.setAttribute("aria-expanded",open?"true":"false");
+}
+function closeNav(){
+  setDd(false); $("#nav").classList.remove("open"); $("#menuBtn").setAttribute("aria-expanded","false");
+}
 $("#menuBtn").addEventListener("click",function(){
-  var o=$("#nav").classList.toggle("open"); this.setAttribute("aria-expanded",o?"true":"false");
+  var o=$("#nav").classList.toggle("open"); this.setAttribute("aria-expanded",o?"true":"false"); if(!o) setDd(false);
 });
-if(CFG.STAFF_PORTAL_URL) $("#staffLink").setAttribute("href",CFG.STAFF_PORTAL_URL);
+$("#reqBtn").addEventListener("click",function(e){ e.stopPropagation(); setDd(!$("#reqDd").classList.contains("open")); });
+document.addEventListener("click",function(e){ var dd=$("#reqDd"); if(dd&&!dd.contains(e.target)) setDd(false); });
+document.addEventListener("keydown",function(e){
+  if(e.key!=="Escape") return;
+  var dd=$("#reqDd"),was=dd&&dd.classList.contains("open"),mo=$("#nav").classList.contains("open");
+  if(was){ setDd(false); $("#reqBtn").focus(); }
+  else if(mo){ closeNav(); $("#menuBtn").focus(); }
+});
+$("#reqDd").addEventListener("focusout",function(e){ var dd=this; if(e.relatedTarget&&!dd.contains(e.relatedTarget)) setDd(false); });
+/* a leave from the dropdown by hover is not needed: it is click / keyboard driven so touch and keyboard behave the same */
+if(CFG.STAFF_PORTAL_URL) document.querySelectorAll("[data-staff]").forEach(function(a){a.setAttribute("href",CFG.STAFF_PORTAL_URL)});
 route();
 })();
 </script>
