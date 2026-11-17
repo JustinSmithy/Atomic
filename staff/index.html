@@ -226,6 +226,14 @@ nav a.ag-public{margin-top:auto}
 .rc-qa{margin:10px 0}.rc-qa b{color:var(--acc);font-size:14px}.rc-qa p{margin:4px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
 .rc-note{border-left:3px solid var(--acc);background:var(--glow);padding:8px 12px;border-radius:6px;margin:8px 0}.rc-note p{margin:0 0 4px;white-space:pre-wrap;overflow-wrap:anywhere}.rc-note small{color:var(--mute)}
 .rc-detail select{width:auto;min-width:180px}.rc-detail textarea{margin-top:8px}.bk-tl li small{display:block;color:var(--mute)}
+.rc-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.rc-card{all:unset;box-sizing:border-box;cursor:pointer;display:flex;flex-direction:column;gap:2px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--panel2)}
+.rc-card.info{cursor:default;background:var(--panel)}.rc-card:hover:not(.info){border-color:var(--acc)}.rc-card.on{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc) inset}.rc-card:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.rc-card span{color:var(--mute);font-size:13px;font-weight:600}.rc-card b{font:800 34px "Barlow Condensed",sans-serif;font-variant-numeric:tabular-nums;line-height:1.1}.rc-card small{color:var(--mute);font-size:12px}
+.rc-pos.wide{grid-column:1/-1}.rc-pos{flex-direction:column;align-items:stretch}.rc-pos-t{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.rc-pos-b{display:flex;gap:8px;flex-wrap:wrap}
+.rc-vac-form{margin-top:10px;border-top:1px solid var(--line);padding-top:6px}.rc-chk{display:flex;gap:8px;align-items:center;color:var(--ink);font-size:15px}.rc-chk input{width:auto}
+.rc-dates{align-items:center}.rc-dates label{margin:0}.rc-dates input{flex:0 1 160px}
+.rc-iv{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:8px 0;background:var(--panel)}.rc-iv small{display:block;color:var(--mute)}
 @media(max-width:560px){.rc-filters select,.rc-filters input{flex:1 1 100%}.rc-detail select{width:100%}}
 </style></head><body>
 <div class="app"><nav aria-label="Main">
@@ -360,6 +368,8 @@ function ft(d){if(!d)return"—";var x=new Date(d);return isNaN(x)?"—":x.toLoc
 function iso(local){if(!local)return null;var x=new Date(local);return isNaN(x)?null:x.toISOString()}
 function say(m){if(window.toast)window.toast(m)}
 function isMgr(){return ST.me&&ST.me.role==="manager"}
+function isRec(){return !!(ST.me&&ST.me.active&&(ST.me.role==="manager"||ST.me.role==="hr"))}
+function roleName(r){return r==="manager"?"Manager":r==="hr"?"HR":"Mechanic"}
 function nameOf(uid){if(!uid)return"";var s=ST.staff.filter(function(x){return x.user_id===uid})[0];return s?s.display_name:(ST.me&&ST.me.user_id===uid?ST.me.display_name:"a mechanic")}
 function authErr(e){if(e&&e.message==="auth"){ST.me=undefined;ST.err="Your session has ended. Please sign in again.";return}ST.err=(e&&e.message)||"Something went wrong."}
 function filters(){return isMgr()?MGR_FILTERS:MECH_FILTERS}
@@ -430,6 +440,7 @@ function loadSettings(){return api("site_settings?select=location_text,map_url,h
 function syncProfile(m){if(!m||!m.active||typeof S==="undefined")return;var ch=false;
   if(m.display_name&&(!S.name||S.name==="New Mechanic")){S.name=m.display_name;ch=true}
   if(m.role==="manager"&&(!S.rank||S.rank==="Mechanic")){S.rank="Manager";ch=true}
+  if(m.role==="hr"&&(!S.rank||S.rank==="Mechanic")){S.rank="Human Resources";ch=true}
   if(ch){try{save();route()}catch(e){}}}
 function boot(){if(ST.booting)return;ST.booting=true;ST.err="";
   rpc("staff_me").then(function(m){ST.me=m;syncProfile(m);if(m&&m.active)return Promise.all([loadList(),m.role==="manager"?loadStaff():0])})
@@ -456,14 +467,14 @@ function chips(){var f=filters(),cur=curFilter()[0];
   return'<div class="bk-chips" role="group" aria-label="Filter bookings">'+f.map(function(x){var n=x[2]?ST.list.filter(function(b){return x[2].indexOf(b.status)>=0}).length:ST.list.length;
     return'<button type="button" class="sm '+(x[0]===cur?"":"alt")+'" data-bk="filter" data-f="'+x[0]+'" aria-pressed="'+(x[0]===cur)+'">'+esc(x[1])+' <b>'+n+'</b></button>'}).join("")+'</div>'}
 function appHtml(){var mgr=isMgr();
-  var h='<div class="card bk-bar"><div class="bk-top"><div><b>'+esc(ST.me.display_name)+'</b> <span class="pill a">'+(mgr?"Manager":"Mechanic")+'</span></div><div class="bk-btns"><button class="alt sm" data-bk="reload">Refresh</button><button class="alt sm" data-bk="signout">Sign out</button></div></div>';
+  var h='<div class="card bk-bar"><div class="bk-top"><div><b>'+esc(ST.me.display_name)+'</b> <span class="pill a">'+roleName(ST.me.role)+'</span></div><div class="bk-btns"><button class="alt sm" data-bk="reload">Refresh</button><button class="alt sm" data-bk="signout">Sign out</button></div></div>';
   if(mgr)h+='<div class="bk-tabs"><button type="button" class="'+(ST.tab==="bookings"?"":"alt")+'" data-bk="tab" data-t="bookings">Bookings</button><button type="button" class="'+(ST.tab==="team"?"":"alt")+'" data-bk="tab" data-t="team">Team and site settings</button><button type="button" class="'+(ST.tab==="parts"?"":"alt")+'" data-bk="tab" data-t="parts">Parts</button><button type="button" class="'+(ST.tab==="apps"?"":"alt")+'" data-bk="tab" data-t="apps">Applications</button></div>';
   h+='</div>';
   if(ST.err)h+='<div class="bk-note bad" role="alert">'+esc(ST.err)+'</div>';
   return h+(mgr&&ST.tab==="apps"?appsHtml():mgr&&ST.tab==="parts"?partsHtml():mgr&&ST.tab==="team"?teamHtml():listHtml())}
 function listHtml(){var f=curFilter(),rows=f[2]?ST.list.filter(function(b){return f[2].indexOf(b.status)>=0}):ST.list;
   var head=sec("✉","Bookings",isMgr()?"Review requests, propose times, assign mechanics":"Jobs assigned to you");
-  var body=rows.length?rows.map(cardHtml).join(""):'<div class="empty">'+(ST.list.length?"Nothing in this view.":(isMgr()?"No bookings yet. Requests from the public website appear here as Pending.":"No bookings are assigned to you yet. A manager will assign work to you."))+'</div>';
+  var body=rows.length?rows.map(cardHtml).join(""):'<div class="empty">'+(ST.list.length?"Nothing in this view.":(isMgr()?"No bookings yet. Requests from the public website appear here as Pending.":ST.me&&ST.me.role==="hr"?"Bookings are handled by managers and mechanics. Use the Recruitment section for applications and interviews.":"No bookings are assigned to you yet. A manager will assign work to you."))+'</div>';
   return'<div class="card">'+head+chips()+'<div class="bk-list">'+body+'</div></div>'}
 function cardHtml(b){var open=ST.open===b.id;
   return'<article class="bk-card'+(open?" open":"")+'"><div class="bk-row"><div class="bk-main"><b class="bk-ref">'+esc(b.reference)+'</b> '+pill(b.status)+
@@ -499,14 +510,14 @@ function actionsHtml(b){var mgr=isMgr(),s=b.status,closed=CLOSED.indexOf(s)>=0,h
 function noteHtml(b){return'<div class="bk-grp"><h3 class="hd bk-h3">Internal note</h3><div class="bk-inline"><input id="bk-note" maxlength="500" placeholder="Visible to staff only" aria-label="Internal note"><button class="alt" data-bk="act" data-act="note">Add note</button></div></div>'}
 function teamHtml(){
   var staff=ST.staff.length?'<div class="tw"><table><tr><th>Name</th><th>Role</th><th>Status</th><th></th></tr>'+ST.staff.map(function(s){
-    return'<tr><td>'+esc(s.display_name)+(ST.me.user_id===s.user_id?' <em class="you">You</em>':"")+'</td><td><select id="bk-r-'+esc(s.user_id)+'" aria-label="Role for '+esc(s.display_name)+'"><option value="mechanic"'+(s.role==="mechanic"?" selected":"")+'>Mechanic</option><option value="manager"'+(s.role==="manager"?" selected":"")+'>Manager</option></select></td>'+
+    return'<tr><td>'+esc(s.display_name)+(ST.me.user_id===s.user_id?' <em class="you">You</em>':"")+'</td><td><select id="bk-r-'+esc(s.user_id)+'" aria-label="Role for '+esc(s.display_name)+'"><option value="mechanic"'+(s.role==="mechanic"?" selected":"")+'>Mechanic</option><option value="hr"'+(s.role==="hr"?" selected":"")+'>HR</option><option value="manager"'+(s.role==="manager"?" selected":"")+'>Manager</option></select></td>'+
     '<td><select id="bk-a-'+esc(s.user_id)+'" aria-label="Status for '+esc(s.display_name)+'"><option value="1"'+(s.active?" selected":"")+'>Active</option><option value="0"'+(s.active?"":" selected")+'>Deactivated</option></select></td><td><button class="alt sm" data-bk="member" data-uid="'+esc(s.user_id)+'">Save</button></td></tr>'}).join("")+'</table></div>':'<div class="empty">No staff yet.</div>';
   var inv=ST.invites.length?'<div class="tw"><table><tr><th>For</th><th>Role</th><th>Expires</th><th>State</th><th></th></tr>'+ST.invites.map(function(i){var used=!!i.used_at,exp=new Date(i.expires_at)<new Date();
-    return'<tr><td>'+esc(i.label||"—")+'</td><td>'+esc(i.role)+'</td><td>'+esc(ft(i.expires_at))+'</td><td>'+(used?"Used":exp?"Expired":"Waiting")+'</td><td>'+(used?"":'<button class="alt sm" data-bk="revoke" data-id="'+esc(i.id)+'">Remove</button>')+'</td></tr>'}).join("")+'</table></div>':'<div class="empty">No invitations yet.</div>';
+    return'<tr><td>'+esc(i.label||"—")+'</td><td>'+esc(roleName(i.role))+'</td><td>'+esc(ft(i.expires_at))+'</td><td>'+(used?"Used":exp?"Expired":"Waiting")+'</td><td>'+(used?"":'<button class="alt sm" data-bk="revoke" data-id="'+esc(i.id)+'">Remove</button>')+'</td></tr>'}).join("")+'</table></div>':'<div class="empty">No invitations yet.</div>';
   var s=ST.settings||{};
   return'<div class="card">'+sec("☰","Staff","Roles and access")+staff+'</div>'+
   '<div class="card sp">'+sec("+","Invite staff","Give the one-time code to the person privately. It expires in 7 days.")+
-   '<div class="g g3"><div><label for="bk-inv-label">Who is it for?</label><input id="bk-inv-label" maxlength="60"></div><div><label for="bk-inv-role">Role</label><select id="bk-inv-role"><option value="mechanic">Mechanic</option><option value="manager">Manager</option></select></div></div>'+
+   '<div class="g g3"><div><label for="bk-inv-label">Who is it for?</label><input id="bk-inv-label" maxlength="60"></div><div><label for="bk-inv-role">Role</label><select id="bk-inv-role"><option value="mechanic">Mechanic</option><option value="hr">HR</option><option value="manager">Manager</option></select></div></div>'+
    '<div class="sp"><button data-bk="invite">Create access code</button></div>'+
    (ST.newCode?'<div class="bk-note good" role="status"><b>Code (shown once):</b> <code class="bk-code">'+esc(ST.newCode)+'</code> <button class="alt sm" data-bk="copycode">Copy</button></div>':"")+
    '<div class="sp">'+inv+'</div></div>'+
@@ -624,74 +635,153 @@ function loadApps(){return api("applications?select="+RC_COLS+"&order=created_at
 function appsHtml(){return'<div class="card sp">'+sec("\u2605","Recruitment has moved","Applications now have their own section")+'<p class="note">Review applications, add private notes and open or close roles in the Recruitment section.</p><a class="btn" href="#recruitment">Open Recruitment</a></div>'}
 /* ---------- recruitment management (managers only; enforced by RLS in the database) ---------- */
 var RS={new:"Pending",reviewing:"Under Review",interview:"Interview",accepted:"Accepted",rejected:"Rejected"};
+var IS={invited:"Invited",confirmed:"Confirmed",reschedule_requested:"Asked for another time",completed:"Completed",cancelled:"Cancelled",no_show:"No show"};
+var IV_ACTIVE=["invited","confirmed","reschedule_requested"];
 var RC_ROLES=["mechanic_apprentice","mechanic","human_resources"];
-var RC_COLS="id,reference,character_name,contact,role,experience,motivation,availability,status,manager_note,created_at,answers,details,updated_at";
-var RC={apps:[],roles:{},events:{},open:null,role:"all",status:"all",q:"",token:{},err:"",loaded:false,busy:false};
+var RC_COLS="id,reference,character_name,contact,role,experience,motivation,availability,status,manager_note,created_at,answers,details,updated_at,reviewer_id,recommendation,recommended_by,recommended_at,decided_by,decided_at";
+var VAC_COLS="role,is_open,is_public,title,tagline,responsibilities,requirements,sort,updated_at";
+var IV_COLS="id,application_id,interviewer_id,scheduled_at,ends_at,duration_minutes,location,prep_notes,status,requested_alt_at,applicant_message,outcome_notes,recommendation";
+var RC={apps:[],roles:{},events:{},ivs:[],staff:[],stats:null,open:null,edit:null,role:"all",status:"all",rev:"all",from:"",to:"",q:"",token:{},err:"",loaded:false,busy:false};
 function rcLoad(){return Promise.all([
   api("applications?select="+RC_COLS+"&order=created_at.desc&limit=500").then(function(r){RC.apps=r||[]}),
-  api("recruitment_roles?select=role,is_open,updated_at").then(function(r){RC.roles={};(r||[]).forEach(function(x){RC.roles[x.role]=x})})
+  api("recruitment_roles?select="+VAC_COLS+"&order=sort.asc,role.asc").then(function(r){RC.roles={};(r||[]).forEach(function(x){RC.roles[x.role]=x})}),
+  api("interviews?select="+IV_COLS+"&order=scheduled_at.desc&limit=500").then(function(r){RC.ivs=r||[]}),
+  rpc("recruitment_stats").then(function(r){RC.stats=(r&&r.ok)?r:null}).catch(function(e){if(e&&e.message==="auth")throw e;RC.stats=null}),
+  rpc("recruitment_staff").then(function(r){RC.staff=Array.isArray(r)?r:[]}).catch(function(e){if(e&&e.message==="auth")throw e;RC.staff=[]})
 ]).then(function(){RC.loaded=true;RC.err=""})}
 function rcEvents(id){return api("application_events?select=id,action,actor_name,from_status,to_status,message,internal,at&application_id=eq."+encodeURIComponent(id)+"&order=at.asc,id.asc").then(function(r){RC.events[id]=r||[]})}
 function rcFail(e){if(e&&e.message==="auth"){authErr(e);render();return}RC.err=(e&&e.message)||"Something went wrong."}
+function rcDay(d){var x=new Date(d);return x.getFullYear()+"-"+("0"+(x.getMonth()+1)).slice(-2)+"-"+("0"+x.getDate()).slice(-2)}
+function rcRev(id){if(!id)return"";var s=RC.staff.filter(function(x){return x.user_id===id})[0];return s?s.display_name:(ST.me&&ST.me.user_id===id?ST.me.display_name:"a colleague")}
 function rcMatches(a,skipStatus){
   if(RC.role!=="all"&&a.role!==RC.role)return false;
   if(!skipStatus&&RC.status!=="all"&&a.status!==RC.status)return false;
+  if(RC.rev==="none"){if(a.reviewer_id)return false}
+  else if(RC.rev==="me"){if(!ST.me||a.reviewer_id!==ST.me.user_id)return false}
+  else if(RC.rev!=="all"&&a.reviewer_id!==RC.rev)return false;
+  if(RC.from||RC.to){var k=rcDay(a.created_at);if(RC.from&&k<RC.from)return false;if(RC.to&&k>RC.to)return false}
   var q=RC.q.trim().toLowerCase();
   return !q||(a.character_name+" "+a.reference).toLowerCase().indexOf(q)>=0}
-function rcPositions(){
-  return'<div class="card">'+sec("\u2699","Positions","Open or close recruitment for each role. Closed roles stop accepting applications immediately.")+
-  '<div class="rc-pos-g">'+RC_ROLES.map(function(k){var r=RC.roles[k],open=!r||r.is_open,tot=RC.apps.filter(function(a){return a.role===k}).length,pend=RC.apps.filter(function(a){return a.role===k&&a.status==="new"}).length;
-    return'<div class="rc-pos"><div><b>'+esc(RL[k])+'</b> <span class="rc-st '+(open?"open":"closed")+'">'+(open?"Open":"Closed")+'</span><small>'+pend+' pending \u00B7 '+tot+' total</small></div>'+
-      '<button class="'+(open?"alt ":"")+'sm" data-rc="toggle" data-role="'+k+'" data-open="'+(open?"0":"1")+'"'+(RC.busy?" disabled":"")+'>'+(open?"Close recruitment":"Open recruitment")+'</button></div>'}).join("")+'</div></div>'}
+function rcIvOf(id){return RC.ivs.filter(function(i){return i.application_id===id})}
+function rcActiveIv(id){return rcIvOf(id).filter(function(i){return IV_ACTIVE.indexOf(i.status)>=0})[0]}
+/* ----- summary cards ----- */
+function rcCards(){
+  var c={new:0,reviewing:0,interview:0,accepted:0,rejected:0};RC.apps.forEach(function(a){if(c[a.status]!=null)c[a.status]++});
+  var s=RC.stats||{},now=Date.now();
+  var up=RC.ivs.filter(function(i){return IV_ACTIVE.indexOf(i.status)>=0&&new Date(i.scheduled_at)>=now}),
+      wait=up.filter(function(i){return i.status!=="confirmed"}),conf=up.filter(function(i){return i.status==="confirmed"});
+  var tot=s.total!=null?s.total:RC.apps.length;
+  function stat(k,l,n,sub){return'<button type="button" class="rc-card'+(RC.status===k?" on":"")+'" data-rc="filter" data-f="'+k+'" aria-pressed="'+(RC.status===k)+'"><span>'+l+'</span><b>'+n+'</b>'+(sub?'<small>'+sub+'</small>':"")+'</button>'}
+  function info(l,n,sub){return'<div class="rc-card info"><span>'+l+'</span><b>'+n+'</b>'+(sub?'<small>'+sub+'</small>':"")+'</div>'}
+  var unas=RC.apps.filter(function(a){return !a.reviewer_id&&a.status!=="accepted"&&a.status!=="rejected"}).length;
+  return'<div class="rc-cards">'+stat("all","All applications",tot)+stat("new",RS.new,s.pending!=null?s.pending:c.new,unas?unas+" without a reviewer":"")+stat("reviewing",RS.reviewing,s.reviewing!=null?s.reviewing:c.reviewing)+
+    stat("interview",RS.interview,s.interview!=null?s.interview:c.interview)+stat("accepted",RS.accepted,s.accepted!=null?s.accepted:c.accepted)+stat("rejected",RS.rejected,s.rejected!=null?s.rejected:c.rejected)+
+    info("Upcoming interviews",s.interviews_scheduled!=null?s.interviews_scheduled:up.length,"times are shown in your local time")+
+    info("Awaiting applicant reply",s.interviews_awaiting_reply!=null?s.interviews_awaiting_reply:wait.length)+info("Confirmed",s.interviews_confirmed!=null?s.interviews_confirmed:conf.length)+'</div>'}
+/* ----- vacancies ----- */
+function rcLines(v){return(v&&v.length)?v.join("\n"):""}
+function rcVacForm(k){var r=RC.roles[k]||{};
+  return'<div class="rc-vac-form"><p class="note">Leave a field empty to use the standard wording on the Careers page. One responsibility or requirement per line (up to 8 lines, 120 characters each).</p>'+
+  '<label for="rc-vt-'+k+'">Title (2 to 60 characters)</label><input id="rc-vt-'+k+'" maxlength="60" value="'+esc(r.title||"")+'" placeholder="'+esc(RL[k])+'">'+
+  '<label for="rc-vg-'+k+'">Short description (up to 160 characters)</label><input id="rc-vg-'+k+'" maxlength="160" value="'+esc(r.tagline||"")+'">'+
+  '<label for="rc-vr-'+k+'">Responsibilities</label><textarea id="rc-vr-'+k+'" rows="5">'+esc(rcLines(r.responsibilities))+'</textarea>'+
+  '<label for="rc-vq-'+k+'">Requirements</label><textarea id="rc-vq-'+k+'" rows="5">'+esc(rcLines(r.requirements))+'</textarea>'+
+  '<label class="rc-chk"><input type="checkbox" id="rc-vp-'+k+'"'+(r.is_public===false?"":" checked")+'> Show this vacancy on the Careers page</label>'+
+  '<div class="sp"><button data-rc="vsave" data-role="'+k+'"'+(RC.busy?" disabled":"")+'>Save vacancy</button> <button class="alt" data-rc="vcancel">Cancel</button></div></div>'}
+function rcPositions(){var mgr=isMgr();
+  return'<div class="card sp">'+sec("⚙","Vacancies","Open or close recruitment, edit the Careers page text and choose which vacancies are visible.")+
+  '<div class="rc-pos-g">'+RC_ROLES.map(function(k){var r=RC.roles[k],open=!r||r.is_open,pub=!r||r.is_public!==false,tot=RC.apps.filter(function(a){return a.role===k}).length,pend=RC.apps.filter(function(a){return a.role===k&&a.status==="new"}).length,ed=RC.edit===k;
+    return'<div class="rc-pos'+(ed?" wide":"")+'"><div class="rc-pos-t"><div><b>'+esc((r&&r.title)||RL[k])+'</b> <span class="rc-st '+(open?"open":"closed")+'">'+(open?"Open":"Closed")+'</span> <span class="rc-st '+(pub?"open":"closed")+'">'+(pub?"Visible":"Hidden")+'</span><small>'+pend+' pending · '+tot+' total</small></div>'+
+      (mgr?'<div class="rc-pos-b"><button class="'+(open?"alt ":"")+'sm" data-rc="toggle" data-role="'+k+'" data-open="'+(open?"0":"1")+'"'+(RC.busy?" disabled":"")+'>'+(open?"Close recruitment":"Open recruitment")+'</button>'+
+      '<button class="alt sm" data-rc="vpub" data-role="'+k+'" data-pub="'+(pub?"0":"1")+'"'+(RC.busy?" disabled":"")+'>'+(pub?"Hide from site":"Show on site")+'</button>'+
+      '<button class="alt sm" data-rc="vedit" data-role="'+k+'">'+(ed?"Close editor":"Edit vacancy")+'</button></div>':"")+'</div>'+(mgr&&ed?rcVacForm(k):"")+'</div>'}).join("")+'</div>'+
+  (mgr?'<p class="note">A hidden vacancy disappears from the Careers page and cannot be applied for, even if recruitment is open.</p>':'<p class="note">Only managers can change vacancies.</p>')+'</div>'}
+function rcVacSave(k,pubOnly,pub){var r=RC.roles[k]||{},p={role:k};
+  if(pubOnly){p.title=r.title||null;p.tagline=r.tagline||null;p.responsibilities=r.responsibilities||null;p.requirements=r.requirements||null;p.is_public=pub}
+  else{
+    function lines(id,l){var a=(document.getElementById(id).value||"").split(/\r?\n/).map(function(x){return x.trim()}).filter(Boolean);
+      if(a.length>8)throw new Error(l+": up to 8 lines.");if(a.some(function(x){return x.length>120}))throw new Error(l+": each line can be 120 characters at most.");return a.length?a:null}
+    var t=val("rc-vt-"+k),g=val("rc-vg-"+k);
+    if(t&&(t.length<2||t.length>60))throw new Error("The title must be 2 to 60 characters.");
+    if(g.length>160)throw new Error("The short description can be 160 characters at most.");
+    p.title=t||null;p.tagline=g||null;p.responsibilities=lines("rc-vr-"+k,"Responsibilities");p.requirements=lines("rc-vq-"+k,"Requirements");p.is_public=document.getElementById("rc-vp-"+k).checked}
+  return p}
+/* ----- application detail ----- */
 function rcQa(a){return(a.answers&&a.answers.length)?a.answers:[{q:"Experience",a:a.experience},{q:"Why join",a:a.motivation}]}
 function rcEv(e){var w=e.actor_name?" by "+esc(e.actor_name):"";
   if(e.action==="submitted")return"Application submitted";
   if(e.action==="status_changed")return"Status changed"+(e.from_status?" from "+esc(RS[e.from_status]||e.from_status):"")+" to <b>"+esc(RS[e.to_status]||e.to_status)+"</b>"+w;
   if(e.action==="note")return"Private note"+w;
   if(e.action==="token_reset")return"New tracking code issued"+w;
+  if(e.action==="reviewer_assigned")return esc(e.message||"Reviewer changed")+w;
+  if(e.action==="recommendation")return esc(e.message||"Recommendation recorded")+w;
+  if(e.action==="onboarding")return"Onboarding updated"+w;
   return esc(e.action)}
+function rcIvHtml(a){var l=rcIvOf(a.id);
+  if(!l.length)return'<p class="note">No interview yet. Interviews are scheduled from the Calendar.</p>';
+  return l.map(function(i){return'<div class="rc-iv"><div><b>'+esc(ft(i.scheduled_at))+'</b> · '+esc(i.duration_minutes)+' min · <span class="rc-st '+(i.status==="confirmed"||i.status==="completed"?"open":IV_ACTIVE.indexOf(i.status)>=0?"":"closed")+'">'+esc(IS[i.status]||i.status)+'</span>'+
+    '<small>Interviewer: '+esc(rcRev(i.interviewer_id)||"—")+(i.location?" · "+esc(i.location):"")+'</small>'+
+    (i.status==="reschedule_requested"?'<small>Applicant asked for another time'+(i.requested_alt_at?": <b>"+esc(ft(i.requested_alt_at))+"</b>":"")+(i.applicant_message?" – “"+esc(i.applicant_message)+"”":"")+'</small>':"")+
+    (i.recommendation?'<small>Recommendation: <b>'+esc(i.recommendation==="accept"?"Accept":"Reject")+'</b></small>':"")+'</div></div>'}).join("")}
 function rcDetail(a){
-  var i=esc(a.id),d=a.details||{},ev=RC.events[a.id];
+  var i=esc(a.id),d=a.details||{},ev=RC.events[a.id],mgr=isMgr(),final=a.status==="accepted"||a.status==="rejected";
   function row(k,v){return v?'<dt>'+k+'</dt><dd>'+esc(v)+'</dd>':""}
-  var h='<div class="rc-detail"><dl class="bk-dl">'+row("Character",a.character_name)+row("Age",d.age)+row("Contact",a.contact)+row("Discord",d.discord)+row("Time zone",d.timezone)+row("Availability",a.availability)+row("Submitted",ft(a.created_at))+row("Last update",ft(a.updated_at))+'</dl>';
+  var h='<div class="rc-detail"><dl class="bk-dl">'+row("Character",a.character_name)+row("Age",d.age)+row("Contact",a.contact)+row("Discord",d.discord)+row("Time zone",d.timezone)+row("Availability",a.availability)+row("Submitted",ft(a.created_at))+row("Last update",ft(a.updated_at))+row("Reviewer",rcRev(a.reviewer_id))+
+    (a.recommendation?row("Recommendation",(a.recommendation==="accept"?"Accept":"Reject")+(a.recommended_by?" (by "+rcRev(a.recommended_by)+")":"")):"")+(final&&a.decided_by?row("Decided by",rcRev(a.decided_by)+(a.decided_at?", "+ft(a.decided_at):"")):"")+'</dl>';
   h+='<h3 class="hd bk-h3">Answers</h3>'+rcQa(a).map(function(x){return'<div class="rc-qa"><b>'+esc(x.q)+'</b><p>'+esc(x.a)+'</p></div>'}).join("");
-  h+='<h3 class="hd bk-h3">Status</h3><div class="bk-inline"><select id="rc-st-'+i+'" aria-label="Application status">'+Object.keys(RS).map(function(k){return'<option value="'+k+'"'+(k===a.status?" selected":"")+'>'+RS[k]+'</option>'}).join("")+'</select><button data-rc="status" data-id="'+i+'">Update status</button></div>'+
-    '<p class="note">Applicants see status changes on their tracking page.</p>';
-  h+='<h3 class="hd bk-h3">Private notes</h3><p class="note">Only managers can see these notes. Applicants never see them.</p>';
+  h+='<h3 class="hd bk-h3">Reviewer</h3><div class="bk-inline"><select id="rc-rv-'+i+'" aria-label="Reviewer"><option value="">Unassigned</option>'+RC.staff.map(function(s){return'<option value="'+esc(s.user_id)+'"'+(s.user_id===a.reviewer_id?" selected":"")+'>'+esc(s.display_name)+' ('+(s.role==="hr"?"HR":"Manager")+')</option>'}).join("")+'</select>'+
+    '<button data-rc="assign" data-id="'+i+'"'+(RC.busy?" disabled":"")+'>Assign</button>'+(ST.me&&a.reviewer_id!==ST.me.user_id?'<button class="alt" data-rc="assign-me" data-id="'+i+'"'+(RC.busy?" disabled":"")+'>Assign to me</button>':"")+'</div>';
+  h+='<h3 class="hd bk-h3">Interview</h3>'+rcIvHtml(a);
+  var lock=!mgr&&final;
+  h+='<h3 class="hd bk-h3">Status</h3><div class="bk-inline"><select id="rc-st-'+i+'" aria-label="Application status"'+(lock?" disabled":"")+'>'+Object.keys(RS).map(function(k){var off=!mgr&&(k==="accepted"||k==="rejected")&&k!==a.status;return'<option value="'+k+'"'+(k===a.status?" selected":"")+(off?" disabled":"")+'>'+RS[k]+(off?" (managers only)":"")+'</option>'}).join("")+'</select><button data-rc="status" data-id="'+i+'"'+(lock?" disabled":"")+'>Update status</button></div>'+
+    '<p class="note">Applicants see status changes on their tracking page.'+(mgr?"":" Only managers can accept or reject an applicant; record a recommendation after an interview instead.")+'</p>';
+  h+='<h3 class="hd bk-h3">Private notes</h3><p class="note">Only managers and HR can see these notes. Applicants never see them.</p>';
   var notes=(ev||[]).filter(function(e){return e.action==="note"});
-  h+=notes.length?notes.map(function(e){return'<div class="rc-note"><p>'+esc(e.message)+'</p><small>'+esc(e.actor_name||"Manager")+" \u00B7 "+esc(ft(e.at))+'</small></div>'}).join(""):(ev?'<p class="note">No notes yet.</p>':"");
+  h+=notes.length?notes.map(function(e){return'<div class="rc-note"><p>'+esc(e.message)+'</p><small>'+esc(e.actor_name||"Staff")+" · "+esc(ft(e.at))+'</small></div>'}).join(""):(ev?'<p class="note">No notes yet.</p>':"");
   h+='<textarea id="rc-nt-'+i+'" maxlength="1000" rows="3" placeholder="Add a private note" aria-label="Private note"></textarea><div class="sp"><button class="sm" data-rc="note" data-id="'+i+'">Add note</button></div>';
-  h+='<h3 class="hd bk-h3">History</h3>'+(ev?'<ol class="bk-tl">'+ev.map(function(e){return'<li>'+rcEv(e)+'<small>'+esc(ft(e.at))+'</small></li>'}).join("")+'</ol>':'<p class="note">Loading history\u2026</p>');
-  h+='<h3 class="hd bk-h3">Tracking code</h3><p class="note">Access codes are stored hashed and cannot be viewed. If an applicant lost theirs, or applied before tracking existed, issue a new one and pass it on in character. The old code stops working.</p>'+
+  h+='<h3 class="hd bk-h3">History</h3>'+(ev?'<ol class="bk-tl">'+ev.map(function(e){return'<li>'+rcEv(e)+'<small>'+esc(ft(e.at))+'</small></li>'}).join("")+'</ol>':'<p class="note">Loading history…</p>');
+  if(mgr)h+='<h3 class="hd bk-h3">Tracking code</h3><p class="note">Access codes are stored hashed and cannot be viewed. If an applicant lost theirs, or applied before tracking existed, issue a new one and pass it on in character. The old code stops working.</p>'+
     (RC.token[a.id]?'<p>New code for <b>'+esc(a.reference)+'</b> (shown once):</p><code class="bk-code">'+esc(RC.token[a.id])+'</code><div class="sp"><button class="alt sm" data-rc="copy" data-id="'+i+'">Copy code</button></div>':
-     '<button class="alt sm" data-rc="token" data-id="'+i+'">Issue new tracking code</button>')+'</div>';
-  return h}
+     '<button class="alt sm" data-rc="token" data-id="'+i+'">Issue new tracking code</button>');
+  return h+'</div>'}
 function rcListHtml(){
   var l=RC.apps.filter(function(a){return rcMatches(a)});
   if(!l.length)return'<div class="empty">'+(RC.apps.length?"No applications match these filters.":"No applications yet. They appear here as soon as someone applies.")+'</div>';
-  return l.map(function(a){var o=RC.open===a.id;
-    return'<div class="rc-app'+(o?" open":"")+'"><button type="button" class="rc-head" data-rc="open" data-id="'+esc(a.id)+'" aria-expanded="'+o+'"><span class="rc-n"><b>'+esc(a.character_name)+'</b><small>'+esc(RL[a.role]||a.role)+" \u00B7 "+esc(a.reference)+" \u00B7 "+esc(new Date(a.created_at).toLocaleDateString())+'</small></span><span class="rc-b s-'+esc(a.status)+'">'+esc(RS[a.status]||a.status)+'</span></button>'+(o?rcDetail(a):"")+'</div>'}).join("")}
+  return l.map(function(a){var o=RC.open===a.id,iv=rcActiveIv(a.id);
+    return'<div class="rc-app'+(o?" open":"")+'"><button type="button" class="rc-head" data-rc="open" data-id="'+esc(a.id)+'" aria-expanded="'+o+'"><span class="rc-n"><b>'+esc(a.character_name)+'</b><small>'+esc((RC.roles[a.role]&&RC.roles[a.role].title)||RL[a.role]||a.role)+" · "+esc(a.reference)+" · "+esc(new Date(a.created_at).toLocaleDateString())+
+      (a.reviewer_id?" · Reviewer: "+esc(rcRev(a.reviewer_id)):" · No reviewer")+(iv?" · Interview "+esc(ft(iv.scheduled_at)):"")+'</small></span><span class="rc-b s-'+esc(a.status)+'">'+esc(RS[a.status]||a.status)+'</span></button>'+(o?rcDetail(a):"")+'</div>'}).join("")}
 function rcHtml(){
-  if(!isMgr())return'<div class="card">'+sec("\u2605","Recruitment","Managers only")+'<p class="note">Recruitment management is available to managers only.</p></div>';
+  if(!isRec())return'<div class="card">'+sec("★","Recruitment","Managers and HR only")+'<p class="note">Recruitment is available to managers and HR staff only.</p></div>';
   if(!RC.loaded&&!RC.err)return'<div class="sk" style="height:200px"></div><div class="sk sp" style="height:260px"></div>';
   var cnt={};RC.apps.forEach(function(a){if(rcMatches(a,true))cnt[a.status]=(cnt[a.status]||0)+1});
   var all=RC.apps.filter(function(a){return rcMatches(a,true)}).length;
-  var h=(RC.err?'<div class="bk-note bad" role="alert">'+esc(RC.err)+'</div>':"")+rcPositions();
-  h+='<div class="card sp">'+sec("\u2605","Applications","Filter by role and status, open an application to review it")+
+  var h=(RC.err?'<div class="bk-note bad" role="alert">'+esc(RC.err)+'</div>':"");
+  if(!isMgr())h+='<div class="bk-note">Signed in as HR: you can review applications, assign reviewers, add notes, schedule interviews and recommend. Final hiring decisions, vacancies and tracking codes are managers only.</div>';
+  h+=rcCards()+rcPositions();
+  h+='<div class="card sp">'+sec("★","Applications","Filter by role, reviewer, date and status, then open an application to review it")+
     '<div class="rc-filters"><select id="rc-role" aria-label="Filter by role"><option value="all">All roles</option>'+RC_ROLES.map(function(k){return'<option value="'+k+'"'+(RC.role===k?" selected":"")+'>'+esc(RL[k])+'</option>'}).join("")+'</select>'+
+    '<select id="rc-rev" aria-label="Filter by reviewer"><option value="all">All reviewers</option><option value="none"'+(RC.rev==="none"?" selected":"")+'>Unassigned</option><option value="me"'+(RC.rev==="me"?" selected":"")+'>Assigned to me</option>'+
+      RC.staff.filter(function(s){return !ST.me||s.user_id!==ST.me.user_id}).map(function(s){return'<option value="'+esc(s.user_id)+'"'+(RC.rev===s.user_id?" selected":"")+'>'+esc(s.display_name)+'</option>'}).join("")+'</select>'+
     '<input id="rc-q" type="search" maxlength="60" placeholder="Search name or reference" aria-label="Search applications" value="'+esc(RC.q)+'"><button class="alt sm" data-rc="refresh">Refresh</button></div>'+
+    '<div class="rc-filters rc-dates"><label for="rc-from">Applied from</label><input id="rc-from" type="date" value="'+esc(RC.from)+'"><label for="rc-to">to</label><input id="rc-to" type="date" value="'+esc(RC.to)+'">'+
+      '<button class="alt sm" data-rc="range" data-d="7">Last 7 days</button><button class="alt sm" data-rc="range" data-d="30">Last 30 days</button><button class="alt sm" data-rc="range" data-d="0">Clear dates</button></div>'+
     '<div class="bk-chips" role="group" aria-label="Filter by status"><button type="button" class="sm '+(RC.status==="all"?"":"alt")+'" data-rc="filter" data-f="all" aria-pressed="'+(RC.status==="all")+'">All <b>'+all+'</b></button>'+
     Object.keys(RS).map(function(k){return'<button type="button" class="sm '+(RC.status===k?"":"alt")+'" data-rc="filter" data-f="'+k+'" aria-pressed="'+(RC.status===k)+'">'+RS[k]+' <b>'+(cnt[k]||0)+'</b></button>'}).join("")+'</div>'+
     '<div class="rc-list" id="rc-list">'+rcListHtml()+'</div></div>';
   return h}
 function rcRender(){var d=$b("#rc");if(!d)return;
   var t=RC.open&&document.getElementById("rc-nt-"+RC.open),draft=t?t.value:"",keep=RC.open;
+  var ae=document.activeElement,fid=ae&&ae.id&&/^rc-(q|vt|vg|vr|vq)/.test(ae.id)?ae.id:null,fv=fid?ae.value:null,sel=fid&&ae.selectionStart;
+  /* keep unsaved vacancy edits while the page re-renders */
+  var vk=RC.edit,vv=null;if(vk&&document.getElementById("rc-vt-"+vk))vv=["vt","vg","vr","vq"].map(function(p){return document.getElementById("rc-"+p+"-"+vk).value}).concat([document.getElementById("rc-vp-"+vk).checked]);
   d.innerHTML=rcHtml();
-  if(keep&&draft){var n=document.getElementById("rc-nt-"+keep);if(n)n.value=draft}}
+  if(vv&&document.getElementById("rc-vt-"+vk)){["vt","vg","vr","vq"].forEach(function(p,n){document.getElementById("rc-"+p+"-"+vk).value=vv[n]});document.getElementById("rc-vp-"+vk).checked=vv[4]}
+  if(keep&&draft){var n=document.getElementById("rc-nt-"+keep);if(n)n.value=draft}
+  if(fid&&fv!=null){var f=document.getElementById(fid);if(f){f.value=fv;f.focus();try{f.setSelectionRange(sel,sel)}catch(e){}}}}
 function rcKick(){
-  var l=document.querySelector('nav a[data-v="recruitment"]');if(l)l.hidden=!isMgr();
+  var l=document.querySelector('nav a[data-v="recruitment"]');if(l)l.hidden=!isRec();
   if(!$b("#rc"))return;
-  if(!(sess&&ST.me&&ST.me.active&&isMgr())){rcRender();return}
+  if(!(sess&&ST.me&&ST.me.active&&isRec())){rcRender();return}
   if(!RC.loaded&&!RC.busy){RC.busy=true;rcRender();rcLoad().catch(rcFail).then(function(){RC.busy=false;rcRender()})}else rcRender()}
 function rcDo(p,okMsg,after){
   if(RC.busy)return;RC.busy=true;RC.err="";
@@ -705,17 +795,30 @@ document.addEventListener("click",function(e){
   if(a==="open"){RC.open=RC.open===id?null:id;rcRender();if(RC.open&&!RC.events[id])rcEvents(id).catch(rcFail).then(rcRender)}
   else if(a==="filter"){RC.status=b.dataset.f;rcRender()}
   else if(a==="refresh"){RC.loaded=false;RC.events={};RC.err="";rcKick()}
+  else if(a==="range"){var n=+b.dataset.d;if(!n){RC.from="";RC.to=""}else{var t=new Date(),f=new Date();f.setDate(t.getDate()-(n-1));RC.from=rcDay(f);RC.to=rcDay(t)}rcRender()}
   else if(a==="toggle"){var open=b.dataset.open==="1";
     rcDo(rpc("staff_set_recruitment",{p_role:b.dataset.role,p_open:open}),RL[b.dataset.role]+" recruitment "+(open?"opened":"closed"),rcLoad)}
+  else if(a==="vedit"){RC.edit=RC.edit===b.dataset.role?null:b.dataset.role;rcRender()}
+  else if(a==="vcancel"){RC.edit=null;rcRender()}
+  else if(a==="vpub"){var pub=b.dataset.pub==="1";
+    rcDo(rpc("staff_save_vacancy",{p:rcVacSave(b.dataset.role,true,pub)}),RL[b.dataset.role]+" "+(pub?"is now shown on the Careers page":"is now hidden from the Careers page"),rcLoad)}
+  else if(a==="vsave"){var p;try{p=rcVacSave(b.dataset.role,false)}catch(er){RC.err=er.message;rcRender();return}
+    rcDo(rpc("staff_save_vacancy",{p:p}),"Vacancy saved",function(){RC.edit=null;return rcLoad()})}
+  else if(a==="assign"||a==="assign-me"){var rv=a==="assign-me"?(ST.me&&ST.me.user_id):(val("rc-rv-"+id)||null);
+    rcDo(rpc("staff_assign_reviewer",{p_id:id,p_reviewer:rv}),rv?"Reviewer assigned":"Reviewer removed",function(){return Promise.all([rcLoad(),rcEvents(id)])})}
   else if(a==="status"){var s=val("rc-st-"+id);
     rcDo(rpc("staff_set_application",{p_id:id,p_status:s,p_note:null}),"Status updated",function(){return Promise.all([rcLoad(),rcEvents(id)])})}
-  else if(a==="note"){var n=val("rc-nt-"+id);if(!n){RC.err="Write a note first.";rcRender();return}
-    rcDo(rpc("staff_add_application_note",{p_id:id,p_note:n}),"Note added",function(){var t=document.getElementById("rc-nt-"+id);if(t)t.value="";return rcEvents(id)})}
+  else if(a==="note"){var n2=val("rc-nt-"+id);if(!n2){RC.err="Write a note first.";rcRender();return}
+    rcDo(rpc("staff_add_application_note",{p_id:id,p_note:n2}),"Note added",function(){var t=document.getElementById("rc-nt-"+id);if(t)t.value="";return rcEvents(id)})}
   else if(a==="token"){if(!confirm("Issue a new access code? The applicant's current code will stop working."))return;
     rcDo(rpc("staff_reset_application_token",{p_id:id}),"New code issued",function(r){RC.token[id]=r.token;return rcEvents(id)})}
   else if(a==="copy"){var c=RC.token[id];(navigator.clipboard&&c?navigator.clipboard.writeText(c):Promise.reject()).then(function(){say("Copied")},function(){say("Select the code and copy it manually")})}
 });
-document.addEventListener("change",function(e){if(e.target.id==="rc-role"){RC.role=e.target.value;rcRender()}});
+document.addEventListener("change",function(e){var t=e.target.id;
+  if(t==="rc-role"){RC.role=e.target.value;rcRender()}
+  else if(t==="rc-rev"){RC.rev=e.target.value;rcRender()}
+  else if(t==="rc-from"||t==="rc-to"){if(t==="rc-from")RC.from=e.target.value;else RC.to=e.target.value;
+    if(RC.from&&RC.to&&RC.from>RC.to){var x=RC.from;RC.from=RC.to;RC.to=x}rcRender()}});
 document.addEventListener("input",function(e){if(e.target.id==="rc-q"){RC.q=e.target.value;var l=document.getElementById("rc-list");if(l)l.innerHTML=rcListHtml()}});
 /* ---------- staff calendar ---------- */
 var CL={pending:"Pending",alternative_proposed:"Time proposed",alternative_accepted:"New time accepted",approved:"Approved",in_progress:"In progress",completed:"Completed",declined:"Declined",cancelled:"Cancelled"};
