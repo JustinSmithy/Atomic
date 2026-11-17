@@ -40,9 +40,9 @@
             <span>My Requests</span>
             <svg class="dd-caret" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M2 4.2l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
-          <ul class="dd-menu" id="reqMenu">
-            <li><a href="#track" data-r="track"><b>Track Booking</b><small>Check a service request</small></a></li>
-            <li><a href="#application" data-r="application"><b>Track Application</b><small>Check a careers application</small></a></li>
+          <ul class="dd-menu" id="reqMenu" aria-label="My Requests">
+            <li><a href="#track" data-r="track"><span class="dd-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4M9 15l2 2 4-4"/></svg></span><span class="dd-txt"><b>Track Booking</b><small>Check the status of a service request</small></span></a></li>
+            <li><a href="#application" data-r="application"><span class="dd-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9z"/><circle cx="12" cy="13" r="2"/><path d="M8.5 18c.5-1.7 1.9-2.5 3.5-2.5s3 .8 3.5 2.5"/></svg></span><span class="dd-txt"><b>Track Application</b><small>Check the status of a careers application</small></span></a></li>
           </ul>
         </li>
         <li><a class="btn cta" href="#book" data-r="book">Book a Service</a></li>
@@ -181,11 +181,15 @@ function icon(k){ return el("div",{class:"ico",html:ICON[k]}); }
 /* ---------- pages ---------- */
 function head(t,p){ return el("div",{class:"head"},[el("h2",{text:t}), p?el("p",{text:p}):null]); }
 
-function serviceCard(key,title,desc,items){
-  return el("article",{class:"card svc"},[
+var CHEV='<svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function serviceCard(key,title,desc,items,learn){
+  return el("article",{class:"card svc",id:"svc-"+key,tabindex:"-1"},[
     icon(key), el("h3",{text:title}), el("p",{text:desc}),
     el("ul",null,items.map(function(i){return el("li",{text:i})})),
-    el("a",{class:"btn sm",href:"#book?service="+key,text:"Request "+title.toLowerCase()})
+    el("div",{class:"svc-act"},[
+      el("a",{class:"btn sm",href:"#book?service="+key,text:"Request "+title.toLowerCase()}),
+      learn?el("a",{class:"learn",href:"#services?service="+key,"aria-label":"Learn more about "+title.toLowerCase(),html:"<span>Learn more</span>"+CHEV}):null
+    ])
   ]);
 }
 var SERVICES=[
@@ -195,6 +199,50 @@ var SERVICES=[
   ["towing","Towing","Recovery of broken-down or stranded vehicles.",["Vehicle recovery","Transport to the garage","Arrange by booking request"]]
 ];
 
+/* live garage status: only real Supabase data is shown; anything unavailable is simply left out */
+function statusPanel(){
+  var box=el("section",{class:"status","aria-labelledby":"st-h",hidden:true});
+  if(!configured()) return box;
+  function slotText(r){
+    var tz=r.tz||undefined,keys=Object.keys(r.days||{}).sort(),now=Date.now(),first=null;
+    for(var i=0;i<keys.length&&!first;i++){
+      (r.days[keys[i]]||[]).slice().sort().forEach(function(t){ if(!first&&new Date(t).getTime()>now) first=t; });
+    }
+    if(!first) return null;
+    try{ return {v:new Date(first).toLocaleString([],{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit",timeZone:tz}),tz:r.tz}; }
+    catch(e){ return {v:new Date(first).toLocaleString([],{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}),tz:null}; }
+  }
+  function cell(label,value,sub,href,linkText){
+    return el("div",{class:"st-cell"},[
+      el("p",{class:"st-l",text:label}), el("p",{class:"st-v",text:value}),
+      sub?el("p",{class:"st-s",text:sub}):null,
+      href?el("a",{class:"st-a",href:href,text:linkText}):null]);
+  }
+  Promise.all([
+    loadSettings().catch(function(){return null}),
+    rpc("available_slots",{p_from:null,p_to:null}).catch(function(){return null}),
+    rpc("list_recruitment",{}).catch(function(){return null})
+  ]).then(function(res){
+    var st=res[0],sl=res[1],rc=res[2],cells=[];
+    if(st&&st.hours_text) cells.push(cell("Opening hours",st.hours_text));
+    if(sl&&sl.ok&&sl.enabled){
+      var n=slotText(sl);
+      cells.push(n?cell("Next free appointment",n.v,n.tz?"Times shown in "+n.tz:null,"#book","Book a service")
+                  :cell("Next free appointment","No free slots right now","Check back soon, or send a request.","#book","Book a service"));
+    }
+    if(rc&&typeof rc==="object"){
+      var open=ROLES.filter(function(r){return rc[r.key]!==false}).length;
+      cells.push(cell("Careers",open?open+(open>1?" positions open":" position open"):"Recruitment closed",null,"#careers",open?"View roles":"Learn about the crew"));
+    }
+    if(!cells.length) return;
+    box.appendChild(el("div",{class:"status-h"},[
+      el("h3",{id:"st-h"},[el("span",{class:"live","aria-hidden":"true"}),"Garage status"]),
+      el("small",{text:"Checked "+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})})]));
+    box.appendChild(el("div",{class:"status-grid"},cells));
+    box.hidden=false;
+  });
+  return box;
+}
 function pageHome(){
   var f=document.createDocumentFragment();
   f.appendChild(el("section",{class:"hero"},[
@@ -203,9 +251,10 @@ function pageHome(){
     el("p",{text:"Your vehicle in expert hands. Send us a private service request and we'll come back to you with a decision."}),
     el("div",{class:"btns"},[el("a",{class:"btn",href:"#book",text:"Book a service"}),el("a",{class:"btn alt",href:"#track",text:"Track my booking"})])
   ]));
+  f.appendChild(statusPanel());
   f.appendChild(el("div",{class:"hazard","aria-hidden":"true"}));
   f.appendChild(head("What we do"));
-  f.appendChild(el("div",{class:"grid g4"},SERVICES.map(function(s){return serviceCard.apply(null,s)})));
+  f.appendChild(el("div",{class:"grid g4"},SERVICES.map(function(s){return serviceCard.apply(null,s.concat([true]))})));
   f.appendChild(el("div",{class:"hazard","aria-hidden":"true"}));
   f.appendChild(head("How booking works"));
   var steps=[["1","Send a request","Tell us about you, your vehicle and the work. You receive a booking reference and a private access code."],
@@ -963,6 +1012,10 @@ function route(){
   var grp=$("#reqBtn"); if(grp){ if((grp.dataset.group||"").split(" ").indexOf(navR)>-1) grp.setAttribute("aria-current","page"); else grp.removeAttribute("aria-current"); }
   closeNav();
   window.scrollTo(0,0);
+  if(r==="services"&&q.service){
+    var t=document.getElementById("svc-"+q.service);
+    if(t){ t.scrollIntoView({block:"start"}); t.classList.add("flash"); try{t.focus({preventScroll:true})}catch(e){} }
+  }
 }
 window.addEventListener("hashchange",route);
 function setDd(open){
@@ -983,6 +1036,17 @@ document.addEventListener("keydown",function(e){
   if(was){ setDd(false); $("#reqBtn").focus(); }
   else if(mo){ closeNav(); $("#menuBtn").focus(); }
 });
+$("#nav").addEventListener("click",function(e){ if(e.target.closest("a")) closeNav(); });   /* also covers links to the page you are already on */
+$("#reqBtn").addEventListener("keydown",function(e){
+  if(e.key!=="ArrowDown") return; e.preventDefault(); setDd(true);
+  var a=$("#reqMenu a"); if(a) a.focus();
+});
+$("#reqMenu").addEventListener("keydown",function(e){
+  if(e.key!=="ArrowDown"&&e.key!=="ArrowUp") return; e.preventDefault();
+  var links=[].slice.call(this.querySelectorAll("a")),i=links.indexOf(document.activeElement);
+  links[(i+(e.key==="ArrowDown"?1:-1)+links.length)%links.length].focus();
+});
+if(window.matchMedia){ var mq=window.matchMedia("(min-width:1240px)"); if(mq.addEventListener) mq.addEventListener("change",closeNav); }
 $("#reqDd").addEventListener("focusout",function(e){ var dd=this; if(e.relatedTarget&&!dd.contains(e.relatedTarget)) setDd(false); });
 /* a leave from the dropdown by hover is not needed: it is click / keyboard driven so touch and keyboard behave the same */
 if(CFG.STAFF_PORTAL_URL) document.querySelectorAll("[data-staff]").forEach(function(a){a.setAttribute("href",CFG.STAFF_PORTAL_URL)});
