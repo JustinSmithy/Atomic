@@ -40,7 +40,7 @@
             <span>My Requests</span>
             <svg class="dd-caret" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M2 4.2l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
-          <ul class="dd-menu" id="reqMenu" aria-label="My Requests">
+          <ul class="dd-menu" id="reqMenu" aria-label="My Requests" hidden>
             <li><a href="#track" data-r="track"><span class="dd-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4M9 15l2 2 4-4"/></svg></span><span class="dd-txt"><b>Track Booking</b><small>Check the status of a service request</small></span></a></li>
             <li><a href="#application" data-r="application"><span class="dd-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9z"/><circle cx="12" cy="13" r="2"/><path d="M8.5 18c.5-1.7 1.9-2.5 3.5-2.5s3 .8 3.5 2.5"/></svg></span><span class="dd-txt"><b>Track Application</b><small>Check the status of a careers application</small></span></a></li>
           </ul>
@@ -1019,8 +1019,8 @@ function route(){
 }
 window.addEventListener("hashchange",route);
 function setDd(open){
-  var dd=$("#reqDd"),b=$("#reqBtn"); if(!dd||!b) return;
-  dd.classList.toggle("open",open); b.setAttribute("aria-expanded",open?"true":"false");
+  var dd=$("#reqDd"),b=$("#reqBtn"),m=$("#reqMenu"); if(!dd||!b||!m) return;
+  dd.classList.toggle("open",open); b.setAttribute("aria-expanded",open?"true":"false"); m.hidden=!open;   /* single source of truth */
 }
 function closeNav(){
   setDd(false); $("#nav").classList.remove("open"); $("#menuBtn").setAttribute("aria-expanded","false");
@@ -1028,8 +1028,13 @@ function closeNav(){
 $("#menuBtn").addEventListener("click",function(){
   var o=$("#nav").classList.toggle("open"); this.setAttribute("aria-expanded",o?"true":"false"); if(!o) setDd(false);
 });
-$("#reqBtn").addEventListener("click",function(e){ e.stopPropagation(); setDd(!$("#reqDd").classList.contains("open")); });
-document.addEventListener("click",function(e){ var dd=$("#reqDd"); if(dd&&!dd.contains(e.target)) setDd(false); });
+$("#reqBtn").addEventListener("click",function(){ setDd(!$("#reqDd").classList.contains("open")); });
+/* capture phase: page components (e.g. the Careers role cards) stop click bubbling, which used to leave the menu stuck open */
+function outside(e){ var dd=$("#reqDd"); if(dd&&dd.classList.contains("open")&&!dd.contains(e.target)) setDd(false); }
+document.addEventListener("click",outside,true);
+document.addEventListener("pointerdown",outside,true);
+window.addEventListener("blur",function(){ setDd(false); });
+window.addEventListener("hashchange",function(){ setDd(false); });
 document.addEventListener("keydown",function(e){
   if(e.key!=="Escape") return;
   var dd=$("#reqDd"),was=dd&&dd.classList.contains("open"),mo=$("#nav").classList.contains("open");
