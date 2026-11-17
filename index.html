@@ -23,30 +23,16 @@
       </svg>
       <b>Atomic<br>Garage</b>
     </a>
-    <button class="menu" id="menuBtn" type="button" aria-expanded="false" aria-controls="nav">
-      <span class="menu-ico" aria-hidden="true"><i></i><i></i><i></i></span><span>Menu</span>
-    </button>
+    <button class="menu" id="menuBtn" aria-expanded="false" aria-controls="nav">Menu</button>
     <nav id="nav" aria-label="Main">
-      <ul class="nav-main">
-        <li><a class="nl" href="#home" data-r="home">Home</a></li>
-        <li><a class="nl" href="#services" data-r="services">Services</a></li>
-        <li><a class="nl" href="#gallery" data-r="gallery">Gallery</a></li>
-        <li><a class="nl" href="#careers" data-r="careers">Careers</a></li>
-        <li><a class="nl" href="#contact" data-r="contact">Contact</a></li>
-      </ul>
-      <ul class="nav-side">
-        <li class="dd" id="reqDd">
-          <button class="nl dd-btn" id="reqBtn" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="reqMenu" data-group="track application">
-            <span>My Requests</span>
-            <svg class="dd-caret" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M2 4.2l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-          <ul class="dd-menu" id="reqMenu" aria-label="My Requests" hidden>
-            <li><a href="#track" data-r="track"><span class="dd-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4M9 15l2 2 4-4"/></svg></span><span class="dd-txt"><b>Track Booking</b><small>Check the status of a service request</small></span></a></li>
-            <li><a href="#application" data-r="application"><span class="dd-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9z"/><circle cx="12" cy="13" r="2"/><path d="M8.5 18c.5-1.7 1.9-2.5 3.5-2.5s3 .8 3.5 2.5"/></svg></span><span class="dd-txt"><b>Track Application</b><small>Check the status of a careers application</small></span></a></li>
-          </ul>
-        </li>
-        <li><a class="btn cta" href="#book" data-r="book">Book a Service</a></li>
-        <li class="nav-staff"><a class="nl staff" id="staffLink" data-staff href="staff/">Staff Login</a></li>
+      <ul>
+        <li><a href="#home" data-r="home">Home</a></li>
+        <li><a href="#services" data-r="services">Our Services</a></li>
+        <li><a href="#parts" data-r="parts">Parts</a><a href="#gallery" data-r="gallery">Gallery</a></li>
+        <li><a href="#book" data-r="book">Book a Service</a></li>
+        <li><a href="#contact" data-r="contact">Contact</a></li>
+        <li><a href="#careers" data-r="careers">Careers</a><a href="#track" data-r="track">Track Booking</a></li>
+        <li><a class="staff" id="staffLink" href="staff/">Staff Login</a></li>
       </ul>
     </nav>
   </div>
@@ -56,21 +42,8 @@
 
 <footer>
   <div class="in">
-    <div class="f-brand">
-      <b class="disp">Atomic Garage</b>
-      <span>GTA World roleplay business</span>
-    </div>
-    <nav class="f-links" aria-label="Footer">
-      <a href="#services">Services</a>
-      <a href="#parts">Parts</a>
-      <a href="#gallery">Gallery</a>
-      <a href="#careers">Careers</a>
-      <a href="#contact">Contact</a>
-      <a href="#book">Book a service</a>
-      <a href="#track">Track booking</a>
-      <a href="#application">Track application</a>
-      <a href="staff/" data-staff>Staff login</a>
-    </nav>
+    <span>© Atomic Garage · GTA World roleplay business</span>
+    <span><a href="#book">Book a service</a> · <a href="#track">Track a booking</a> · <a href="#careers">Careers</a> · <a href="#application">Application status</a> · <a href="staff/">Staff login</a></span>
   </div>
 </footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -181,15 +154,11 @@ function icon(k){ return el("div",{class:"ico",html:ICON[k]}); }
 /* ---------- pages ---------- */
 function head(t,p){ return el("div",{class:"head"},[el("h2",{text:t}), p?el("p",{text:p}):null]); }
 
-var CHEV='<svg viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-function serviceCard(key,title,desc,items,learn){
-  return el("article",{class:"card svc",id:"svc-"+key,tabindex:"-1"},[
+function serviceCard(key,title,desc,items){
+  return el("article",{class:"card svc"},[
     icon(key), el("h3",{text:title}), el("p",{text:desc}),
     el("ul",null,items.map(function(i){return el("li",{text:i})})),
-    el("div",{class:"svc-act"},[
-      el("a",{class:"btn sm",href:"#book?service="+key,text:"Request "+title.toLowerCase()}),
-      learn?el("a",{class:"learn",href:"#services?service="+key,"aria-label":"Learn more about "+title.toLowerCase(),html:"<span>Learn more</span>"+CHEV}):null
-    ])
+    el("a",{class:"btn sm",href:"#book?service="+key,text:"Request "+title.toLowerCase()})
   ]);
 }
 var SERVICES=[
@@ -199,50 +168,6 @@ var SERVICES=[
   ["towing","Towing","Recovery of broken-down or stranded vehicles.",["Vehicle recovery","Transport to the garage","Arrange by booking request"]]
 ];
 
-/* live garage status: only real Supabase data is shown; anything unavailable is simply left out */
-function statusPanel(){
-  var box=el("section",{class:"status","aria-labelledby":"st-h",hidden:true});
-  if(!configured()) return box;
-  function slotText(r){
-    var tz=r.tz||undefined,keys=Object.keys(r.days||{}).sort(),now=Date.now(),first=null;
-    for(var i=0;i<keys.length&&!first;i++){
-      (r.days[keys[i]]||[]).slice().sort().forEach(function(t){ if(!first&&new Date(t).getTime()>now) first=t; });
-    }
-    if(!first) return null;
-    try{ return {v:new Date(first).toLocaleString([],{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit",timeZone:tz}),tz:r.tz}; }
-    catch(e){ return {v:new Date(first).toLocaleString([],{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}),tz:null}; }
-  }
-  function cell(label,value,sub,href,linkText){
-    return el("div",{class:"st-cell"},[
-      el("p",{class:"st-l",text:label}), el("p",{class:"st-v",text:value}),
-      sub?el("p",{class:"st-s",text:sub}):null,
-      href?el("a",{class:"st-a",href:href,text:linkText}):null]);
-  }
-  Promise.all([
-    loadSettings().catch(function(){return null}),
-    rpc("available_slots",{p_from:null,p_to:null}).catch(function(){return null}),
-    rpc("list_recruitment",{}).catch(function(){return null})
-  ]).then(function(res){
-    var st=res[0],sl=res[1],rc=res[2],cells=[];
-    if(st&&st.hours_text) cells.push(cell("Opening hours",st.hours_text));
-    if(sl&&sl.ok&&sl.enabled){
-      var n=slotText(sl);
-      cells.push(n?cell("Next free appointment",n.v,n.tz?"Times shown in "+n.tz:null,"#book","Book a service")
-                  :cell("Next free appointment","No free slots right now","Check back soon, or send a request.","#book","Book a service"));
-    }
-    if(rc&&typeof rc==="object"){
-      var open=ROLES.filter(function(r){return rc[r.key]!==false}).length;
-      cells.push(cell("Careers",open?open+(open>1?" positions open":" position open"):"Recruitment closed",null,"#careers",open?"View roles":"Learn about the crew"));
-    }
-    if(!cells.length) return;
-    box.appendChild(el("div",{class:"status-h"},[
-      el("h3",{id:"st-h"},[el("span",{class:"live","aria-hidden":"true"}),"Garage status"]),
-      el("small",{text:"Checked "+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})})]));
-    box.appendChild(el("div",{class:"status-grid"},cells));
-    box.hidden=false;
-  });
-  return box;
-}
 function pageHome(){
   var f=document.createDocumentFragment();
   f.appendChild(el("section",{class:"hero"},[
@@ -251,10 +176,9 @@ function pageHome(){
     el("p",{text:"Your vehicle in expert hands. Send us a private service request and we'll come back to you with a decision."}),
     el("div",{class:"btns"},[el("a",{class:"btn",href:"#book",text:"Book a service"}),el("a",{class:"btn alt",href:"#track",text:"Track my booking"})])
   ]));
-  f.appendChild(statusPanel());
   f.appendChild(el("div",{class:"hazard","aria-hidden":"true"}));
   f.appendChild(head("What we do"));
-  f.appendChild(el("div",{class:"grid g4"},SERVICES.map(function(s){return serviceCard.apply(null,s.concat([true]))})));
+  f.appendChild(el("div",{class:"grid g4"},SERVICES.map(function(s){return serviceCard.apply(null,s)})));
   f.appendChild(el("div",{class:"hazard","aria-hidden":"true"}));
   f.appendChild(head("How booking works"));
   var steps=[["1","Send a request","Tell us about you, your vehicle and the work. You receive a booking reference and a private access code."],
@@ -269,9 +193,6 @@ function pageServices(){
   var f=document.createDocumentFragment();
   f.appendChild(head("Our services","Four ways we can help. Pricing and availability are agreed with management when your request is reviewed."));
   f.appendChild(el("div",{class:"grid g2"},SERVICES.map(function(s){return serviceCard.apply(null,s)})));
-  f.appendChild(el("div",{class:"card cta-strip sp2"},[
-    el("div",null,[el("h3",{text:"Need parts?"}),el("p",{class:"muted",text:"Order parts online and collect them from the garage. We confirm using the contact details you give."})]),
-    el("a",{class:"btn",href:"#parts",text:"Browse parts"})]));
   return f;
 }
 function pageGallery(){
@@ -670,7 +591,7 @@ function pageCareers(q){
   q=q||{};
   var f=document.createDocumentFragment(),role=null,open={},known=false,busy=false,cur=0;
   var vac=el("span",{class:"pill",text:"Checking vacancies…"});
-  var pos=el("section",{class:"c-anchor c-pos","aria-labelledby":"c-pos-h"}),card=el("div",{class:"card c-wiz"});
+  var pos=el("section",{class:"c-anchor","aria-labelledby":"c-pos-h"}),card=el("div",{class:"card c-wiz"});
 
   /* ----- cinematic hero ----- */
   f.appendChild(el("section",{class:"c-hero","aria-labelledby":"c-h1"},[
@@ -686,7 +607,7 @@ function pageCareers(q){
     ])]));
 
   /* ----- why join us ----- */
-  f.appendChild(el("section",{class:"c-anchor c-sec"},[head("Why join us","More than a job: a crew, a craft and a story to be part of.")]));
+  f.appendChild(el("section",{class:"c-anchor sp2"},[head("Why join us","More than a job: a crew, a craft and a story to be part of.")]));
   f.appendChild(el("div",{class:"grid g4 c-why"},WHY.map(function(w,i){
     return el("article",{class:"card c-why-c",style:"--d:"+(i*0.07)+"s"},[cico(w[0]),el("h3",{text:w[1]}),el("p",{text:w[2]})]);
   })));
@@ -843,9 +764,7 @@ function pageCareers(q){
     show(cur+1);
   };
   form.appendChild(prog);P.forEach(function(x){form.appendChild(x)});form.appendChild(msg);
-  form.appendChild(el("div",{class:"wz-nav"},[back,next,btn]));
-  card.appendChild(el("div",{class:"c-apply-h"},[el("h3",{text:"Application form"}),el("p",{text:"Three short steps: choose a role, tell us about you, then review and submit."})]));
-  card.appendChild(form);pos.appendChild(card);show(0,true);
+  form.appendChild(el("div",{class:"wz-nav"},[back,next,btn]));card.appendChild(form);pos.appendChild(card);show(0,true);
 
   var codeMap={invalid_name:["c-name",0],invalid_age:["c-age",1],invalid_contact:["c-contact",1],invalid_availability:["c-av",1],invalid_discord:["c-discord",1],invalid_timezone:["c-tz",1],
     invalid_answer_1:["c-q0",1],invalid_answer_2:["c-q1",1],invalid_answer_3:["c-q2",1]};
@@ -895,12 +814,41 @@ function appReceipt(card,r){
   if(card.scrollIntoView) card.scrollIntoView({behavior:"smooth",block:"start"});
 }
 
-/* ---------- application tracking ---------- */
+/* ---------- application tracking: status, interview invitations, outcome ---------- */
+var IV_ST={invited:"Invitation sent",confirmed:"Attendance confirmed",reschedule_requested:"Change requested",completed:"Interview completed",cancelled:"Interview cancelled",no_show:"Not attended"};
+var IV_TXT={
+  invited:"Management has invited you to an interview. Please confirm that you can attend, or ask for a different time.",
+  confirmed:"You are confirmed for this interview. Management has been told you will attend.",
+  reschedule_requested:"You asked for a different time. Management has been notified and will reply here. Until then, the original time is held for you.",
+  completed:"Your interview is complete. Management will review your application and any decision will appear here.",
+  cancelled:"Management cancelled this interview. If a new one is arranged, it will appear here.",
+  no_show:"Management recorded that this interview was not attended. If that is a mistake, please contact management."};
+var IV_EV={invited:"Interview invitation sent",rescheduled:"Management updated your interview",accepted:"You confirmed your attendance",
+  change_requested:"You asked for a different time",completed:"Interview completed",cancelled:"Interview cancelled",no_show:"Interview marked as not attended"};
+var IV_EV_TONE={accepted:"ok",completed:"ok",change_requested:"warn",cancelled:"bad",no_show:"bad"};
+var apPoll=null;
+function stopApPoll(){ if(apPoll){ clearInterval(apPoll); apPoll=null; } }
+function utcText(d){
+  var x=new Date(d); if(isNaN(x)) return "—";
+  return x.toLocaleString("en-GB",{timeZone:"UTC",weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit",hour12:false})+" UTC";
+}
+function timeOnly(d){ return new Date(d).toLocaleTimeString(undefined,{hour:"2-digit",minute:"2-digit"}); }
+function relText(d){
+  var ms=new Date(d)-Date.now(), a=Math.abs(ms), m=Math.round(a/60000), h=Math.round(a/3600000), dd=Math.round(a/86400000), s;
+  if(m<60) s=m+" minute"+(m===1?"":"s"); else if(h<48) s=h+" hour"+(h===1?"":"s"); else s=dd+" days";
+  return ms>=0?"In "+s:s+" ago";
+}
+function toLocalInput(d){
+  function p(n){return(n<10?"0":"")+n}
+  return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+"T"+p(d.getHours())+":"+p(d.getMinutes());
+}
+
 function pageAppTrack(q){
+  stopApPoll();
   var f=document.createDocumentFragment();
-  f.appendChild(head("Application status","Enter the reference and private access code you were given when you applied."));
+  f.appendChild(head("Track your application","Enter the reference and private access code you were given when you applied. You can follow your progress, confirm an interview and ask for another time here."));
   if(!configured()){ f.appendChild(el("p",{class:"notice bad",text:"Tracking isn't available yet."})); return f; }
-  var out=el("div",{class:"sp",role:"region","aria-live":"polite"});
+  var out=el("div",{class:"sp",role:"region","aria-label":"Your application","aria-live":"polite"});
   var ref=el("input",{id:"a-ref",maxlength:"20",autocomplete:"off",placeholder:"AP-XXXXXX",value:q.ref||"",style:"text-transform:uppercase"});
   var code=el("input",{id:"a-code",maxlength:"80",autocomplete:"off",type:"password",value:q.code||""});
   var form=el("form",{novalidate:true},[
@@ -919,13 +867,129 @@ function pageAppTrack(q){
     });
     f.appendChild(m);
   }
+
+  var cur=null, formOpen=false, lastSig="";
+  function sigOf(b){ return JSON.stringify([b.status,b.updated_at,b.interview,(b.timeline||[]).length,(b.interview_timeline||[]).length]); }
+
+  function ivCall(action,payload,btns,note,okMsg){
+    btns.forEach(function(x){x.disabled=true});
+    note.className="";note.textContent="";
+    rpc("applicant_interview_action",{p_ref:cur.ref,p_token:cur.tok,p_action:action,p:payload||{}}).then(function(r){
+      if(r&&r.ok){ formOpen=false; toast(okMsg); load(true); }
+      else{ note.className="notice bad"; note.textContent=(r&&r.message)||"That didn't work. Please try again."; btns.forEach(function(x){x.disabled=false}); }
+    }).catch(function(){ note.className="notice bad"; note.textContent="Couldn't reach the recruitment service. Please try again."; btns.forEach(function(x){x.disabled=false}); });
+  }
+
+  function interviewCard(b,decided){
+    var iv=b.interview, st=iv.status, d=new Date(iv.scheduled_at), end=new Date(iv.ends_at);
+    var c=el("section",{class:"card iv","aria-label":"Your interview"});
+    c.appendChild(el("div",{class:"iv-top"},[el("h3",{text:"Your interview"}),el("span",{class:"badge i-"+st,text:IV_ST[st]||st})]));
+    var cal=el("div",{class:"iv-cal","aria-hidden":"true"},[
+      el("b",{text:d.toLocaleString(undefined,{month:"short"})}),el("span",{text:String(d.getDate())}),el("em",{text:d.toLocaleString(undefined,{weekday:"short"})})]);
+    var open=(st==="invited"||st==="confirmed"||st==="reschedule_requested");
+    var when=el("div",{class:"iv-when"},[
+      el("strong",{text:d.toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long",year:"numeric"})}),
+      el("span",{class:"iv-time",text:timeOnly(d)+" – "+timeOnly(end)+" (your time)"}),
+      el("small",{text:utcText(d)+" · "+iv.duration_minutes+" minutes"}),
+      open?el("span",{class:"iv-rel",text:relText(d)}):null]);
+    c.appendChild(el("div",{class:"iv-main"},[cal,when]));
+    var dl=el("dl");
+    function add(k,v){ if(v==null||v==="") return; dl.appendChild(el("dt",{text:k}));dl.appendChild(el("dd",{text:v})); }
+    add("Interviewer",iv.interviewer_name);add("Where",iv.location);
+    c.appendChild(dl);
+
+    var txt=IV_TXT[st]||"";
+    if(st==="invited"&&!iv.can_accept&&!decided) txt="This interview time has passed. Please contact management to arrange a new one.";
+    if(decided&&open) txt="A final decision has been made on your application, so this interview is now closed.";
+    c.appendChild(el("p",{class:"notice sp",text:txt}));
+
+    if(st==="reschedule_requested"&&(iv.requested_alt_at||iv.applicant_message)){
+      var rq=el("div",{class:"iv-req"},[el("strong",{text:"Your request"})]);
+      if(iv.requested_alt_at) rq.appendChild(el("p",{text:"Preferred time: "+fmt(iv.requested_alt_at)+" ("+utcText(iv.requested_alt_at)+")"}));
+      if(iv.applicant_message) rq.appendChild(el("p",{class:"muted",text:"“"+iv.applicant_message+"”"}));
+      c.appendChild(rq);
+    }
+    if(decided) return c;
+
+    var note=el("div",{role:"alert"}), act=el("div",{class:"btns sp"}), fwrap=el("div");
+    var btns=[];
+    if(iv.can_accept){
+      var ok=el("button",{class:"btn",type:"button",text:"Confirm I will attend"});
+      ok.addEventListener("click",function(){ ivCall("accept",{},btns,note,"Attendance confirmed"); });
+      btns.push(ok);act.appendChild(ok);
+    }
+    if(iv.can_request_change){
+      var rb=el("button",{class:"btn alt",type:"button",text:"Request a different time","aria-expanded":"false"});
+      btns.push(rb);act.appendChild(rb);
+      rb.addEventListener("click",function(){
+        if(formOpen){ formOpen=false; fwrap.textContent=""; rb.setAttribute("aria-expanded","false"); return; }
+        formOpen=true; rb.setAttribute("aria-expanded","true"); fwrap.appendChild(changeForm());
+        var a=fwrap.querySelector("input"); if(a) a.focus();
+      });
+      function changeForm(){
+        var minD=new Date(Date.now()+3600000);
+        var alt=el("input",{id:"iv-alt",type:"datetime-local",min:toLocalInput(minD)});
+        var hint=el("small",{class:"muted",text:"Enter the time in your own time zone."});
+        var msg=el("textarea",{id:"iv-msg",maxlength:"500",rows:"3",placeholder:"For example, I am working that evening but free after 20:00."});
+        var cnt=el("small",{class:"muted",text:"0 / 500"});
+        var err=el("div",{role:"alert"});
+        var send=el("button",{class:"btn",type:"submit",text:"Send request"}),cancel=el("button",{class:"btn alt",type:"button",text:"Cancel"});
+        alt.addEventListener("input",function(){
+          var x=alt.value?new Date(alt.value):null;
+          hint.textContent=(x&&!isNaN(x))?"That is "+utcText(x)+".":"Enter the time in your own time zone.";
+        });
+        msg.addEventListener("input",function(){cnt.textContent=msg.value.length+" / 500"});
+        cancel.addEventListener("click",function(){formOpen=false;fwrap.textContent="";rb.setAttribute("aria-expanded","false");});
+        var fm=el("form",{class:"iv-form",novalidate:true},[
+          el("p",{class:"muted",text:"Tell management when suits you better, add an explanation, or both. Management will reply here."}),
+          el("label",{for:"iv-alt",text:"Preferred date and time (optional)"}),alt,hint,
+          el("label",{for:"iv-msg",text:"Explanation (optional)"}),msg,cnt,err,
+          el("div",{class:"btns sp"},[send,cancel])]);
+        fm.addEventListener("submit",function(e){
+          e.preventDefault(); err.className="";err.textContent="";
+          var iso=null, text=msg.value.trim();
+          if(alt.value){
+            var x=new Date(alt.value);
+            if(isNaN(x)){ err.className="notice bad"; err.textContent="Enter a valid date and time."; return; }
+            if(x<=new Date()){ err.className="notice bad"; err.textContent="The preferred time must be in the future."; return; }
+            iso=x.toISOString();
+          }
+          if(!iso&&!text){ err.className="notice bad"; err.textContent="Suggest another date and time, or tell us what suits you."; return; }
+          ivCall("request_change",{alt_at:iso,message:text},[send,cancel],err,"Request sent to management");
+        });
+        return fm;
+      }
+    }
+    if(btns.length) c.appendChild(act);
+    c.appendChild(fwrap);c.appendChild(note);
+    return c;
+  }
+
+  function timelineItems(b){
+    var items=[], ivt=b.interview_timeline||[];
+    (b.timeline||[]).forEach(function(e,i){
+      var label,tone="";
+      if(e.action==="submitted") label="Application submitted";
+      else if(e.to_status==="accepted"){ label="Final decision: Accepted"; tone="ok"; }
+      else if(e.to_status==="rejected"){ label="Final decision: Rejected"; tone="bad"; }
+      else{
+        if(e.to_status==="interview"&&ivt.some(function(v){return v.action==="invited"&&Math.abs(new Date(v.at)-new Date(e.at))<60000})) return;
+        label="Status changed to "+(APP_ST[e.to_status]||e.to_status);
+      }
+      items.push({at:e.at,o:0,i:i,label:label,tone:tone});
+    });
+    ivt.forEach(function(e,i){ items.push({at:e.at,o:1,i:i,label:IV_EV[e.action]||e.action,tone:IV_EV_TONE[e.action]||""}); });
+    items.sort(function(a,z){ return (new Date(a.at)-new Date(z.at))||(a.o-z.o)||(a.i-z.i); });
+    return items;
+  }
+
   function render(b){
     out.textContent="";
     var idx={new:0,reviewing:1,interview:2,accepted:3,rejected:3}[b.status]||0,dec=b.status==="accepted"||b.status==="rejected";
     var c=el("div",{class:"card"});
     c.appendChild(el("div",{class:"ref",text:b.reference}));
     c.appendChild(el("p",null,[el("span",{class:"badge s-"+b.status,text:APP_ST[b.status]||b.status})]));
-    c.appendChild(el("p",{class:"notice"+(b.status==="accepted"?" good":b.status==="rejected"?" bad":""),text:APP_TXT[b.status]||""}));
+    if(!dec) c.appendChild(el("p",{class:"notice",text:(b.status==="interview"&&b.interview&&/^(invited|confirmed|reschedule_requested)$/.test(b.interview.status))?"You have an interview. See the details below.":(APP_TXT[b.status]||"")}));
     var steps=["Pending","Under Review","Interview",dec?APP_ST[b.status]:"Decision"];
     c.appendChild(el("ol",{class:"c-flow","aria-label":"Application progress"},steps.map(function(t,i){
       return el("li",{class:i<idx?"done":i===idx?"cur"+(dec?(b.status==="accepted"?" good":" bad"):""):"","aria-current":i===idx?"step":null},[el("span",{text:t})]);
@@ -934,24 +998,52 @@ function pageAppTrack(q){
     function add(k,v){ if(v==null||v==="") return; dl.appendChild(el("dt",{text:k}));dl.appendChild(el("dd",{text:v})); }
     add("Character",b.character_name);add("Role",ROLE_LABEL[b.role]||b.role);add("Submitted",fmt(b.created_at));add("Last update",fmt(b.updated_at));
     c.appendChild(dl);out.appendChild(c);
-    if(b.timeline&&b.timeline.length){
-      var tl=el("ol",{class:"tl"});
-      b.timeline.forEach(function(e){
-        tl.appendChild(el("li",null,[el("strong",{text:e.action==="submitted"?"Application submitted":"Status changed to "+(APP_ST[e.to_status]||e.to_status)}),el("small",{text:fmt(e.at)})]));
-      });
-      out.appendChild(el("div",{class:"card sp"},[el("h3",{text:"History",style:"font-size:26px;margin-bottom:14px"}),tl]));
+
+    if(dec){
+      out.appendChild(el("section",{class:"card sp outcome "+(b.status==="accepted"?"good":"bad"),"aria-label":"Final outcome"},[
+        el("h3",{text:b.status==="accepted"?"Application accepted":"Application not successful"}),
+        el("p",{text:APP_TXT[b.status]})]));
     }
-    out.appendChild(el("p",{class:"sp"},[el("a",{class:"btn sm alt",href:"#careers",text:"Back to careers"})]));
+    if(b.interview){ var ic=interviewCard(b,dec); ic.classList.add("sp"); out.appendChild(ic); }
+    else if(b.status==="interview"){
+      out.appendChild(el("p",{class:"notice sp",text:"Management wants to speak with you. Your interview time will appear here as soon as it is scheduled."}));
+    }
+
+    var items=timelineItems(b);
+    if(items.length){
+      var tl=el("ol",{class:"tl"});
+      items.forEach(function(e){ tl.appendChild(el("li",{class:e.tone},[el("strong",{text:e.label}),el("small",{text:fmt(e.at)})])); });
+      out.appendChild(el("div",{class:"card sp"},[el("h3",{text:"Progress",style:"font-size:26px;margin-bottom:14px"}),tl]));
+    }
+    out.appendChild(el("p",{class:"sp btns"},[
+      el("button",{class:"btn sm alt",type:"button",text:"Refresh",onclick:function(){load(true)}}),
+      el("a",{class:"btn sm alt",href:"#careers",text:"Back to careers"})]));
   }
-  function load(){
+
+  function remember(b,t){
+    LS.set("ag_app_"+b.reference,t);
+    var mm=[];try{mm=JSON.parse(LS.get("ag_apps")||"[]")}catch(e){} if(mm.indexOf(b.reference)<0){mm.push(b.reference);LS.set("ag_apps",JSON.stringify(mm))}
+  }
+  function fail(msg){ out.textContent="";out.appendChild(el("p",{class:"notice bad",text:msg})); }
+  function load(silent){
     var r=ref.value.trim(),t=code.value.trim();
-    if(!r||!t){out.textContent="";out.appendChild(el("p",{class:"notice bad",text:"Enter both your reference and access code."}));return}
-    out.textContent="";out.appendChild(el("div",{class:"skel"}));
+    if(!r||!t){fail("Enter both your reference and access code.");return}
+    if(!silent){ out.textContent="";out.appendChild(el("div",{class:"skel"})); }
     rpc("track_application",{p_ref:r,p_token:t}).then(function(b){
-      if(b&&b.ok){ render(b); LS.set("ag_app_"+b.reference,t);
-        var mm=[];try{mm=JSON.parse(LS.get("ag_apps")||"[]")}catch(e){} if(mm.indexOf(b.reference)<0){mm.push(b.reference);LS.set("ag_apps",JSON.stringify(mm))} }
-      else{ out.textContent="";out.appendChild(el("p",{class:"notice bad",text:(b&&b.error==="rate_limited"&&b.message)?b.message:"No application matches that reference and access code. Check both and try again."})); }
-    }).catch(function(){out.textContent="";out.appendChild(el("p",{class:"notice bad",text:"Couldn't reach the recruitment service. Please try again."}))});
+      if(b&&b.ok){ cur={ref:b.reference,tok:t}; lastSig=sigOf(b); formOpen=false; render(b); remember(b,t); startPoll(); }
+      else{ stopApPoll(); fail((b&&b.error==="rate_limited"&&b.message)?b.message:"No application matches that reference and access code. Check both and try again."); }
+    }).catch(function(){ if(!silent) fail("Couldn't reach the recruitment service. Please try again."); else toast("Couldn't refresh. Check your connection."); });
+  }
+  /* keep the page current while it is open, without disturbing a request being typed */
+  function startPoll(){
+    stopApPoll();
+    apPoll=setInterval(function(){
+      if(!document.body.contains(out)){ stopApPoll(); return; }
+      if(document.hidden||formOpen||!cur) return;
+      rpc("track_application",{p_ref:cur.ref,p_token:cur.tok}).then(function(b){
+        if(b&&b.ok&&!formOpen&&sigOf(b)!==lastSig){ lastSig=sigOf(b); render(b); toast("Your application has been updated"); }
+      }).catch(function(){});
+    },30000);
   }
   form.addEventListener("submit",function(e){e.preventDefault();load()});
   if(q.ref&&q.code){
@@ -1005,56 +1097,17 @@ function route(){
   var parts=h.split("?"), r=parts[0], q={};
   (parts[1]||"").split("&").forEach(function(kv){ if(!kv) return; var i=kv.indexOf("="); try{ q[decodeURIComponent(kv.slice(0,i<0?kv.length:i))]=i<0?"":decodeURIComponent(kv.slice(i+1)); }catch(e){} });
   if(!PAGES[r]) r="home";
-  main.textContent=""; main.className="pg-"+r+((r==="book"||r==="track"||r==="application")?" narrow":""); main.appendChild(PAGES[r](q));
+  stopApPoll(); main.textContent=""; main.appendChild(PAGES[r](q));
   document.title=(r==="home"?"Atomic Garage — Repairs, Tuning, Custom Builds & Towing":TITLES[r]+" — Atomic Garage");
-  var navR=(r==="parts")?"services":r;   /* Parts has no top-level link: it lives under Services */
-  document.querySelectorAll("#nav [data-r]").forEach(function(a){ if(a.dataset.r===navR) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); });
-  var grp=$("#reqBtn"); if(grp){ if((grp.dataset.group||"").split(" ").indexOf(navR)>-1) grp.setAttribute("aria-current","page"); else grp.removeAttribute("aria-current"); }
-  closeNav();
+  document.querySelectorAll("nav a[data-r]").forEach(function(a){ if(a.dataset.r===r||(r==="application"&&a.dataset.r==="careers")) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); });
+  $("#nav").classList.remove("open"); $("#menuBtn").setAttribute("aria-expanded","false");
   window.scrollTo(0,0);
-  if(r==="services"&&q.service){
-    var t=document.getElementById("svc-"+q.service);
-    if(t){ t.scrollIntoView({block:"start"}); t.classList.add("flash"); try{t.focus({preventScroll:true})}catch(e){} }
-  }
 }
 window.addEventListener("hashchange",route);
-function setDd(open){
-  var dd=$("#reqDd"),b=$("#reqBtn"),m=$("#reqMenu"); if(!dd||!b||!m) return;
-  dd.classList.toggle("open",open); b.setAttribute("aria-expanded",open?"true":"false"); m.hidden=!open;   /* single source of truth */
-}
-function closeNav(){
-  setDd(false); $("#nav").classList.remove("open"); $("#menuBtn").setAttribute("aria-expanded","false");
-}
 $("#menuBtn").addEventListener("click",function(){
-  var o=$("#nav").classList.toggle("open"); this.setAttribute("aria-expanded",o?"true":"false"); if(!o) setDd(false);
+  var o=$("#nav").classList.toggle("open"); this.setAttribute("aria-expanded",o?"true":"false");
 });
-$("#reqBtn").addEventListener("click",function(){ setDd(!$("#reqDd").classList.contains("open")); });
-/* capture phase: page components (e.g. the Careers role cards) stop click bubbling, which used to leave the menu stuck open */
-function outside(e){ var dd=$("#reqDd"); if(dd&&dd.classList.contains("open")&&!dd.contains(e.target)) setDd(false); }
-document.addEventListener("click",outside,true);
-document.addEventListener("pointerdown",outside,true);
-window.addEventListener("blur",function(){ setDd(false); });
-window.addEventListener("hashchange",function(){ setDd(false); });
-document.addEventListener("keydown",function(e){
-  if(e.key!=="Escape") return;
-  var dd=$("#reqDd"),was=dd&&dd.classList.contains("open"),mo=$("#nav").classList.contains("open");
-  if(was){ setDd(false); $("#reqBtn").focus(); }
-  else if(mo){ closeNav(); $("#menuBtn").focus(); }
-});
-$("#nav").addEventListener("click",function(e){ if(e.target.closest("a")) closeNav(); });   /* also covers links to the page you are already on */
-$("#reqBtn").addEventListener("keydown",function(e){
-  if(e.key!=="ArrowDown") return; e.preventDefault(); setDd(true);
-  var a=$("#reqMenu a"); if(a) a.focus();
-});
-$("#reqMenu").addEventListener("keydown",function(e){
-  if(e.key!=="ArrowDown"&&e.key!=="ArrowUp") return; e.preventDefault();
-  var links=[].slice.call(this.querySelectorAll("a")),i=links.indexOf(document.activeElement);
-  links[(i+(e.key==="ArrowDown"?1:-1)+links.length)%links.length].focus();
-});
-if(window.matchMedia){ var mq=window.matchMedia("(min-width:1240px)"); if(mq.addEventListener) mq.addEventListener("change",closeNav); }
-$("#reqDd").addEventListener("focusout",function(e){ var dd=this; if(e.relatedTarget&&!dd.contains(e.relatedTarget)) setDd(false); });
-/* a leave from the dropdown by hover is not needed: it is click / keyboard driven so touch and keyboard behave the same */
-if(CFG.STAFF_PORTAL_URL) document.querySelectorAll("[data-staff]").forEach(function(a){a.setAttribute("href",CFG.STAFF_PORTAL_URL)});
+if(CFG.STAFF_PORTAL_URL) $("#staffLink").setAttribute("href",CFG.STAFF_PORTAL_URL);
 route();
 })();
 </script>
