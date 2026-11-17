@@ -43,9 +43,8 @@ nav#nav .nav-side{gap:12px}
 .dd-caret{transition:transform .18s}
 .dd.open .dd-caret{transform:rotate(180deg)}
 .dd.open>.dd-btn{background:rgba(255,255,255,.07);color:var(--ink)}
-.dd-menu{display:none;position:absolute;right:0;top:calc(100% + 14px);width:320px;z-index:30;padding:8px;
+.dd-menu{position:absolute;right:0;top:calc(100% + 14px);width:320px;z-index:30;padding:8px;
   background:#1a1a18;border:1px solid var(--line);border-top:3px solid var(--acc);border-radius:10px;box-shadow:0 20px 44px rgba(0,0,0,.6)}
-.dd.open .dd-menu{display:block}
 .dd-menu li+li{margin-top:2px}
 .dd-menu a{display:flex;align-items:center;gap:14px;padding:12px;border-radius:8px;text-decoration:none;color:var(--ink);transition:background .15s,transform .15s}
 .dd-menu a:hover,.dd-menu a:focus-visible{background:rgba(255,255,255,.07);transform:translateX(2px)}
