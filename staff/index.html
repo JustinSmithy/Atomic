@@ -202,6 +202,11 @@ nav a.ag-public{margin-top:auto}
 .cl-c{font-size:.7rem;line-height:1.2;padding:2px 4px;border-radius:4px;background:rgba(255,255,255,.1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cl-c.s-pending,.cl-c.s-alternative_proposed{background:var(--acc,#ffc400);color:#111}.cl-c.s-approved,.cl-c.s-alternative_accepted,.cl-c.s-in_progress{background:#2e7d32;color:#fff}
 .cl-r{display:flex;gap:12px;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid rgba(255,255,255,.1)}
+.cl-c.iv{background:#1565c0;color:#fff}.cl-c.iv.i-confirmed{background:#2e7d32}.cl-c.iv.i-reschedule_requested{background:var(--warn,#ffb020);color:#111}.cl-c.iv.i-completed,.cl-c.iv.i-no_show{opacity:.55}
+.cl-layers{margin-top:0}.cl-key{font-size:.8rem;opacity:.8;display:inline-flex;align-items:center;gap:6px;margin-left:auto}.cl-key i{display:inline-block;width:14px;height:10px;padding:0}
+.cl-iv{border:1px solid var(--line);border-left:4px solid #1565c0;border-radius:10px;background:var(--panel2);padding:12px 14px;margin:10px 0}.cl-iv.i-confirmed{border-left-color:#2e7d32}.cl-iv.i-reschedule_requested{border-left-color:var(--warn,#ffb020)}.cl-iv.i-completed,.cl-iv.i-no_show{opacity:.8}
+.cl-iv-h{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap}.cl-iv-b small{display:block;color:var(--mute);overflow-wrap:anywhere}.cl-req{margin:6px 0;padding:8px 10px;border-radius:8px;background:var(--glow);border:1px solid var(--warn,#ffb020)}
+.cl-iv-a{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.cl-iv-a button:disabled{opacity:.45;cursor:not-allowed}.cl-form{margin-top:10px;border-top:1px solid var(--line);padding-top:4px}
 @media(max-width:600px){.cl-d{min-height:56px;padding:4px}.cl-c{display:none}}
 .app-c summary{cursor:pointer;list-style:none}.app-c summary small{opacity:.7}
 .app-b{display:inline-block;padding:2px 9px;border-radius:99px;font-size:.72rem;background:rgba(255,255,255,.14);text-transform:capitalize}
@@ -444,7 +449,7 @@ function syncProfile(m){if(!m||!m.active||typeof S==="undefined")return;var ch=f
   if(ch){try{save();route()}catch(e){}}}
 function boot(){if(ST.booting)return;ST.booting=true;ST.err="";
   rpc("staff_me").then(function(m){ST.me=m;syncProfile(m);if(m&&m.active)return Promise.all([loadList(),m.role==="manager"?loadStaff():0])})
-   .catch(authErr).then(function(){ST.booting=false;render();rcKick()});}
+   .catch(authErr).then(function(){ST.booting=false;render();rcKick();calKick()});}
 function refresh(id){var jobs=[loadList()];if(id)jobs.push(loadEvents(id));if(isMgr())jobs.push(loadStaff());
   return Promise.all(jobs).catch(authErr).then(render)}
 
@@ -561,10 +566,12 @@ document.addEventListener("click",function(e){var b=e.target.closest&&e.target.c
   else if(a==="mode"){ST.authMode=b.dataset.m;ST.err="";ST.info="";render()}
   else if(a==="signout")signOut();
   else if(a==="reload"){ST.err="";refresh(ST.open).then(function(){if(isMgr()&&ST.tab==="team")return Promise.all([loadInvites(),loadSettings(),loadSched()]).then(render)}).catch(function(){})}
-  else if(a==="cal-nav"){var m=ST.cm=ST.cm||{mode:"month",a:Date.now(),sel:null},x=new Date(m.a),dd=+b.dataset.d;if(m.mode==="week")x.setDate(x.getDate()+7*dd);else{x.setDate(1);x.setMonth(x.getMonth()+dd)}m.a=x.getTime();m.sel=null;calRender()}
-  else if(a==="cal-mode"){ST.cm=ST.cm||{a:Date.now(),sel:null};ST.cm.mode=b.dataset.m;calRender()}
-  else if(a==="cal-today"){ST.cm=ST.cm||{mode:"month"};ST.cm.a=Date.now();ST.cm.sel=null;calRender()}
-  else if(a==="cal-day"){ST.cm.sel=ST.cm.sel===b.dataset.k?null:b.dataset.k;calRender()}
+  else if(a==="cal-nav"){var m=calSt(),x=new Date(m.a),dd=+b.dataset.d;if(m.mode==="week")x.setDate(x.getDate()+7*dd);else if(m.mode==="day")x.setDate(x.getDate()+dd);else{x.setDate(1);x.setMonth(x.getMonth()+dd)}m.a=x.getTime();m.sel=null;calRender()}
+  else if(a==="cal-mode"){var m2=calSt();if(b.dataset.m==="day"&&m2.sel)m2.a=new Date(m2.sel+"T12:00:00").getTime();m2.mode=b.dataset.m;if(m2.mode==="day")m2.sel=null;calRender()}
+  else if(a==="cal-today"){var m3=calSt();m3.a=Date.now();m3.sel=null;calRender()}
+  else if(a==="cal-day"){var m4=calSt();m4.sel=m4.sel===b.dataset.k?null:b.dataset.k;calRender()}
+  else if(a==="cal-goday"){var m5=calSt();m5.mode="day";m5.a=new Date(b.dataset.k+"T12:00:00").getTime();m5.sel=null;calRender()}
+  else if(a==="cal-layer"){calSt().layer=b.dataset.l;calRender()}
   else if(a==="cal-open"){ST.tab="bookings";ST.filter=null;ST.armed=null;ST.open=b.dataset.id;location.hash="#bookings";loadEvents(b.dataset.id).then(render).catch(function(er){authErr(er);render()})}
   else if(a==="gd-import"){var secs=gdParse(document.getElementById("gd-in").value);
     if(!secs.length){say("No sections found. Each section must start with a line like :auto_exotic: ALARM");return}
@@ -782,7 +789,8 @@ function rcKick(){
   var l=document.querySelector('nav a[data-v="recruitment"]');if(l)l.hidden=!isRec();
   if(!$b("#rc"))return;
   if(!(sess&&ST.me&&ST.me.active&&isRec())){rcRender();return}
-  if(!RC.loaded&&!RC.busy){RC.busy=true;rcRender();rcLoad().catch(rcFail).then(function(){RC.busy=false;rcRender()})}else rcRender()}
+  if(!RC.loaded&&!RC.busy){RC.busy=true;rcRender();rcLoad().catch(rcFail).then(function(){RC.busy=false;rcRender()})}else rcRender();
+  if(RC.open&&!RC.events[RC.open])rcEvents(RC.open).catch(rcFail).then(rcRender)}
 function rcDo(p,okMsg,after){
   if(RC.busy)return;RC.busy=true;RC.err="";
   p.then(function(r){
@@ -820,41 +828,168 @@ document.addEventListener("change",function(e){var t=e.target.id;
   else if(t==="rc-from"||t==="rc-to"){if(t==="rc-from")RC.from=e.target.value;else RC.to=e.target.value;
     if(RC.from&&RC.to&&RC.from>RC.to){var x=RC.from;RC.from=RC.to;RC.to=x}rcRender()}});
 document.addEventListener("input",function(e){if(e.target.id==="rc-q"){RC.q=e.target.value;var l=document.getElementById("rc-list");if(l)l.innerHTML=rcListHtml()}});
-/* ---------- staff calendar ---------- */
+/* ---------- staff calendar (bookings + interviews) ---------- */
 var CL={pending:"Pending",alternative_proposed:"Time proposed",alternative_accepted:"New time accepted",approved:"Approved",in_progress:"In progress",completed:"Completed",declined:"Declined",cancelled:"Cancelled"};
+var DUR=[15,20,30,45,60,90,120];
+var CI={ivs:[],applist:[],apps:{},staff:[],loaded:false,busy:false,err:"",edit:null,fin:null,fv:{n:{},e:{},f:{}}};
 function calWhen(b){return b.status==="alternative_proposed"?b.proposed_at:(b.scheduled_at||b.preferred_at)}
+function calSt(){return ST.cm=ST.cm||{mode:"month",a:Date.now(),sel:null,layer:"all"}}
+function ivLoad(){return Promise.all([
+  api("interviews?select="+IV_COLS+"&order=scheduled_at.asc&limit=500").then(function(r){CI.ivs=r||[]}),
+  api("applications?select=id,reference,character_name,role,status,reviewer_id&order=created_at.desc&limit=500").then(function(r){CI.applist=r||[];CI.apps={};CI.applist.forEach(function(a){CI.apps[a.id]=a})}),
+  rpc("recruitment_staff").then(function(r){CI.staff=Array.isArray(r)?r:[]}).catch(function(e){if(e&&e.message==="auth")throw e})
+]).then(function(){CI.loaded=true;CI.err=""})}
+function ivWho(id){var s=CI.staff.filter(function(x){return x.user_id===id})[0];return s?s.display_name:(ST.me&&ST.me.user_id===id?ST.me.display_name:"")}
+/* wall-clock <-> instant conversions in the calendar time zone (bookings use the same zone) */
+function tzOff(ms,tz){var o={};new Intl.DateTimeFormat("en-US",{timeZone:tz,hourCycle:"h23",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit"}).formatToParts(new Date(ms)).forEach(function(p){o[p.type]=p.value});
+  return(Date.UTC(+o.year,+o.month-1,+o.day,+o.hour,+o.minute,+o.second)-ms)/6e4}
+function wallToIso(d,t,tz){var p=(d||"").split("-"),q=(t||"").split(":");if(p.length<3||q.length<2)return null;
+  var y=+p[0],mo=+p[1]-1,da=+p[2],h=+q[0],mi=+q[1];if([y,mo,da,h,mi].some(isNaN))return null;
+  try{if(tz){var base=Date.UTC(y,mo,da,h,mi),g=base-tzOff(base,tz)*6e4;g=base-tzOff(g,tz)*6e4;return new Date(g).toISOString()}}catch(e){}
+  var x=new Date(y,mo,da,h,mi);return isNaN(x)?null:x.toISOString()}
+function wallParts(iso,tz){var o={};try{new Intl.DateTimeFormat("en-CA",{timeZone:tz||undefined,hourCycle:"h23",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}).formatToParts(new Date(iso)).forEach(function(p){o[p.type]=p.value});return{d:o.year+"-"+o.month+"-"+o.day,t:o.hour+":"+o.minute}}catch(e){return{d:"",t:""}}}
+function tzLabel(){return ST.tz||"your local time"}
+function ivTm(t){return new Date(t).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",timeZone:ST.tz||undefined})}
+function ivWhen(t){return new Date(t).toLocaleString([],{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit",timeZone:ST.tz||undefined})}
+function staffOpts(sel){return CI.staff.map(function(s){return'<option value="'+esc(s.user_id)+'"'+(s.user_id===sel?" selected":"")+'>'+esc(s.display_name)+' ('+(s.role==="hr"?"HR":"Manager")+')</option>'}).join("")}
+function durOpts(sel){var l=DUR.slice();if(sel&&l.indexOf(+sel)<0){l.push(+sel);l.sort(function(a,b){return a-b})}return l.map(function(n){return'<option value="'+n+'"'+(n===+sel?" selected":"")+'>'+n+' minutes</option>'}).join("")}
+function ivErr(){return CI.err?'<div class="bk-note bad" role="alert">'+esc(CI.err)+'</div>':""}
+/* ----- interview card ----- */
+function ivCard(i){var a=CI.apps[i.application_id]||{},act=IV_ACTIVE.indexOf(i.status)>=0,past=new Date(i.scheduled_at)<=Date.now(),id=esc(i.id);
+  var cls=(i.status==="confirmed"||i.status==="completed")?"open":act?"":"closed";
+  var h='<div class="cl-iv i-'+esc(i.status)+'"><div class="cl-iv-h"><div><b>'+esc(a.character_name||"Applicant")+'</b> <small>'+esc(a.reference||"")+" · "+esc(RL[a.role]||a.role||"")+'</small></div><span class="rc-st '+cls+'">'+esc(IS[i.status]||i.status)+'</span></div>'+
+    '<div class="cl-iv-b"><div><strong>'+esc(ivWhen(i.scheduled_at))+'</strong> · '+esc(i.duration_minutes)+' min <small>('+esc(tzLabel())+')</small></div>'+
+    '<small>Interviewer: '+esc(ivWho(i.interviewer_id)||"—")+(i.location?" · "+esc(i.location):"")+'</small>'+
+    (i.status==="reschedule_requested"?'<div class="cl-req">The applicant asked for another time'+(i.requested_alt_at?': <b>'+esc(ivWhen(i.requested_alt_at))+'</b>':"")+(i.applicant_message?' – “'+esc(i.applicant_message)+'”':"")+'</div>':"")+
+    (i.prep_notes?'<small>Preparation (staff only): '+esc(i.prep_notes)+'</small>':"")+
+    (i.outcome_notes?'<small>Interview notes: '+esc(i.outcome_notes)+'</small>':"")+
+    (i.recommendation?'<small>Recommendation: <b>'+(i.recommendation==="accept"?"Accept":"Reject")+'</b></small>':"")+'</div>';
+  if(CI.edit===i.id)h+=ivEditForm(i);
+  else if(CI.fin&&CI.fin.id===i.id)h+=ivFinForm(i);
+  else{h+='<div class="cl-iv-a">';
+    if(act){
+      if(i.status==="reschedule_requested"&&i.requested_alt_at&&new Date(i.requested_alt_at)>Date.now())h+='<button class="sm" data-ci="usealt" data-id="'+id+'"'+(CI.busy?" disabled":"")+'>Use their time</button>';
+      h+='<button class="alt sm" data-ci="edit" data-id="'+id+'">Reschedule or edit</button>'+
+        '<button class="alt sm" data-ci="complete" data-id="'+id+'"'+(past?"":' disabled title="Available once the interview has taken place"')+'>Mark completed</button>'+
+        '<button class="alt sm" data-ci="noshow" data-id="'+id+'"'+(past?"":' disabled title="Available once the interview time has passed"')+'>No show</button>'+
+        '<button class="alt sm" data-ci="cancel" data-id="'+id+'"'+(CI.busy?" disabled":"")+'>Cancel interview</button>'}
+    h+='<button class="alt sm" data-ci="app" data-aid="'+esc(i.application_id)+'">Open application</button></div>'}
+  return h+'</div>'}
+function ivEditForm(i){var v=CI.fv.e;
+  return'<div class="cl-form"><div class="g g2"><div><label for="ci-e-d">Date ('+esc(tzLabel())+')</label><input id="ci-e-d" type="date" value="'+esc(v.d||"")+'"><label for="ci-e-t">Time</label><input id="ci-e-t" type="time" value="'+esc(v.t||"")+'"></div>'+
+   '<div><label for="ci-e-iv">Interviewer</label><select id="ci-e-iv">'+staffOpts(v.iv)+'</select><label for="ci-e-du">Length</label><select id="ci-e-du">'+durOpts(v.du)+'</select></div></div>'+
+   '<label for="ci-e-lo">Location (shown to the applicant)</label><input id="ci-e-lo" maxlength="200" value="'+esc(v.lo||"")+'"><label for="ci-e-pn">Preparation notes (staff only)</label><textarea id="ci-e-pn" maxlength="2000" rows="3">'+esc(v.pn||"")+'</textarea>'+
+   '<p class="note">Changing the time, interviewer, length or location asks the applicant to confirm again.</p>'+ivErr()+
+   '<div class="sp"><button data-ci="esave" data-id="'+esc(i.id)+'"'+(CI.busy?" disabled":"")+'>Save changes</button> <button class="alt" data-ci="ecancel">Cancel</button></div></div>'}
+function ivFinForm(i){var v=CI.fv.f,done=CI.fin.status==="completed";
+  return'<div class="cl-form"><label for="ci-f-n">Interview notes (staff only)</label><textarea id="ci-f-n" maxlength="2000" rows="4">'+esc(v.n||"")+'</textarea>'+
+   (done?'<label for="ci-f-r">Recommendation</label><select id="ci-f-r"><option value="">No recommendation yet</option><option value="accept"'+(v.r==="accept"?" selected":"")+'>Recommend acceptance</option><option value="reject"'+(v.r==="reject"?" selected":"")+'>Recommend rejection</option></select><p class="note">A recommendation helps managers decide. Final hiring decisions are made by managers.</p>':"")+ivErr()+
+   '<div class="sp"><button data-ci="fsave" data-id="'+esc(i.id)+'"'+(CI.busy?" disabled":"")+'>'+(done?"Mark completed":"Mark no show")+'</button> <button class="alt" data-ci="fcancel">Back</button></div></div>'}
+/* ----- scheduling form ----- */
+function ivNewForm(){var v=CI.fv.n;
+  var elig=CI.applist.filter(function(a){return["new","reviewing","interview"].indexOf(a.status)>=0&&!CI.ivs.some(function(i){return i.application_id===a.id&&IV_ACTIVE.indexOf(i.status)>=0})});
+  var h='<div class="card sp" id="ci-new">'+sec("+","Schedule an interview","The applicant sees the invitation on their tracking page and can accept it or ask for another time.");
+  if(!CI.loaded)return h+'<p class="note">Loading…</p></div>';
+  if(!elig.length)return h+'<p class="note">No applications are waiting for an interview. Applications that already have an active interview, or a final decision, are not listed.</p></div>';
+  h+='<div class="g g2"><div><label for="ci-n-app">Applicant</label><select id="ci-n-app"><option value="">Choose an applicant</option>'+elig.map(function(a){return'<option value="'+esc(a.id)+'"'+(v.app===a.id?" selected":"")+'>'+esc(a.character_name)+' ('+esc(a.reference)+') – '+esc(RL[a.role]||a.role)+' · '+esc(RS[a.status]||a.status)+'</option>'}).join("")+'</select>'+
+    '<label for="ci-n-iv">Interviewer</label><select id="ci-n-iv">'+staffOpts(v.iv||(ST.me&&ST.me.user_id))+'</select></div>'+
+    '<div><label for="ci-n-d">Date ('+esc(tzLabel())+')</label><input id="ci-n-d" type="date" value="'+esc(v.d||"")+'"><label for="ci-n-t">Time</label><input id="ci-n-t" type="time" value="'+esc(v.t||"")+'">'+
+    '<label for="ci-n-du">Length</label><select id="ci-n-du">'+durOpts(v.du||30)+'</select></div></div>'+
+    '<label for="ci-n-lo">Location or meeting point (shown to the applicant)</label><input id="ci-n-lo" maxlength="200" value="'+esc(v.lo||"")+'" placeholder="For example: Atomic Garage office">'+
+    '<label for="ci-n-pn">Preparation notes (staff only)</label><textarea id="ci-n-pn" maxlength="2000" rows="3">'+esc(v.pn||"")+'</textarea>'+ivErr()+
+    '<div class="sp"><button data-ci="create"'+(CI.busy?" disabled":"")+'>Send invitation</button></div></div>';
+  return h}
+/* ----- calendar ----- */
+function calItems(){var c=calSt(),by={},tz=ST.tz||undefined;
+  function add(t,it){var k=new Date(t).toLocaleDateString("en-CA",{timeZone:tz});(by[k]=by[k]||[]).push(it)}
+  if(c.layer!=="interviews")(ST.list||[]).forEach(function(b){if(b.status==="declined"||b.status==="cancelled")return;var t=calWhen(b);if(!t)return;add(t,{k:"b",t:t,b:b})});
+  if(isRec()&&c.layer!=="bookings")CI.ivs.forEach(function(i){if(i.status==="cancelled")return;add(i.scheduled_at,{k:"i",t:i.scheduled_at,i:i})});
+  Object.keys(by).forEach(function(k){by[k].sort(function(x,y){return new Date(x.t)-new Date(y.t)})});
+  return by}
+function calRow(it){
+  if(it.k==="i")return ivCard(it.i);var b=it.b;
+  return'<div class="cl-r"><div><strong>'+esc(ivWhen(it.t))+'</strong> · '+esc(b.character_name)+' · '+esc(b.reference)+
+    '<br><small>'+esc(SVC[b.service_type]||b.service_type)+" – "+esc(b.vehicle)+" · "+esc(CL[b.status]||b.status)+" · "+(b.assigned_to?"Mechanic: "+esc(nameOf(b.assigned_to)||"assigned"):"Unassigned")+'</small></div>'+
+    '<button class="alt sm" data-bk="cal-open" data-id="'+esc(b.id)+'">Open</button></div>'}
 function calRender(){var d=document.getElementById("cl");if(!d)return;
-  var c=ST.cm=ST.cm||{mode:"month",a:Date.now(),sel:null},tz=ST.tz||undefined,wk=c.mode==="week",by={};
+  var c=calSt(),tz=ST.tz||undefined,mode=c.mode,wk=mode==="week",dy=mode==="day",rec=isRec(),by=calItems();
   function lk(x){return x.getFullYear()+"-"+("0"+(x.getMonth()+1)).slice(-2)+"-"+("0"+x.getDate()).slice(-2)}
   function tm(t){return new Date(t).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",timeZone:tz})}
-  (ST.list||[]).forEach(function(b){if(b.status==="declined"||b.status==="cancelled")return;var t=calWhen(b);if(!t)return;
-    var k=new Date(t).toLocaleDateString("en-CA",{timeZone:tz});(by[k]=by[k]||[]).push(b)});
-  Object.keys(by).forEach(function(k){by[k].sort(function(x,y){return new Date(calWhen(x))-new Date(calWhen(y))})});
-  var A=new Date(c.a),st,n,f=new Date(A.getFullYear(),A.getMonth(),1),today=new Date().toLocaleDateString("en-CA",{timeZone:tz});
-  if(wk){st=new Date(A.getFullYear(),A.getMonth(),A.getDate());st.setDate(st.getDate()-(st.getDay()+6)%7);n=7}
-  else{st=new Date(f);st.setDate(1-(f.getDay()+6)%7);n=Math.ceil(((f.getDay()+6)%7+new Date(A.getFullYear(),A.getMonth()+1,0).getDate())/7)*7}
-  var e=new Date(st);e.setDate(e.getDate()+6);
-  var label=wk?st.toLocaleDateString([],{day:"numeric",month:"short"})+" \u2013 "+e.toLocaleDateString([],{day:"numeric",month:"short",year:"numeric"}):A.toLocaleDateString([],{month:"long",year:"numeric"});
-  var h='<div class="card">'+sec("\u25A6","Calendar","Upcoming bookings, mechanics and statuses \u2013 times in "+(ST.tz||"your local time"))+
-    '<div class="cl-bar"><button class="alt sm" data-bk="cal-nav" data-d="-1" aria-label="Previous">\u2039</button><strong>'+esc(label)+'</strong><button class="alt sm" data-bk="cal-nav" data-d="1" aria-label="Next">\u203A</button>'+
-    '<button class="'+(wk?"alt ":"")+'sm" data-bk="cal-mode" data-m="month">Month</button><button class="'+(wk?"":"alt ")+'sm" data-bk="cal-mode" data-m="week">Week</button><button class="alt sm" data-bk="cal-today">Today</button></div>'+
-    '<div class="cl-g">'+["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(function(w){return'<span class="cl-w">'+w+'</span>'}).join("");
-  for(var i=0;i<n;i++){var dt=new Date(st);dt.setDate(st.getDate()+i);var k=lk(dt),it=by[k]||[],max=wk?8:2;
-    h+='<button type="button" class="cl-d'+(k===today?" today":"")+(k===c.sel?" sel":"")+(!wk&&dt.getMonth()!==A.getMonth()?" out":"")+'" data-bk="cal-day" data-k="'+k+'"><b>'+dt.getDate()+'</b>'+
-      it.slice(0,max).map(function(b){return'<span class="cl-c s-'+esc(b.status)+'">'+esc(tm(calWhen(b)))+" "+esc(b.character_name)+'</span>'}).join("")+(it.length>max?'<i>+'+(it.length-max)+' more</i>':"")+'</button>'}
-  h+='</div></div>';
-  var rows=[],ttl;
-  if(c.sel){rows=by[c.sel]||[];ttl=new Date(c.sel+"T12:00:00").toLocaleDateString([],{weekday:"long",day:"numeric",month:"long"})}
-  else{ttl="Upcoming appointments";Object.keys(by).filter(function(k){return k>=today}).sort().forEach(function(k){rows=rows.concat(by[k])});rows=rows.slice(0,10)}
-  h+='<div class="card sp"><h3 class="hd bk-h3">'+esc(ttl)+'</h3>'+(rows.length?rows.map(function(b){
-    return'<div class="cl-r"><div><strong>'+esc(new Date(calWhen(b)).toLocaleString([],{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit",timeZone:tz}))+'</strong> \u00B7 '+esc(b.character_name)+' \u00B7 '+esc(b.reference)+
-      '<br><small>'+esc(SVC[b.service_type]||b.service_type)+" \u2013 "+esc(b.vehicle)+" \u00B7 "+esc(CL[b.status]||b.status)+" \u00B7 "+(b.assigned_to?"Mechanic: "+esc(nameOf(b.assigned_to)||"assigned"):"Unassigned")+'</small></div>'+
-      '<button class="alt sm" data-bk="cal-open" data-id="'+esc(b.id)+'">Open</button></div>'}).join(""):'<p class="note">Nothing booked.</p>')+
+  var A=new Date(c.a),st,n,f=new Date(A.getFullYear(),A.getMonth(),1),today=new Date().toLocaleDateString("en-CA",{timeZone:tz}),label,dayKey=lk(A);
+  if(dy){label=new Date(dayKey+"T12:00:00").toLocaleDateString([],{weekday:"long",day:"numeric",month:"long",year:"numeric"})}
+  else{
+    if(wk){st=new Date(A.getFullYear(),A.getMonth(),A.getDate());st.setDate(st.getDate()-(st.getDay()+6)%7);n=7}
+    else{st=new Date(f);st.setDate(1-(f.getDay()+6)%7);n=Math.ceil(((f.getDay()+6)%7+new Date(A.getFullYear(),A.getMonth()+1,0).getDate())/7)*7}
+    var e=new Date(st);e.setDate(e.getDate()+6);
+    label=wk?st.toLocaleDateString([],{day:"numeric",month:"short"})+" – "+e.toLocaleDateString([],{day:"numeric",month:"short",year:"numeric"}):A.toLocaleDateString([],{month:"long",year:"numeric"})}
+  function mb(m,l){return'<button class="'+(mode===m?"":"alt ")+'sm" data-bk="cal-mode" data-m="'+m+'" aria-pressed="'+(mode===m)+'">'+l+'</button>'}
+  var h='<div class="card">'+sec("▦","Calendar",rec?"Bookings and interviews – times in "+tzLabel():"Upcoming bookings, mechanics and statuses – times in "+tzLabel())+
+    '<div class="cl-bar"><button class="alt sm" data-bk="cal-nav" data-d="-1" aria-label="Previous">‹</button><strong>'+esc(label)+'</strong><button class="alt sm" data-bk="cal-nav" data-d="1" aria-label="Next">›</button>'+
+    mb("day","Day")+mb("week","Week")+mb("month","Month")+'<button class="alt sm" data-bk="cal-today">Today</button></div>';
+  if(rec)h+='<div class="cl-bar cl-layers" role="group" aria-label="Show">'+[["all","Everything"],["bookings","Bookings"],["interviews","Interviews"]].map(function(x){return'<button type="button" class="'+(c.layer===x[0]?"":"alt ")+'sm" data-bk="cal-layer" data-l="'+x[0]+'" aria-pressed="'+(c.layer===x[0])+'">'+x[1]+'</button>'}).join("")+'<span class="cl-key"><i class="cl-c iv"></i> Interview</span></div>';
+  var rows,ttl,dkey=null;
+  if(dy){dkey=dayKey;rows=by[dayKey]||[];ttl=null}
+  else{
+    h+='<div class="cl-g">'+["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map(function(w){return'<span class="cl-w">'+w+'</span>'}).join("");
+    for(var i=0;i<n;i++){var dt=new Date(st);dt.setDate(st.getDate()+i);var k=lk(dt),it=by[k]||[],max=wk?8:2;
+      h+='<button type="button" class="cl-d'+(k===today?" today":"")+(k===c.sel?" sel":"")+(!wk&&dt.getMonth()!==A.getMonth()?" out":"")+'" data-bk="cal-day" data-k="'+k+'"><b>'+dt.getDate()+'</b>'+
+        it.slice(0,max).map(function(x){return x.k==="b"?'<span class="cl-c s-'+esc(x.b.status)+'">'+esc(tm(x.t))+" "+esc(x.b.character_name)+'</span>':'<span class="cl-c iv i-'+esc(x.i.status)+'">'+esc(tm(x.t))+" ★ "+esc((CI.apps[x.i.application_id]||{}).character_name||"Interview")+'</span>'}).join("")+(it.length>max?'<i>+'+(it.length-max)+' more</i>':"")+'</button>'}
+    h+='</div>';
+    if(c.sel){dkey=c.sel;rows=by[c.sel]||[];ttl=new Date(c.sel+"T12:00:00").toLocaleDateString([],{weekday:"long",day:"numeric",month:"long"})}
+    else{ttl="Upcoming";rows=[];Object.keys(by).filter(function(k){return k>=today}).sort().forEach(function(k){rows=rows.concat(by[k])});rows=rows.slice(0,10)}}
+  h+='</div>';
+  if(rec){var ask=CI.ivs.filter(function(i){return i.status==="reschedule_requested"&&new Date(i.scheduled_at)>Date.now()});
+    if(ask.length)h+='<div class="card sp"><h3 class="hd bk-h3">Waiting for your reply ('+ask.length+')</h3><p class="note">These applicants asked for another time. Use their time, or reschedule.</p>'+ask.map(ivCard).join("")+'</div>'}
+  if(rec){var due=CI.ivs.filter(function(i){return IV_ACTIVE.indexOf(i.status)>=0&&new Date(i.scheduled_at)<=Date.now()});
+    if(due.length)h+='<div class="card sp"><h3 class="hd bk-h3">Needs an outcome ('+due.length+')</h3><p class="note">These interviews have taken place. Record the result, or mark a no show.</p>'+due.map(ivCard).join("")+'</div>'}
+  h+='<div class="card sp">'+(ttl?'<h3 class="hd bk-h3">'+esc(ttl)+'</h3>':"")+
+    ((dkey&&!dy)||rec?'<div class="cl-bar">'+(dkey&&!dy?'<button class="alt sm" data-bk="cal-goday" data-k="'+esc(dkey)+'">Open day view</button>':"")+(rec?'<button class="alt sm" data-ci="sched-day" data-k="'+esc(dkey||today)+'">Schedule an interview on this day</button>':"")+'</div>':"")+
+    (rows.length?rows.map(calRow).join(""):'<p class="note">Nothing booked.</p>')+
     '<p class="note">Open a booking to approve it, assign a mechanic or propose another time.</p></div>';
-  d.innerHTML=h}
-V.calendar=function(){setTimeout(function(){calRender();if(sess&&ST.me&&ST.me.active){
+  if(rec)h+=ivNewForm();
+  /* keep typing and focus when the page redraws */
+  var ae=document.activeElement,fid=ae&&ae.id&&/^ci-/.test(ae.id)?ae.id:null,sel=fid&&ae.selectionStart;
+  d.innerHTML=h;
+  if(fid){var f2=document.getElementById(fid);if(f2){f2.focus();try{if(sel!=null)f2.setSelectionRange(sel,sel)}catch(x){}}}}
+function calKick(){if(!document.getElementById("cl"))return;calRender();
+  if(!(sess&&ST.me&&ST.me.active))return;
   if(ST.tz===undefined){ST.tz=null;rpc("available_slots",{}).then(function(r){if(r&&r.tz){ST.tz=r.tz;calRender()}}).catch(function(){})}
-  loadList().then(calRender).catch(function(er){authErr(er);calRender()})}},0);return'<div id="cl"></div>'};
+  var jobs=[loadList()];if(isRec())jobs.push(ivLoad());
+  Promise.all(jobs).then(calRender).catch(function(er){authErr(er);calRender()})}
+V.calendar=function(){setTimeout(function(){if(sess&&ST.me===undefined)boot();calKick()},0);return'<div id="cl"></div>'};
+/* ----- interview actions ----- */
+function ciDo(p,okMsg,after){
+  if(CI.busy)return;CI.busy=true;CI.err="";calRender();
+  p.then(function(r){
+    if(r&&r.ok===false)throw new Error(r.message||"That change was not allowed.");
+    if(okMsg)say(okMsg);RC.loaded=false;return after&&after(r)}).then(function(){return ivLoad()}).catch(function(e){if(e&&e.message==="auth"){authErr(e);render();return}CI.err=(e&&e.message)||"Something went wrong."}).then(function(){CI.busy=false;calRender()})}
+function ciIv(id){return CI.ivs.filter(function(i){return i.id===id})[0]}
+document.addEventListener("click",function(e){
+  var b=e.target.closest&&e.target.closest("[data-ci]");if(!b||!document.getElementById("cl"))return;
+  var a=b.dataset.ci,id=b.dataset.id,i=id&&ciIv(id),v;
+  if(a==="sched-day"){CI.fv.n.d=b.dataset.k;calRender();var f=document.getElementById("ci-new");if(f&&f.scrollIntoView)f.scrollIntoView({behavior:"smooth",block:"start"})}
+  else if(a==="create"){v=CI.fv.n;CI.err="";
+    var iso=wallToIso(v.d,v.t,ST.tz||null);
+    if(!v.app)CI.err="Choose an applicant.";else if(!iso)CI.err="Enter a date and a time.";else if(!(v.iv||(ST.me&&ST.me.user_id)))CI.err="Choose an interviewer.";
+    if(CI.err){calRender();return}
+    ciDo(rpc("staff_schedule_interview",{p:{application_id:v.app,interviewer_id:v.iv||ST.me.user_id,scheduled_at:iso,duration_minutes:+(v.du||30),location:v.lo||"",prep_notes:v.pn||""}}),"Interview scheduled",function(){CI.fv.n={}})}
+  else if(a==="edit"&&i){var w=wallParts(i.scheduled_at,ST.tz);CI.edit=id;CI.fin=null;CI.err="";CI.fv.e={d:w.d,t:w.t,iv:i.interviewer_id,du:i.duration_minutes,lo:i.location||"",pn:i.prep_notes||""};calRender()}
+  else if(a==="ecancel"){CI.edit=null;CI.err="";calRender()}
+  else if(a==="esave"&&i){v=CI.fv.e;var iso2=wallToIso(v.d,v.t,ST.tz||null);if(!iso2){CI.err="Enter a date and a time.";calRender();return}
+    ciDo(rpc("staff_update_interview",{p_id:id,p:{scheduled_at:iso2,interviewer_id:v.iv,duration_minutes:+v.du,location:v.lo||"",prep_notes:v.pn||""}}),"Interview updated",function(){CI.edit=null})}
+  else if(a==="usealt"&&i){ciDo(rpc("staff_update_interview",{p_id:id,p:{scheduled_at:i.requested_alt_at}}),"Interview moved to the applicant's time; they will be asked to confirm")}
+  else if(a==="cancel"&&i){if(!confirm("Cancel this interview? The applicant will see it as cancelled."))return;
+    ciDo(rpc("staff_set_interview_status",{p_id:id,p_status:"cancelled",p:{}}),"Interview cancelled")}
+  else if((a==="complete"||a==="noshow")&&i){CI.fin={id:id,status:a==="complete"?"completed":"no_show"};CI.edit=null;CI.err="";CI.fv.f={n:i.outcome_notes||"",r:""};calRender()}
+  else if(a==="fcancel"){CI.fin=null;CI.err="";calRender()}
+  else if(a==="fsave"&&i){v=CI.fv.f;var p={outcome_notes:v.n||""};if(CI.fin.status==="completed"&&v.r)p.recommendation=v.r;
+    var stt=CI.fin.status;ciDo(rpc("staff_set_interview_status",{p_id:id,p_status:stt,p:p}),stt==="completed"?"Interview completed":"Marked as no show",function(){CI.fin=null})}
+  else if(a==="app"){RC.open=b.dataset.aid;RC.status="all";RC.role="all";RC.rev="all";RC.from="";RC.to="";RC.q="";location.hash="#recruitment"}
+});
+function ciField(e){var m=/^ci-([nef])-(\w+)$/.exec(e.target.id||"");if(!m)return false;CI.fv[m[1]][m[2]]=e.target.value;return m}
+document.addEventListener("input",function(e){ciField(e)});
+document.addEventListener("change",function(e){var m=ciField(e);
+  if(m&&m[1]==="n"&&m[2]==="app"){var ap=CI.apps[e.target.value];if(ap&&ap.reviewer_id&&CI.staff.some(function(s){return s.user_id===ap.reviewer_id})){CI.fv.n.iv=ap.reviewer_id;calRender()}}});
 V.bookings=function(){setTimeout(function(){render();if(sess&&ST.me===undefined)boot()},0);return'<div id="bk"></div>'};
 setInterval(function(){if(location.hash!=="#bookings"||!sess||!ST.me||!ST.me.active||ST.open||ST.busy||document.hidden||ST.tab!=="bookings")return;
   loadList().then(function(){if(!ST.open&&$b("#bk")&&!(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)))render()}).catch(authErr)},45000);
