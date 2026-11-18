@@ -240,6 +240,145 @@ nav a.ag-public{margin-top:auto}
 .rc-dates{align-items:center}.rc-dates label{margin:0}.rc-dates input{flex:0 1 160px}
 .rc-iv{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:8px 0;background:var(--panel)}.rc-iv small{display:block;color:var(--mute)}
 @media(max-width:560px){.rc-filters select,.rc-filters input{flex:1 1 100%}.rc-detail select{width:100%}}
+
+/* ===== Handbook: Employee Handbook + Mechanical Training Library ===== */
+.hb-tabs{display:flex;gap:8px;flex-wrap:wrap}
+.hb-tab{display:inline-flex;align-items:center;gap:10px;padding:13px 20px;border:2px solid var(--line);background:var(--pa);color:var(--mute);font:600 13px Archivo,sans-serif;text-transform:uppercase;letter-spacing:.09em;text-decoration:none;transition:color .15s,border-color .15s,background .15s}
+.hb-tab:hover{color:var(--ink);border-color:var(--acc)}
+.hb-tab.on{background:var(--acc);color:var(--accink);border-color:var(--acc)}
+.hb-tab .pill{padding:1px 9px;font-size:11px;background:rgba(0,0,0,.2);border-color:transparent;color:inherit}
+.hb-tab:not(.on) .pill{background:var(--glow);color:var(--acc)}
+.hb-title small{display:block;font:600 12px Archivo,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin-bottom:8px}
+.hb-title h2{font-size:clamp(28px,4.4vw,46px);line-height:1}
+.hb-title p{margin:10px 0 0;color:var(--mute);font-style:italic}
+.hb-tools{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,320px);gap:20px;align-items:end;margin-top:22px}
+.hb-search{position:relative}
+.hb-search input{padding-right:84px}
+.hb-search button{position:absolute;right:6px;top:50%;transform:translateY(-50%);padding:6px 12px;font-size:11px}
+.hb-search button:hover{transform:translateY(-50%)}
+.hb-prog-t{display:flex;justify-content:space-between;gap:12px;font-size:13px;color:var(--mute)}
+.hb-prog-t b{color:var(--ink)}
+.hb-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.hb-chip{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;background:var(--panel2);color:var(--mute);border:1px solid var(--line);font-size:12px;text-decoration:none}
+.hb-chip svg{width:16px;height:16px}
+.hb-chip em{font-style:normal;opacity:.7}
+.hb-chip:hover{color:var(--ink);border-color:var(--acc)}
+.hb-chip.on{background:var(--acc);color:var(--accink);border-color:var(--acc)}
+.hb-res{margin:20px 2px 0;color:var(--mute);font-size:14px}
+.hb-res b{color:var(--acc)}
+.hb-cat{padding:0;margin-top:20px}
+.hb-cat>summary,.hb-sec>summary{list-style:none;cursor:pointer}
+.hb-cat>summary::-webkit-details-marker,.hb-sec>summary::-webkit-details-marker,.hb-std>summary::-webkit-details-marker,.hb-emp>summary::-webkit-details-marker{display:none}
+.hb-cat>summary{display:flex;align-items:center;gap:16px;padding:18px 22px}
+.hb-cat>summary h3{font-size:30px;line-height:1}
+.hb-cat>summary small{display:block;color:var(--mute);margin-top:4px;font-size:14px}
+.hb-car{margin-left:auto;display:flex;align-items:center;gap:12px;color:var(--mute);font-size:13px;flex:none}
+.hb-car::after,.hb-sec>summary::after,.hb-std>summary::after,.hb-emp>summary::after{content:"";width:9px;height:9px;border-right:2px solid var(--acc);border-bottom:2px solid var(--acc);transform:rotate(45deg);transition:transform .2s;flex:none;margin:-4px 4px 0 8px}
+details[open]>summary>.hb-car::after,details[open]>.hb-sec-s::after,details[open]>summary::after{transform:rotate(225deg);margin-top:4px}
+.hb-cat>summary .ico svg,.hb-svc-top .ico svg,.hb-card .ico svg{width:26px;height:26px}
+.hb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;padding:4px 22px 22px}
+.hb-card{position:relative;display:flex;flex-direction:column;gap:8px;padding:18px;background:var(--panel2);border:1px solid var(--line);color:var(--ink);text-decoration:none;min-height:190px;transition:border-color .15s,transform .15s}
+.hb-card:hover{border-color:var(--acc);transform:translateY(-2px)}
+.hb-card:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.hb-card .ico{width:44px;height:44px}
+.hb-card h3{font-size:26px;line-height:1}
+.hb-card p{margin:0;color:var(--mute);font-size:14px;flex:1}
+.hb-n{position:absolute;right:14px;top:10px;font:800 30px "Big Shoulders Display",sans-serif;color:var(--line)}
+.hb-card:hover .hb-n{color:var(--acc)}
+.hb-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;color:var(--mute)}
+.hb-foot .pill{padding:3px 10px;font-size:11px}
+.hb-ok{color:var(--ok);font-weight:600}
+.hb-stack{display:grid;gap:12px}
+.hb-std,.hb-emp{border:1px solid var(--line);background:var(--panel2)}
+.hb-std{margin:0 22px 12px}
+.hb-std:last-child{margin-bottom:22px}
+.hb-std>summary,.hb-emp>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:14px;padding:14px 16px}
+.hb-emp>summary h3{font-size:28px;line-height:1}
+.hb-st b{display:block;font-weight:600}
+.hb-st small{display:block;color:var(--mute);margin-top:2px;font-size:13px}
+.hb-std>summary .hb-st,.hb-emp>summary .hb-st{flex:1}
+.hb-std>summary::after,.hb-emp>summary::after{margin-left:auto}
+.hb-sn{flex:none;display:grid;place-items:center;min-width:34px;height:34px;padding:0 6px;background:var(--acc);color:var(--accink);font:800 18px "Big Shoulders Display",sans-serif}
+.hb-sb{padding:6px 22px 22px}
+.hb-std .hb-sb,.hb-emp .hb-sb{padding:4px 16px 18px}
+.hb-emp .hb-sb p{margin:0 0 12px;color:var(--mute)}
+.hb-h4{font:700 12px Archivo,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin:20px 0 10px}
+.hb-crumb{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:18px 0 0;font-size:13px;color:var(--mute)}
+.hb-crumb a{color:var(--mute);text-decoration:none;border-bottom:1px solid var(--line)}
+.hb-crumb a:hover{color:var(--acc);border-color:var(--acc)}
+.hb-crumb b{color:var(--ink);font-weight:600}
+.hb-svc-top{display:flex;align-items:center;gap:18px}
+.hb-svc-top h2{font-size:clamp(34px,5vw,56px);margin-top:6px}
+.hb-lead{margin:16px 0 0;color:var(--mute);max-width:70ch}
+.hb-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.hb-acts button{padding:10px 16px;font-size:12px}
+.hb-acts button.on{background:var(--ok);color:#111;border-color:var(--ok)}
+.hb-layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:20px;align-items:start;margin-top:20px}
+.hb-toc{position:sticky;top:88px;padding:16px}
+.hb-toc .hb-h4{margin:0 0 8px}
+.hb-toc button{display:flex;gap:10px;width:100%;align-items:center;text-align:left;background:none;color:var(--mute);padding:9px 8px;border:0;border-left:2px solid var(--line);font:600 13px Archivo,sans-serif;text-transform:none;letter-spacing:0}
+.hb-toc button:hover{color:var(--ink);border-left-color:var(--acc);transform:none;filter:none}
+.hb-toc button span{color:var(--acc);font:800 15px "Big Shoulders Display",sans-serif}
+.hb-main{display:grid;gap:14px;min-width:0}
+.hb-sec{padding:0;scroll-margin-top:88px}
+.hb-sec>summary{display:flex;align-items:center;gap:14px;padding:16px 20px}
+.hb-sec>summary h3{font-size:25px;line-height:1.05}
+.hb-meta{margin-left:auto;color:var(--mute);font-size:12px;text-transform:uppercase;letter-spacing:.08em;white-space:nowrap}
+.hb-sec>summary::after{margin-left:6px}
+.hb-sec p{margin:0 0 12px;line-height:1.6}
+.hb-steps{list-style:none;margin:0;padding:0;counter-reset:s;display:grid;gap:10px}
+.hb-steps li{counter-increment:s;display:flex;gap:14px;align-items:flex-start;padding:12px 14px;background:var(--panel2);border:1px solid var(--line);line-height:1.5}
+.hb-steps li::before{content:counter(s);flex:none;display:grid;place-items:center;width:30px;height:30px;background:var(--acc);color:var(--accink);font:800 17px "Big Shoulders Display",sans-serif}
+.hb-gh{display:flex;justify-content:space-between;align-items:center;margin:18px 0 8px}
+.hb-gh:first-child{margin-top:4px}
+.hb-gh .hb-h4{margin:0}
+.hb-gc{font-size:13px;color:var(--mute)}
+.hb-cl{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.hb-ck{display:flex;gap:12px;align-items:flex-start;margin:0;padding:10px 12px;background:var(--panel2);border:1px solid var(--line);color:var(--ink);font-size:15px;line-height:1.45;cursor:pointer}
+.hb-ck:hover{border-color:var(--acc)}
+.hb-ck input{flex:none;width:20px;height:20px;padding:0;margin:1px 0 0;accent-color:#ffc400;cursor:pointer}
+.hb-ck input:checked+span{color:var(--mute);text-decoration:line-through;text-decoration-color:var(--acc)}
+.hb-note{display:flex;gap:14px;padding:12px 14px;margin-bottom:8px;background:var(--panel2);border:1px solid var(--line);border-left:4px solid var(--acc)}
+.hb-note p{margin:4px 0 0}
+.hb-note.nS{border-left-color:var(--bad)}.hb-note.nM{border-left-color:var(--warn)}
+.hb-tag{display:inline-block;font:700 11px Archivo,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
+.nS .hb-tag{color:var(--bad)}.nM .hb-tag{color:var(--warn)}
+.hb-rpp{border:1px solid var(--line);border-left:4px solid var(--acc);background:rgba(127,127,127,.1);padding:4px 16px 16px;margin-top:16px}
+.hb-rpp.in{margin-top:20px}
+.hb-rt{display:block;font:800 20px "Big Shoulders Display",sans-serif;letter-spacing:.04em;text-transform:uppercase;color:var(--acc);margin:14px 0 4px}
+.hb-rn{color:var(--mute);font-size:14px;margin:0 0 6px!important}
+.hb-rules{margin:6px 0 4px}
+.hb-rules summary{cursor:pointer;color:var(--ink);font-size:13px;font-weight:600}
+.hb-rules ul{margin:8px 0 0 18px;padding:0;color:var(--mute);font-size:14px;line-height:1.5}
+.hb-rp{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;background:rgba(0,0,0,.28);border:1px solid var(--line);margin-bottom:8px}
+@media(prefers-color-scheme:light){:root:not([data-theme="dark"]) .hb-rp{background:rgba(255,255,255,.7)}}
+.hb-cmd{flex:1;margin:0!important;font:500 14px/1.6 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow-wrap:anywhere;user-select:all}
+.hb-cmd b{color:var(--acc)}
+.hb-copy{flex:none;padding:8px 14px;font-size:11px;min-width:76px}
+.hb-copy.ok{background:var(--ok);color:#111;border-color:var(--ok)}
+.hb-pager{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
+.hb-pager a{display:block;padding:16px 18px;background:var(--pa);border:2px solid var(--line);color:var(--ink);text-decoration:none}
+.hb-pager a:hover{border-color:var(--acc)}
+.hb-pager small{display:block;color:var(--acc);font:700 11px Archivo,sans-serif;letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}
+.hb-pager a:last-child{text-align:right}
+.hb-pager b{font:800 22px "Big Shoulders Display",sans-serif;text-transform:uppercase}
+@media(max-width:900px){
+ .hb-tools{grid-template-columns:1fr}
+ .hb-layout{grid-template-columns:1fr}
+ .hb-toc{position:static;padding:10px 12px}
+ .hb-toc .hb-h4{display:none}
+ .hb-toc div{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+ .hb-toc button{width:auto;white-space:nowrap;border:1px solid var(--line);padding:8px 12px}
+}
+@media(max-width:560px){
+ .hb-grid{grid-template-columns:1fr;padding:4px 14px 16px}.hb-std{margin:0 14px 12px}
+ .hb-cat>summary{padding:14px;gap:12px}.hb-cat>summary h3{font-size:24px}.hb-car span{display:none}
+ .hb-sec>summary{padding:14px;flex-wrap:wrap}.hb-sb{padding:4px 14px 16px}.hb-meta{display:none}
+ .hb-rp{flex-direction:column}.hb-copy{width:100%;padding:10px}
+ .hb-pager{grid-template-columns:1fr}.hb-pager a:last-child{text-align:left}
+ .hb-tab{flex:1;justify-content:center;padding:12px 10px;font-size:12px}
+}
+@media(prefers-reduced-motion:reduce){.hb-card,.hb-tab,.hb-cat>summary::after{transition:none}.hb-card:hover{transform:none}}
 </style></head><body>
 <div class="app"><nav aria-label="Main">
 <div class="brand"><svg viewBox="0 0 48 48" fill="none" stroke="#ff7a1a" stroke-width="2.4"><ellipse cx="24" cy="24" rx="20" ry="8"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(60 24 24)"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(120 24 24)"/><circle cx="24" cy="24" r="3.5" fill="#ff7a1a"/></svg><b>Atomic<br>Garage</b></div>
@@ -318,13 +457,14 @@ document.addEventListener("click",function(e){var b=e.target.closest("[data-a]")
 document.addEventListener("keydown",function(e){if(e.key=="Enter"&&e.target.id=="nt"){act.post();return}if((e.key=="Enter"||e.key==" ")&&e.target.dataset.a){e.preventDefault();act[e.target.dataset.a](e.target)}});
 document.addEventListener("input",function(e){var t=e.target;if(t.dataset.k){S[t.dataset.k]=t.value;save();idc();me()}if(t.id=="q"||t.id=="cat")grid();if(/^l[ftr]$/.test(t.id))loa()});
 var tick;
-function route(){ensureSelf();var v=(location.hash||"#home").slice(1);if(!V[v])v="home";
+function route(){ensureSelf();var v=(location.hash||"#home").slice(1).split("/")[0];if(!V[v])v="home";
 document.querySelectorAll("nav a").forEach(function(a){a.classList.toggle("on",a.dataset.v==v)});
 $("#v").innerHTML=V[v]();me();idc();grid();if($("#pt"))upc();if($("#lo"))loa()}
 function clk(){$("#ck").textContent=utc(Date.now())+" UTC";document.querySelectorAll(".dur").forEach(function(d){d.textContent=fmt(Date.now()-d.dataset.s)});var r=$("#rt");if(r&&S.start)r.textContent=fmt(Date.now()-S.start)}
 var nt;function nav(){clearTimeout(nt);window.scrollTo(0,0);$("#v").innerHTML='<div class="sk" style="height:240px"></div><div class="sk sp" style="height:160px"></div>';nt=setTimeout(route,200)}window.addEventListener("storage",function(e){if(e.key!="ag2"||!e.newValue)return;try{S=Object.assign({},D,JSON.parse(e.newValue));route()}catch(_){}});window.addEventListener("hashchange",nav);route();clk();setInterval(clk,1000);
 </script>
 <script src="../config.js"></script>
+<script src="handbook-data.js"></script>
 <script>
 /* ===== Atomic Garage: Bookings section (staff) =====
    Talks to Supabase with the PUBLISHABLE key plus the signed-in staff member's own session token.
@@ -574,7 +714,7 @@ document.addEventListener("click",function(e){var b=e.target.closest&&e.target.c
   else if(a==="cal-day"){var m5=calSt();m5.sel=m5.sel===b.dataset.k?null:b.dataset.k;calRender()}
   else if(a==="cal-open"){ST.tab="bookings";ST.filter=null;ST.armed=null;ST.open=b.dataset.id;location.hash="#bookings";loadEvents(b.dataset.id).then(render).catch(function(er){authErr(er);render()})}
   else if(a==="gd-import"){var secs=gdParse(document.getElementById("gd-in").value);
-    if(!secs.length){say("No sections found. Each section must start with a line like :auto_exotic: ALARM");return}
+    if(!secs.length){say("No sections found. Each section must start with a line like :tag: ALARM");return}
     if(!confirm("Replace the whole guide with "+secs.length+" sections?"))return;
     rpc("staff_import_guide",{p:secs}).then(function(r){if(r&&r.ok){say("Guide imported ("+r.count+" sections)");return gdLoad()}say((r&&r.message)||"Import failed")}).catch(authErr).then(gdRender)}
   else if(a==="app-filter"){ST.af=b.dataset.f;render()}
@@ -629,13 +769,16 @@ function gdRender(){var d=document.getElementById("gd");if(!d)return;var g=ST.gu
   if(!g)h+='<div class="skel sp"></div>';
   else if(!g.length)h+='<div class="card sp"><p class="note">The guide has not been added yet.'+(isMgr()?" Use the import box below.":" Ask a manager to add it.")+'</p></div>';
   else h+=g.map(function(s){return'<details class="card sp gd-s"><summary><strong>'+esc(s.title)+'</strong></summary>'+(s.body||[]).map(function(b){return(b.h?'<h4>'+esc(b.h)+'</h4>':"")+gdLines(b)}).join("")+'</details>'}).join("");
-  if(isMgr())h+='<details class="card sp"><summary><strong>Import or replace the guide (managers)</strong></summary><p class="note">Paste the full guide text. Every section must start with a heading line such as <em>:auto_exotic: ALARM</em>. This replaces the current guide.</p><textarea id="gd-in" rows="8" aria-label="Guide text"></textarea><div class="sp"><button data-bk="gd-import">Import guide</button></div></details>';
+  if(isMgr())h+='<details class="card sp"><summary><strong>Import or replace the guide (managers)</strong></summary><p class="note">Paste the full guide text. Every section must start with a heading line such as <em>:tag: ALARM</em>. This replaces the current guide.</p><textarea id="gd-in" rows="8" aria-label="Guide text"></textarea><div class="sp"><button data-bk="gd-import">Import guide</button></div></details>';
   d.innerHTML=h}
 document.addEventListener("input",function(e){if(e.target.id!=="gd-q")return;var q=e.target.value.trim().toLowerCase();
   document.querySelectorAll("#gd .gd-s").forEach(function(x){var hit=!q||x.textContent.toLowerCase().indexOf(q)>-1;x.hidden=!hit;x.open=!!q&&hit})});
 V.guide=function(){setTimeout(function(){gdRender();if(!ST.guide&&sess&&ST.me&&ST.me.active)gdLoad().then(gdRender).catch(function(er){authErr(er);gdRender()})},0);return'<div id="gd"></div>'};
 /* the guide lives under Handbook */
-var hb0=V.handbook;V.handbook=function(){setTimeout(function(){gdRender();if(!ST.guide&&sess&&ST.me&&ST.me.active)gdLoad().then(gdRender).catch(function(er){authErr(er);gdRender()})},0);return(hb0?hb0():"")+'<div id="gd" class="sp"></div>'};
+var hb0=V.handbook;
+/* the legacy imported guide only shows to managers, or to anyone once a guide has actually been imported */
+function hbLegacy(){var d=document.getElementById("hb-legacy");if(d)d.hidden=!(isMgr()||(ST.guide&&ST.guide.length))}
+V.handbook=function(){setTimeout(function(){gdRender();hbLegacy();if(!ST.guide&&sess&&ST.me&&ST.me.active)gdLoad().then(function(){gdRender();hbLegacy()}).catch(function(er){authErr(er);gdRender();hbLegacy()})},0);return window.AGHB?window.AGHB.view():(hb0?hb0():"")+'<div id="gd" class="sp"></div>'};
 /* ---------- applications (managers) ---------- */
 var RL={mechanic_apprentice:"Mechanic Apprentice",mechanic:"Mechanic",human_resources:"Human Resources",bodywork_paint:"Bodywork and paint",tow_driver:"Tow driver",apprentice:"Apprentice",other:"Something else"};
 function loadApps(){return api("applications?select="+RC_COLS+"&order=created_at.desc&limit=100").then(function(r){ST.apps=r||[];ST.appsMissing=false}).catch(function(e){if(e&&e.message==="auth")throw e;ST.appsMissing=true})}
@@ -996,5 +1139,196 @@ var bar=$b(".bar");if(bar)bar.insertAdjacentHTML("beforeend",'<button type="butt
 render();if(sess)boot();
 /* a full page refresh on any section (Calendar, Recruitment, Parts...) must reopen that section: the views above are registered after the first route() call */
 if(location.hash&&location.hash!=="#home")route();
+})();
+</script>
+<script>
+/* ===== Atomic Garage: Handbook UI (Employee Handbook + Mechanical Training Library) =====
+   Content lives in handbook-data.js (window.AG_HB). This file only renders it.
+   Progress (ticked checklist items, reviewed flags) is stored per device in localStorage. */
+(function(){
+"use strict";
+var D=window.AG_HB;
+var KEY="ag_hb_v1",P={},UI={q:"",cat:"all"};
+try{P=JSON.parse(localStorage.getItem(KEY)||"{}")||{}}catch(e){P={}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(P))}catch(e){}}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function qs(s,r){return(r||document).querySelector(s)}
+function qsa(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))}
+
+var ICON={
+ standards:'<path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="m9 14 2 2 4-4"/>',
+ mechanical:'<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"/>',
+ electrical:'<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>',
+ bodywork:'<path d="M19 17h2a1 1 0 0 0 1-1v-3a2 2 0 0 0-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3A3 3 0 0 0 11.7 7H5a1 1 0 0 0-.9.6L2.7 10.5A3.7 3.7 0 0 0 2 12v4a1 1 0 0 0 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/>',
+ custom:'<path d="M21 4h-7M10 4H3M21 12h-9M8 12H3M21 20h-5M12 20H3M14 2v4M8 10v4M16 18v4"/>',
+ interior:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2.5"/><path d="M12 14.5V21M9.5 11H3.3M14.5 11h6.2"/>'
+};
+function ico(k){return'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(ICON[k]||"")+'</svg>'}
+
+var ORDER=[],BYID={},STD={},CAT={},IDX={};
+if(D&&D.services){
+ D.cats.forEach(function(c){CAT[c.id]=c;D.services.forEach(function(s){if(s.cat===c.id)ORDER.push(s)})});
+ ORDER.forEach(function(s,i){BYID[s.id]=s;s.n=i+1});
+ D.standards.forEach(function(w){STD[w.id]=w});
+}
+function pad(n){return n<10?"0"+n:""+n}
+function plain(n){return n.replace(/^[SMT]\|/,"")}
+function hay(o,key){
+ if(IDX[key])return IDX[key];
+ var t=[o.title,o.summary,(o.kw||[]).join(" ")];
+ ["overview","equip","prep","inspect","removal","install","checks","steps"].forEach(function(k){if(o[k])t.push([].concat(o[k]).join(" "))});
+ if(o.notes)t.push(o.notes.map(plain).join(" "));
+ if(o.rp)t.push([].concat.apply([],o.rp.length&&Array.isArray(o.rp[0])?o.rp:[o.rp]).join(" "));
+ return(IDX[key]=t.join(" ").toLowerCase());
+}
+function match(o,key,toks){var h=hay(o,key);return toks.every(function(t){return h.indexOf(t)>-1})}
+function rank(o,toks){var t=o.title.toLowerCase(),k=(o.kw||[]).join(" ").toLowerCase();
+ if(toks.every(function(x){return t.indexOf(x)>-1}))return 0;
+ if(toks.every(function(x){return k.indexOf(x)>-1}))return 1;return 2}
+
+/* progress */
+function total(s){return s.equip.length+s.prep.length+s.checks.length}
+function ticked(s,g){var c=(P[s.id]||{}).c||{},n=0,k;for(k in c){if(c[k]&&(!g||k.charAt(0)===g))n++}return n}
+function reviewed(s){return!!(P[s.id]&&P[s.id].r)}
+
+/* ---------- shared pieces ---------- */
+function ol(a){return'<ol class="hb-steps">'+a.map(function(t){return'<li><span>'+esc(t)+'</span></li>'}).join("")+'</ol>'}
+function notes(a){
+ var L={S:"Safety",M:"Common mistake",T:"Specialist requirement"},o="";
+ ["S","M","T"].forEach(function(k){a.forEach(function(n){if(n.charAt(0)===k)o+='<div class="hb-note n'+k+'"><div><span class="hb-tag">'+L[k]+'</span><p>'+esc(plain(n))+'</p></div></div>'})});
+ return o}
+function line(key,p,i,t){return'<div class="hb-rp"><p class="hb-cmd"><b>/me</b> '+esc(t)+'</p><button type="button" class="alt hb-copy" data-hb="copy" data-s="'+key+'" data-p="'+p+'" data-i="'+i+'" aria-label="Copy this /me command">Copy</button></div>'}
+function rules(){return'<p class="hb-rn">Describe what your character does. Let the scene decide the outcome.</p><details class="hb-rules"><summary>Roleplay ground rules</summary><ul>'+D.rpRules.map(function(r){return'<li>'+esc(r)+'</li>'}).join("")+'</ul></details>'}
+function rpBlock(key,groups,title){
+ return'<div class="hb-rpp'+(title?' in':'')+'">'+(title?'<span class="hb-rt">'+title+'</span>':'')+rules()+groups.map(function(g,p){return(g.h?'<h4 class="hb-h4">'+esc(g.h)+'</h4>':'')+g.l.map(function(t,i){return line(key,g.p!=null?g.p:p,i,t)}).join("")}).join("")+'</div>'}
+function tabs(lib){return'<div class="hb-tabs" role="navigation" aria-label="Handbook sections"><a class="hb-tab'+(lib?'':' on')+'" href="#handbook"'+(lib?'':' aria-current="page"')+'>Employee Handbook</a><a class="hb-tab'+(lib?' on':'')+'" href="#handbook/library"'+(lib?' aria-current="page"':'')+'>Mechanical Training Library <span class="pill">'+ORDER.length+'</span></a></div>'}
+function sectionOf(){return typeof sec==="function"?sec.apply(null,arguments):'<h2>'+arguments[1]+'</h2>'}
+
+/* ---------- Employee Handbook ---------- */
+function empView(){
+ var E=D.employee||[];
+ return'<div class="card">'+sectionOf("\u2263","Employee Handbook","Station rules and procedures")+tabs(false)
+ +'<div class="hb-chips" aria-label="Jump to a section">'+E.map(function(x){return'<button type="button" class="alt hb-chip" data-hb="toc" data-t="emp-'+x.id+'">'+esc(x.title)+'</button>'}).join("")
+ +'<span style="flex:1"></span><button type="button" class="alt hb-chip" data-hb="all" data-o="1" data-sel=".hb-emp">Expand all</button><button type="button" class="alt hb-chip" data-hb="all" data-o="0" data-sel=".hb-emp">Collapse all</button></div></div>'
+ +'<div class="hb-stack sp">'+E.map(function(x){return'<details class="hb-emp card" id="emp-'+x.id+'" open style="padding:0"><summary><h3>'+esc(x.title)+'</h3></summary><div class="hb-sb"><p>'+esc(x.text)+'</p>'+(x.action?'<a class="btn" href="'+esc(x.action.href)+'">'+esc(x.action.label)+'</a>':'')+'</div></details>'}).join("")+'</div>'}
+
+/* ---------- Library home ---------- */
+function svcCard(s){
+ var t=total(s),d=ticked(s);
+ return'<a class="hb-card" href="#handbook/library/'+s.id+'"><span class="hb-n">'+pad(s.n)+'</span><span class="ico">'+ico(s.cat)+'</span><h3>'+esc(s.title)+'</h3><p>'+esc(s.summary)+'</p><span class="hb-foot"><span class="pill">'+esc(CAT[s.cat].name)+'</span>'+(reviewed(s)?'<span class="hb-ok">\u2713 Reviewed</span>':'<span>'+(d?d+' / '+t+' ticked':t+' checklist items')+'</span>')+'</span></a>'}
+function stdList(list,open){return list.map(function(w){var i=D.standards.indexOf(w);return'<details class="hb-std"'+(open?' open':'')+'><summary><span class="hb-sn">'+pad(i+1)+'</span><span class="hb-st"><b>'+esc(w.title)+'</b><small>'+esc(w.summary)+'</small></span></summary><div class="hb-sb"><h4 class="hb-h4">Procedure</h4>'+ol(w.steps)+'<h4 class="hb-h4">Notes</h4>'+notes(w.notes)+rpBlock("std:"+w.id,[{h:"",l:w.rp,p:0}],"Example /me commands")+'</div></details>'}).join("")}
+function stdSection(list,open,searching){
+ return'<details class="card hb-cat"'+(open?' open':'')+'><summary><span class="ico">'+ico("standards")+'</span><div><h3>Workshop Standards</h3><small>Conduct, intake, approvals, safety and handover \u00b7 '+list.length+' procedures</small></div><span class="hb-car"><span>'+list.length+'</span></span></summary><div style="padding-top:4px">'+stdList(list,searching)+'</div></details>'}
+function catSection(c,list,open){
+ return'<details class="card hb-cat"'+(open?' open':'')+'><summary><span class="ico">'+ico(c.id)+'</span><div><h3>'+esc(c.name)+'</h3><small>'+esc(c.blurb)+'</small></div><span class="hb-car"><span>'+list.length+' services</span></span></summary><div class="hb-grid">'+list.map(svcCard).join("")+'</div></details>'}
+function libBody(){
+ var toks=UI.q.trim().toLowerCase().split(/\s+/).filter(Boolean),h="";
+ var all=UI.cat==="all",showStd=all||UI.cat==="standards";
+ if(toks.length){
+  var sv=ORDER.filter(function(s){return(all||UI.cat===s.cat)&&match(s,"s:"+s.id,toks)}).sort(function(a,b){return rank(a,toks)-rank(b,toks)||a.n-b.n});
+  var st=showStd?D.standards.filter(function(w){return match(w,"w:"+w.id,toks)}):[];
+  var n=sv.length+st.length;
+  h+='<p class="hb-res" role="status"><b>'+n+'</b> result'+(n===1?"":"s")+' for \u201c'+esc(UI.q.trim())+'\u201d</p>';
+  if(!n)return h+'<div class="empty sp">Nothing matched. Try a shorter word such as \u201cbrake\u201d or \u201cpaint\u201d, or <button type="button" class="alt sm" data-hb="clear" style="font-size:12px;padding:6px 12px">clear the search</button>.</div>';
+  if(sv.length)h+='<div class="card hb-cat"><div class="hb-grid" style="padding-top:22px">'+sv.map(svcCard).join("")+'</div></div>';
+  if(st.length)h+=stdSection(st,true,true);
+  return h}
+ if(showStd)h+=stdSection(D.standards,UI.cat==="standards",false);
+ D.cats.forEach(function(c){if(all||UI.cat===c.id){var l=ORDER.filter(function(s){return s.cat===c.id});h+=catSection(c,l,true)}});
+ return h}
+function chips(){
+ var items=[["all","All",ORDER.length+D.standards.length],["standards","Workshop Standards",D.standards.length]].concat(D.cats.map(function(c){return[c.id,c.name,ORDER.filter(function(s){return s.cat===c.id}).length]}));
+ return items.map(function(x){return'<button type="button" class="alt hb-chip'+(UI.cat===x[0]?' on':'')+'" data-hb="cat" data-c="'+x[0]+'" aria-pressed="'+(UI.cat===x[0])+'">'+(x[0]==="all"?'':ico(x[0]))+esc(x[1])+' <em>'+x[2]+'</em></button>'}).join("")}
+function libHome(){
+ var r=ORDER.filter(reviewed).length;
+ return'<div class="card hb-title">'+tabs(true)+'<div style="margin-top:24px"><small>Mechanical Training Library</small><h2>'+esc(D.title)+'</h2><p>'+esc(D.sub)+'</p></div>'
+ +'<div class="hb-tools"><div><label for="hb-q">Search procedures</label><div class="hb-search"><input id="hb-q" type="search" autocomplete="off" placeholder="Try turbo, brake pads, tint, airbag\u2026" value="'+esc(UI.q)+'"><button type="button" class="alt" id="hb-clear" data-hb="clear"'+(UI.q?'':' hidden')+'>Clear</button></div></div>'
+ +'<div><div class="hb-prog-t"><span>Services reviewed</span><b id="hb-rv">'+r+' of '+ORDER.length+'</b></div><div class="meter"><i id="hb-rvbar" style="width:'+Math.round(r/ORDER.length*100)+'%"></i></div></div></div>'
+ +'<div class="hb-chips" id="hb-chips" aria-label="Filter by category">'+chips()+'</div></div>'
+ +'<div id="hb-lib-body">'+libBody()+'</div>'
+ +'<details class="card sp" id="hb-legacy" hidden style="padding:0"><summary class="hb-emp" style="list-style:none;cursor:pointer;padding:16px 20px;display:flex;align-items:center;gap:12px"><b>Imported guide (legacy)</b><small style="color:var(--mute)">Text imported by managers</small></summary><div id="gd" style="padding:0 20px 20px"></div></details>'}
+function lib(){
+ var b=qs("#hb-lib-body");if(!b)return;
+ b.innerHTML=libBody();
+ qsa(".hb-chip[data-hb=cat]").forEach(function(c){var on=c.dataset.c===UI.cat;c.classList.toggle("on",on);c.setAttribute("aria-pressed",on)});
+ var cl=qs("#hb-clear");if(cl)cl.hidden=!UI.q}
+
+/* ---------- Service page ---------- */
+function ckList(s,g,arr){var c=(P[s.id]||{}).c||{};
+ return'<ul class="hb-cl">'+arr.map(function(t,i){var k=g+i;return'<li><label class="hb-ck"><input type="checkbox" data-tick="'+k+'" data-s="'+s.id+'"'+(c[k]?' checked':'')+'><span>'+esc(t)+'</span></label></li>'}).join("")+'</ul>'}
+function gh(s,g,t,arr){return'<div class="hb-gh"><h4 class="hb-h4">'+t+'</h4><span class="hb-gc" data-g="'+g+'" data-s="'+s.id+'">'+ticked(s,g)+' / '+arr.length+'</span></div>'}
+function box(id,num,title,meta,body,open){return'<details class="card hb-sec" id="'+id+'"'+(open?' open':'')+'><summary><span class="hb-sn">'+num+'</span><h3>'+title+'</h3><span class="hb-meta">'+meta+'</span></summary><div class="hb-sb">'+body+'</div></details>'}
+function svcPage(s){
+ var c=CAT[s.cat],i=ORDER.indexOf(s),pv=ORDER[i-1],nx=ORDER[i+1],t=total(s),d=ticked(s);
+ var rpn=s.rp.reduce(function(a,x){return a+x.length},0);
+ var secs=[["sec-overview","Overview"],["sec-equip","Equipment"],["sec-inspect","Inspection"],["sec-removal","Removal"],["sec-install","Installation"],["sec-checks","Quality checks"],["sec-notes","Critical notes"],["sec-rp","/me commands"]];
+ return tabs(true)
+ +'<div class="hb-crumb"><a href="#handbook/library">Training Library</a><span>\u203a</span><a href="#handbook/library" data-hb="gocat" data-c="'+c.id+'">'+esc(c.name)+'</a><span>\u203a</span><b>'+esc(s.title)+'</b></div>'
+ +'<div class="card sp hb-svc-h"><div class="hb-svc-top"><span class="ico">'+ico(s.cat)+'</span><div><span class="pill a">'+esc(c.name)+' \u00b7 '+pad(s.n)+'</span><h2>'+esc(s.title)+'</h2></div></div><p class="hb-lead">'+esc(s.summary)+'</p>'
+ +'<div class="hb-prog-t" style="margin-top:20px"><span>Checklist progress</span><b id="hb-pt">'+d+' of '+t+' ticked</b></div><div class="meter"><i id="hb-bar" style="width:'+Math.round(d/t*100)+'%"></i></div>'
+ +'<div class="hb-acts"><button type="button" class="alt'+(reviewed(s)?' on':'')+'" data-hb="review" data-s="'+s.id+'">'+(reviewed(s)?'\u2713 Reviewed':'Mark as reviewed')+'</button><button type="button" class="alt" data-hb="all" data-o="1" data-sel=".hb-sec">Expand all</button><button type="button" class="alt" data-hb="all" data-o="0" data-sel=".hb-sec">Collapse all</button><button type="button" class="alt" data-hb="reset" data-s="'+s.id+'">Reset ticks</button><a class="btn alt" href="#handbook/library" data-hb="gocat" data-c="'+c.id+'" style="background:transparent;color:var(--ink);border:1px solid var(--line)">\u2190 Back to '+esc(c.name)+'</a></div></div>'
+ +'<div class="hb-layout"><div class="card hb-toc"><h4 class="hb-h4">Contents</h4><div>'+secs.map(function(x,k){return'<button type="button" data-hb="toc" data-t="'+x[0]+'"><span>'+(k+1)+'</span>'+x[1]+'</button>'}).join("")+'</div></div>'
+ +'<div class="hb-main">'
+ +box("sec-overview","01","Service Overview","",'<p>'+esc(s.overview)+'</p>',true)
+ +box("sec-equip","02","Equipment &amp; Preparation",s.equip.length+s.prep.length+' items',gh(s,"e","Tools &amp; materials",s.equip)+ckList(s,"e",s.equip)+gh(s,"p","Preparation",s.prep)+ckList(s,"p",s.prep),true)
+ +box("sec-inspect","03","Initial Inspection",s.inspect.length+' steps',ol(s.inspect),false)
+ +box("sec-removal","04","Removal Procedure",s.removal.length+' steps',ol(s.removal),false)
+ +box("sec-install","05","Installation &amp; Reassembly",s.install.length+' steps',ol(s.install),false)
+ +box("sec-checks","06","Final Quality Checks",s.checks.length+' checks',gh(s,"q","Tick each check before handover",s.checks)+ckList(s,"q",s.checks),false)
+ +box("sec-notes","07","Critical Workshop Notes",s.notes.length+' notes',notes(s.notes),false)
+ +box("sec-rp","08","ROLEPLAY PROCEDURE \u2014 EXAMPLE /ME COMMANDS",rpn+' lines',rpBlock(s.id,s.rp.map(function(l,p){return{h:D.phases[p],l:l,p:p}})),true)
+ +'</div></div>'
+ +'<div class="hb-pager">'+(pv?'<a href="#handbook/library/'+pv.id+'"><small>\u2190 Previous</small><b>'+esc(pv.title)+'</b></a>':'<span></span>')+(nx?'<a href="#handbook/library/'+nx.id+'"><small>Next \u2192</small><b>'+esc(nx.title)+'</b></a>':'<span></span>')+'</div>'}
+function refresh(s){
+ var t=total(s),d=ticked(s),b=qs("#hb-bar"),p=qs("#hb-pt");
+ if(b)b.style.width=Math.round(d/t*100)+"%";if(p)p.textContent=d+" of "+t+" ticked";
+ var L={e:s.equip.length,p:s.prep.length,q:s.checks.length};
+ qsa(".hb-gc").forEach(function(el){if(el.dataset.s===s.id)el.textContent=ticked(s,el.dataset.g)+" / "+L[el.dataset.g]})}
+
+/* ---------- entry point used by the portal router ---------- */
+function view(){
+ if(!D||!D.services)return'<div class="card"><p class="note">The handbook content could not be loaded. Make sure handbook-data.js is uploaded next to this page.</p></div>';
+ var p=(location.hash||"").slice(1).split("/");
+ if(p[1]!=="library")return empView();
+ return BYID[p[2]]?svcPage(BYID[p[2]]):libHome()}
+window.AGHB={view:view};
+
+/* ---------- behaviour ---------- */
+function copyText(t){return new Promise(function(res,rej){
+ function fb(){try{var a=document.createElement("textarea");a.value=t;a.setAttribute("readonly","");a.style.cssText="position:fixed;top:0;left:0;opacity:0";document.body.appendChild(a);a.select();a.setSelectionRange(0,t.length);var ok=document.execCommand("copy");document.body.removeChild(a);ok?res():rej()}catch(e){rej()}}
+ if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(res,fb)}else fb()})}
+function say(m){if(typeof toast==="function")toast(m)}
+function getLine(b){var k=b.dataset.s,i=+b.dataset.i;
+ if(k.indexOf("std:")===0)return STD[k.slice(4)].rp[i];
+ return BYID[k].rp[+b.dataset.p][i]}
+function doCopy(b){
+ var text="/me "+getLine(b);
+ copyText(text).then(function(){
+  b.textContent="Copied";b.classList.add("ok");say("Copied to clipboard");
+  clearTimeout(b._t);b._t=setTimeout(function(){b.textContent="Copy";b.classList.remove("ok")},1400)
+ },function(){
+  var el=b.parentNode.querySelector(".hb-cmd");
+  if(el&&window.getSelection){var r=document.createRange();r.selectNodeContents(el);var s=window.getSelection();s.removeAllRanges();s.addRange(r)}
+  say("Press Ctrl+C to copy the selected line")})}
+document.addEventListener("click",function(e){
+ var b=e.target.closest&&e.target.closest("[data-hb]");if(!b)return;
+ var a=b.dataset.hb;
+ if(a==="copy")doCopy(b);
+ else if(a==="cat"){UI.cat=b.dataset.c;lib()}
+ else if(a==="gocat"){UI.cat=b.dataset.c;UI.q=""}
+ else if(a==="clear"){UI.q="";var q=qs("#hb-q");if(q){q.value="";q.focus()}lib()}
+ else if(a==="review"){var s=BYID[b.dataset.s];P[s.id]=P[s.id]||{};P[s.id].r=P[s.id].r?0:1;save();b.classList.toggle("on",!!P[s.id].r);b.textContent=P[s.id].r?"\u2713 Reviewed":"Mark as reviewed"}
+ else if(a==="reset"){if(!window.confirm("Clear every ticked item on this procedure?"))return;var s2=BYID[b.dataset.s];if(P[s2.id])P[s2.id].c={};save();qsa("[data-tick]").forEach(function(x){x.checked=false});refresh(s2)}
+ else if(a==="toc"){var t=document.getElementById(b.dataset.t);if(t){t.open=true;t.scrollIntoView({behavior:"smooth",block:"start"})}}
+ else if(a==="all"){qsa(b.dataset.sel).forEach(function(d){d.open=b.dataset.o==="1"})}
+});
+document.addEventListener("change",function(e){var t=e.target;if(!t.dataset||!t.dataset.tick||!BYID[t.dataset.s])return;
+ var s=BYID[t.dataset.s];P[s.id]=P[s.id]||{};P[s.id].c=P[s.id].c||{};
+ if(t.checked)P[s.id].c[t.dataset.tick]=1;else delete P[s.id].c[t.dataset.tick];save();refresh(s)});
+document.addEventListener("input",function(e){if(e.target.id==="hb-q"){UI.q=e.target.value;lib()}});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&e.target.id==="hb-q"&&e.target.value){e.target.value="";UI.q="";lib()}});
+
+/* the router first ran before this file loaded, so redraw if the page was opened on the Handbook */
+if((location.hash||"").indexOf("#handbook")===0&&typeof route==="function")route();
 })();
 </script></body></html>
