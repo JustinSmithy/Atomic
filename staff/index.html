@@ -379,10 +379,53 @@ details[open]>summary>.hb-car::after,details[open]>.hb-sec-s::after,details[open
  .hb-tab{flex:1;justify-content:center;padding:12px 10px;font-size:12px}
 }
 @media(prefers-reduced-motion:reduce){.hb-card,.hb-tab,.hb-cat>summary::after{transition:none}.hb-card:hover{transform:none}}
+
+/* ===== Jobs: mechanic job management ===== */
+.jb-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:20px}
+.jb-tile{padding:14px 16px;background:var(--panel2);border:1px solid var(--line);text-align:left;color:var(--ink);cursor:pointer;border-radius:0}
+.jb-tile:hover{border-color:var(--acc);transform:none}
+.jb-tile.on{border-color:var(--acc);box-shadow:inset 0 -3px var(--acc)}
+.jb-tile b{display:block;font:800 38px/1 "Big Shoulders Display",sans-serif;color:var(--acc)}
+.jb-tile span{display:block;margin-top:4px;color:var(--mute);font:600 12px Archivo,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.jb-list{display:grid;gap:12px;margin-top:18px}
+.jb-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;padding:16px 18px;background:var(--panel2);border:1px solid var(--line);border-left:4px solid var(--line)}
+.jb-card.s-working{border-left-color:var(--ok)}.jb-card.s-review{border-left-color:var(--acc)}.jb-card.s-paused,.jb-card.s-changes{border-left-color:var(--warn)}.jb-card.s-unassigned{border-left-color:var(--bad)}
+.jb-ref{font:800 24px "Big Shoulders Display",sans-serif;letter-spacing:.04em;margin-right:10px}
+.jb-sub{color:var(--mute);font-size:14px;margin-top:4px;overflow-wrap:anywhere}
+.jb-st{display:inline-block;padding:3px 11px;border:1px solid currentColor;font:700 11px Archivo,sans-serif;letter-spacing:.1em;text-transform:uppercase;vertical-align:middle}
+.jb-st.working{color:var(--ok)}.jb-st.review{color:var(--acc)}.jb-st.paused,.jb-st.changes{color:var(--warn)}.jb-st.unassigned{color:var(--bad)}.jb-st.ready{color:var(--ink)}.jb-st.closed,.jb-st.cancelled{color:var(--mute)}
+.jb-assign{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.jb-assign select{flex:1;min-width:160px}
+.jb-assign button,.jb-card .btn,.jb-card button{padding:10px 16px;font-size:12px}
+.jb-back{display:inline-block;margin:0 0 14px;color:var(--mute);text-decoration:none;border-bottom:1px solid var(--line)}.jb-back:hover{color:var(--acc);border-color:var(--acc)}
+.jb-head{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.jb-head h2{font-size:clamp(30px,5vw,48px)}
+.jb-dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px 22px;margin:18px 0 0}
+.jb-dl div{min-width:0}.jb-dl dt{color:var(--acc);font:700 11px Archivo,sans-serif;letter-spacing:.12em;text-transform:uppercase}.jb-dl dd{margin:3px 0 0;overflow-wrap:anywhere}
+.jb-dl .wide{grid-column:1/-1}
+.jb-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:20px;padding:14px 16px;background:var(--panel2);border:1px solid var(--line);border-left:4px solid var(--acc)}
+.jb-bar .jb-clock{font:800 30px "Big Shoulders Display",sans-serif;color:var(--ok);letter-spacing:.05em;margin-right:6px}
+.jb-bar p{margin:0;color:var(--mute);flex:1;min-width:200px}
+.jb-bar button{padding:11px 18px}
+.jb-form{margin-top:14px}
+.jb-form textarea{min-height:90px}
+.jb-row{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}.jb-row>*{flex:1;min-width:130px}.jb-row>button{flex:none}
+.jb-ent{padding:12px 14px;background:var(--panel2);border:1px solid var(--line);margin-top:8px}
+.jb-ent small{display:block;color:var(--mute);margin-top:4px}
+.jb-ent p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.jb-tag{display:inline-block;margin-right:8px;font:700 11px Archivo,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--acc)}.jb-tag.note{color:var(--mute)}
+.jb-tot{display:flex;justify-content:space-between;gap:12px;padding:12px 4px 0;font-weight:600}.jb-tot b{color:var(--acc)}
+.jb-tl{list-style:none;margin:12px 0 0;padding:0;border-left:2px solid var(--line)}
+.jb-tl li{position:relative;padding:0 0 14px 18px}.jb-tl li::before{content:"";position:absolute;left:-6px;top:5px;width:10px;height:10px;background:var(--acc)}
+.jb-tl small{display:block;color:var(--mute)}.jb-tl .d{overflow-wrap:anywhere}
+.jb-review{border:1px solid var(--acc);padding:16px;margin-top:16px;background:var(--glow)}
+.jb-review h3{margin-top:0}
+.jb-err{margin-top:14px;padding:12px 14px;border:1px solid var(--bad);border-left-width:4px;color:var(--ink)}
+.jb-danger{background:transparent;color:var(--bad);border:1px solid var(--bad)}
+@media(max-width:640px){.jb-card{grid-template-columns:1fr}.jb-card .btn,.jb-card>button{width:100%;text-align:center}.jb-bar button{flex:1}.jb-tile b{font-size:30px}}
 </style></head><body>
 <div class="app"><nav aria-label="Main">
 <div class="brand"><svg viewBox="0 0 48 48" fill="none" stroke="#ff7a1a" stroke-width="2.4"><ellipse cx="24" cy="24" rx="20" ry="8"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(60 24 24)"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(120 24 24)"/><circle cx="24" cy="24" r="3.5" fill="#ff7a1a"/></svg><b>Atomic<br>Garage</b></div>
-<a href="#home" data-v="home"><i aria-hidden="true">⌂</i>Home</a><a href="#dashboard" data-v="dashboard"><i aria-hidden="true">◫</i>Dashboard</a><a href="#calendar" data-v="calendar"><i aria-hidden="true">▦</i>Calendar</a><a href="#bookings" data-v="bookings"><i aria-hidden="true">✉</i>Bookings</a><a href="#recruitment" data-v="recruitment" hidden><i aria-hidden="true">★</i>Recruitment</a><a href="#handbook" data-v="handbook"><i aria-hidden="true">☰</i>Handbook</a><a href="#parts" data-v="parts"><i aria-hidden="true">▦</i>Parts store</a><a href="#loa" data-v="loa"><i aria-hidden="true">✈</i>Leave of absence</a><a href="#id" data-v="id"><i aria-hidden="true">▣</i>Staff ID</a><a href="../" class="ag-public"><i aria-hidden="true">↗</i>Customer site</a></nav>
+<a href="#home" data-v="home"><i aria-hidden="true">⌂</i>Home</a><a href="#dashboard" data-v="dashboard"><i aria-hidden="true">◫</i>Dashboard</a><a href="#calendar" data-v="calendar"><i aria-hidden="true">▦</i>Calendar</a><a href="#bookings" data-v="bookings"><i aria-hidden="true">✉</i>Bookings</a><a href="#jobs" data-v="jobs" hidden><i aria-hidden="true">⚙</i>Jobs</a><a href="#recruitment" data-v="recruitment" hidden><i aria-hidden="true">★</i>Recruitment</a><a href="#handbook" data-v="handbook"><i aria-hidden="true">☰</i>Handbook</a><a href="#parts" data-v="parts"><i aria-hidden="true">▦</i>Parts store</a><a href="#loa" data-v="loa"><i aria-hidden="true">✈</i>Leave of absence</a><a href="#id" data-v="id"><i aria-hidden="true">▣</i>Staff ID</a><a href="../" class="ag-public"><i aria-hidden="true">↗</i>Customer site</a></nav>
 <main><div class="bar"><span class="clock" id="ck"></span><div class="who" id="me"></div></div><div id="v"></div></main></div>
 <script>
 var D={name:"New Mechanic",rank:"Mechanic",dos:"",phone:"",addr:"",photo:"",hours:0,life:0,shifts:0,start:null,
@@ -644,12 +687,10 @@ function actionsHtml(b){var mgr=isMgr(),s=b.status,closed=CLOSED.indexOf(s)>=0,h
       '<label for="bk-when">Propose a different time (your local time)</label><div class="bk-inline"><input id="bk-when" type="datetime-local"><button class="alt" data-bk="act" data-act="propose">Propose time</button></div>'+
       '<p class="note">Nothing is confirmed to the customer until you approve. '+(s==="alternative_proposed"?"A time is already waiting for their reply.":"")+'</p></div>';
   if(mgr)h+='<div class="bk-grp"><h3 class="hd bk-h3">Assigned mechanic</h3><div class="bk-inline"><select id="bk-mech" aria-label="Mechanic"><option value="">Unassigned</option>'+
-      ST.staff.filter(function(x){return x.active}).map(function(x){return'<option value="'+esc(x.user_id)+'"'+(x.user_id===b.assigned_to?" selected":"")+'>'+esc(x.display_name)+' ('+esc(x.role)+')</option>'}).join("")+
+      ST.staff.filter(function(x){return x.active&&x.role!=="hr"}).map(function(x){return'<option value="'+esc(x.user_id)+'"'+(x.user_id===b.assigned_to?" selected":"")+'>'+esc(x.display_name)+' ('+esc(x.role)+')</option>'}).join("")+
       '</select><button class="alt" data-bk="act" data-act="assign">Save assignment</button></div></div>';
-  if(s==="approved"||s==="in_progress"){h+='<div class="bk-grp"><h3 class="hd bk-h3">Work status</h3><div class="bk-btns">'+
-      (s==="approved"?'<button data-bk="act" data-act="set_status" data-status="in_progress">Start work</button>':"")+
-      '<button data-bk="act" data-act="set_status" data-status="completed">Mark completed</button>'+
-      (mgr&&s==="in_progress"?'<button class="alt" data-bk="act" data-act="set_status" data-status="approved">Back to approved</button>':"")+'</div></div>'}
+  if(s==="approved"||s==="in_progress"){h+='<div class="bk-grp"><h3 class="hd bk-h3">Work</h3><div class="bk-btns"><a class="btn" href="#jobs/'+esc(b.id)+'">Open job</a>'+
+      (mgr&&s==="in_progress"?'<button class="alt" data-bk="act" data-act="set_status" data-status="approved">Back to approved</button>':"")+'</div><p class="note">Starting, pausing and completing work is done on the Jobs page, so the time, parts and notes are recorded and a manager can review them.</p></div>'}
   if(mgr)h+='<div class="bk-grp">'+arm("set_status:cancelled","Cancel this booking",' data-status="cancelled"')+'</div>';
   return h+noteHtml(b)}
 function noteHtml(b){return'<div class="bk-grp"><h3 class="hd bk-h3">Internal note</h3><div class="bk-inline"><input id="bk-note" maxlength="500" placeholder="Visible to staff only" aria-label="Internal note"><button class="alt" data-bk="act" data-act="note">Add note</button></div></div>'}
@@ -1136,6 +1177,7 @@ setInterval(function(){if(location.hash!=="#bookings"||!sess||!ST.me||!ST.me.act
   loadList().then(function(){if(!ST.open&&$b("#bk")&&!(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)))render()}).catch(authErr)},45000);
 document.body.insertAdjacentHTML("beforeend",'<div id="bkg"></div>');
 var bar=$b(".bar");if(bar)bar.insertAdjacentHTML("beforeend",'<button type="button" class="alt ag-signout" data-bk="signout">Sign out</button>');
+window.AGX={ST:ST,rpc:rpc,api:api,isMgr:isMgr,ft:ft,SVC:SVC,STAT:STAT,EVT:EVT,nameOf:nameOf,authErr:authErr,boot:boot,loadList:loadList,loadStaff:loadStaff,say:say,hasSession:function(){return!!sess}};
 render();if(sess)boot();
 /* a full page refresh on any section (Calendar, Recruitment, Parts...) must reopen that section: the views above are registered after the first route() call */
 if(location.hash&&location.hash!=="#home")route();
@@ -1330,5 +1372,191 @@ document.addEventListener("keydown",function(e){if(e.key==="Escape"&&e.target.id
 
 /* the router first ran before this file loaded, so redraw if the page was opened on the Handbook */
 if((location.hash||"").indexOf("#handbook")===0&&typeof route==="function")route();
+})();
+</script>
+<script>
+/* ===== Atomic Garage: Jobs (mechanic job management) =====
+   Reads/writes only through the portal's existing Supabase session (AGX). All permission decisions are made
+   by the database (RLS + job_action); this file only presents what the server returns. */
+(function(){
+"use strict";
+var X=window.AGX;if(!X)return;
+var ST=X.ST;
+var LBL={unassigned:"Unassigned",ready:"Ready to start",working:"In progress",paused:"Paused",changes:"Changes requested",review:"Awaiting review",closed:"Closed",cancelled:"Cancelled"};
+var EL={started:"Job started",resumed:"Resumed",paused:"Paused",work_logged:"Work performed logged",note_added:"Note added",part_added:"Part added",part_removed:"Part removed",labour_added:"Labour added",labour_removed:"Labour removed",submitted:"Submitted for completion",changes_requested:"Changes requested",approved:"Approved and closed",closed_direct:"Closed without a work log",reassigned:"Assignment changed",cancelled:"Cancelled"};
+Object.assign(X.EVT,{job_submitted:"Work submitted for review",job_changes_requested:"Changes requested on the job",job_closed_direct:"Closed without a work log"});
+var JB={tab:null,jmap:{},parts:null,detail:{},open:null,busy:false,loaded:false,err:"",f:{},submitOpen:false,armed:null,skew:0,loading:false};
+function q(s){return document.querySelector(s)}
+function fv(id){return esc(JB.f[id]||"")}
+function money(n){return"$"+Number(n).toFixed(2)}
+function fmtMin(m){m=Math.max(0,Math.round(m));var h=Math.floor(m/60);return h?h+"h "+(m%60<10?"0":"")+(m%60)+"m":(m%60)+"m"}
+function hash(){return(location.hash||"").slice(1).split("/")}
+
+/* ---------- state ---------- */
+function jobOf(b){return JB.jmap[b.id]||null}
+function stateOf(b){var j=jobOf(b);
+ if(b.status==="completed")return"closed";
+ if(b.status==="cancelled"||b.status==="declined")return"cancelled";
+ if(b.status==="approved"){if(!b.assigned_to)return"unassigned";return j&&j.status==="paused"?"paused":"ready"}
+ if(b.status==="in_progress"){if(!j)return"ready";return j.status==="paused"?(j.review_note?"changes":"paused"):j.status==="submitted"?"review":"working"}
+ return"other"}
+function visible(){return(ST.list||[]).filter(function(b){return b.status==="approved"||b.status==="in_progress"||b.status==="completed"||(b.status==="cancelled"&&JB.jmap[b.id])})}
+function tabs(){return X.isMgr()?
+ [["dispatch","Dispatch",["unassigned","ready"]],["active","In progress",["working","paused","changes"]],["review","Needs review",["review"]],["done","Closed",["closed","cancelled"]]]:
+ [["todo","Ready to start",["ready"]],["active","In progress",["working","paused","changes"]],["review","Awaiting review",["review"]],["done","History",["closed","cancelled"]]]}
+function pick(){var T=tabs(),c={};T.forEach(function(t){c[t[0]]=visible().filter(function(b){return t[2].indexOf(stateOf(b))>=0}).length});
+ if(!JB.tab||!T.some(function(t){return t[0]===JB.tab}))JB.tab=X.isMgr()?(c.review?"review":c.dispatch?"dispatch":"active"):(c.active?"active":"todo");return c}
+
+/* ---------- data ---------- */
+function load(){
+ var p=[X.loadList(),X.api("jobs?select=id,booking_id,status,work_summary,review_note,started_at,submitted_at,closed_at,updated_at&order=updated_at.desc&limit=500").then(function(r){JB.jmap={};(r||[]).forEach(function(j){JB.jmap[j.booking_id]=j})})];
+ if(X.isMgr())p.push(X.loadStaff());
+ if(!JB.parts)p.push(X.api("parts?select=id,name,price&active=eq.true&order=sort.asc,name.asc").then(function(r){JB.parts=r||[]}).catch(function(e){if(e&&e.message==="auth")throw e;JB.parts=[]}));
+ return Promise.all(p).then(function(){JB.loaded=true})}
+function loadDetail(id){return X.rpc("job_detail",{p_booking:id}).then(function(r){
+ if(r&&r.ok===false)throw new Error(r.message||"Could not load this job.");
+ JB.detail[id]=r;if(r.now)JB.skew=Date.parse(r.now)-Date.now()})}
+function reload(){var id=JB.open;return load().then(function(){return id?loadDetail(id):null})}
+function fail(e){X.authErr(e);JB.err=(e&&e.message==="auth")?"":((e&&e.message)||"Something went wrong.");if(e&&e.message==="auth")JB.err="Your session has ended. Please sign in again on the Bookings page."}
+function act(id,action,p,okMsg,after){
+ if(JB.busy)return;JB.busy=true;JB.err="";render();
+ X.rpc("job_action",{p_booking:id,p_action:action,p:p||{}}).then(function(r){
+  if(r&&r.ok===false)throw new Error(r.message||"That change was not allowed.");
+  if(okMsg)X.say(okMsg);if(after)after();return reload()
+ }).catch(fail).then(function(){JB.busy=false;render()})}
+
+/* ---------- list ---------- */
+function mechOptions(sel){return'<option value="">Unassigned</option>'+(ST.staff||[]).filter(function(x){return x.active&&x.role!=="hr"}).map(function(x){return'<option value="'+esc(x.user_id)+'"'+(x.user_id===sel?" selected":"")+'>'+esc(x.display_name)+' ('+esc(x.role)+')</option>'}).join("")}
+function assignBox(b){return'<div class="jb-assign"><select id="jb-as-'+esc(b.id)+'" aria-label="Mechanic for '+esc(b.reference)+'">'+mechOptions(b.assigned_to)+'</select><button class="alt" data-jb="assign" data-id="'+esc(b.id)+'"'+(JB.busy?" disabled":"")+'>Save assignment</button></div>'}
+function card(b){var s=stateOf(b),mgr=X.isMgr(),inDispatch=mgr&&JB.tab==="dispatch";
+ return'<article class="jb-card s-'+s+'"><div><span class="jb-ref">'+esc(b.reference)+'</span><span class="jb-st '+s+'">'+LBL[s]+'</span>'+
+  '<div class="jb-sub">'+esc(X.SVC[b.service_type]||b.service_type)+' · '+esc(b.vehicle)+(b.vehicle_reg?' ('+esc(b.vehicle_reg)+')':'')+'</div>'+
+  '<div class="jb-sub">Customer: '+esc(b.character_name)+' · Appointment '+esc(X.ft(b.scheduled_at||b.preferred_at))+(mgr&&b.assigned_to?' · Mechanic: '+esc(X.nameOf(b.assigned_to)):'')+'</div>'+
+  (inDispatch?assignBox(b):'')+'</div><a class="btn" href="#jobs/'+esc(b.id)+'">Open job</a></article>'}
+function listView(){
+ var c=pick(),T=tabs(),mgr=X.isMgr(),cur=T.filter(function(t){return t[0]===JB.tab})[0];
+ var rows=visible().filter(function(b){return cur[2].indexOf(stateOf(b))>=0});
+ rows.sort(function(a,b){return JB.tab==="dispatch"||JB.tab==="todo"?new Date(a.scheduled_at||a.preferred_at)-new Date(b.scheduled_at||b.preferred_at):new Date(b.updated_at)-new Date(a.updated_at)});
+ var empty={dispatch:"No approved bookings are waiting. Approve a booking on the Bookings page and it appears here for assignment.",todo:"Nothing is waiting for you. A manager assigns approved bookings to you.",active:"No jobs in progress.",review:mgr?"Nothing is waiting for review.":"Nothing submitted at the moment.",done:"No closed jobs yet."};
+ return'<div class="card">'+sec("\u2699","Jobs",mgr?"Dispatch approved bookings, review submitted work and close jobs":"Your assigned work, from start to submission")+
+  '<div class="jb-tiles" role="tablist">'+T.map(function(t){return'<button type="button" class="jb-tile'+(JB.tab===t[0]?' on':'')+'" role="tab" aria-selected="'+(JB.tab===t[0])+'" data-jb="tab" data-t="'+t[0]+'"><b>'+c[t[0]]+'</b><span>'+t[1]+'</span></button>'}).join("")+'</div>'+
+  (JB.err?'<div class="jb-err" role="alert">'+esc(JB.err)+'</div>':'')+
+  '<div class="jb-list">'+(rows.length?rows.slice(0,80).map(card).join(""):'<div class="empty">'+empty[JB.tab]+'</div>')+'</div></div>'}
+
+/* ---------- job workspace ---------- */
+function runOf(D){return(D.labour||[]).filter(function(l){return l.kind==="session"&&!l.ended_at})[0]}
+function mins(D){return(D.labour||[]).reduce(function(a,l){return a+(l.minutes||0)},0)}
+function partsSum(D){return(D.parts||[]).reduce(function(a,p){return a+Number(p.unit_price)*p.quantity},0)}
+function editable(D,mgr){var j=D.job;return!!j&&(j.status==="in_progress"||j.status==="paused"||(mgr&&j.status==="submitted"))}
+function box(title,body,meta){return'<div class="card sp"><h3 class="hd bk-h3" style="margin-top:0">'+title+(meta?' <span class="pill" style="margin-left:8px">'+meta+'</span>':'')+'</h3>'+body+'</div>'}
+function dis(){return JB.busy?" disabled":""}
+function bar(b,s,D){
+ var run=runOf(D),j=D.job;
+ if(s==="unassigned")return'<div class="jb-bar"><p>This booking has no mechanic yet.'+(X.isMgr()?' Assign one below to make it startable.':' A manager needs to assign it.')+'</p></div>';
+ if(s==="ready")return'<div class="jb-bar"><p>Approved and ready. Starting moves the booking to In progress and starts the work timer.</p><button data-jb="act" data-act="start"'+dis()+'>Start job</button></div>';
+ if(s==="working")return'<div class="jb-bar"><span class="jb-clock" id="jb-clock" data-since="'+esc(run?run.started_at:"")+'">00:00:00</span><p>Timer running'+(run?' since '+esc(X.ft(run.started_at)):'')+'.</p><button class="alt" data-jb="act" data-act="pause"'+dis()+'>Pause</button><button data-jb="submit-open"'+dis()+'>Submit for completion</button></div>';
+ if(s==="paused"||s==="changes"){var again=b.status==="approved";
+  return'<div class="jb-bar"><p>'+(s==="changes"?'<b>Management asked for changes:</b> '+esc(j.review_note)+'<br>':'')+'Timer stopped. '+(again?'Start the job again to continue.':'Resume to keep working, or submit once the work is done.')+'</p><button data-jb="act" data-act="'+(again?'start':'resume')+'"'+dis()+'>'+(again?'Start again':'Resume')+'</button><button class="alt" data-jb="submit-open"'+dis()+'>Submit for completion</button></div>'}
+ if(s==="review")return'<div class="jb-bar"><p>Submitted '+esc(X.ft(j.submitted_at))+'. Waiting for management to review and close the job.</p></div>';
+ if(s==="closed")return'<div class="jb-bar"><p><b>Closed'+(j&&j.closed_at?' '+esc(X.ft(j.closed_at)):'')+'.</b> The booking is completed. This job is now read-only.</p></div>';
+ return'<div class="jb-bar"><p>This booking was cancelled.</p></div>'}
+function submitForm(b){return'<div class="card sp jb-form"><h3 class="hd bk-h3" style="margin-top:0">Submit for completion</h3><label for="jb-f-summary">Summary of work performed (required)</label><textarea id="jb-f-summary" maxlength="2000" placeholder="What was done, what was found, anything the customer should know.">'+fv("jb-f-summary")+'</textarea><p class="note">Submitting stops the timer. A manager will review the work, parts and labour before the job is closed.</p><div class="bk-btns sp"><button data-jb="submit"'+dis()+'>Submit job</button><button class="alt" data-jb="submit-cancel">Cancel</button></div></div>'}
+function reviewPanel(D){var j=D.job;
+ return'<div class="jb-review"><h3 class="hd bk-h3">Review submitted work</h3><p style="white-space:pre-wrap;overflow-wrap:anywhere">'+esc(j.work_summary||"")+'</p><p class="note">Labour '+fmtMin(mins(D))+' · Parts '+money(partsSum(D))+'. Check the work log, parts and labour below.</p>'+
+  '<label for="jb-f-rv">Message (required to send back, optional when approving)</label><textarea id="jb-f-rv" maxlength="500">'+fv("jb-f-rv")+'</textarea><div class="bk-btns sp"><button data-jb="approve"'+dis()+'>Approve and close job</button><button class="alt" data-jb="changes"'+dis()+'>Send back for changes</button></div></div>'}
+function logBox(D,ed){
+ var h=ed?'<label for="jb-f-kind">Add to the job</label><div class="jb-row"><select id="jb-f-kind"><option value="work"'+(JB.f["jb-f-kind"]!=="note"?" selected":"")+'>Work performed</option><option value="note"'+(JB.f["jb-f-kind"]==="note"?" selected":"")+'>Job note</option></select></div><textarea id="jb-f-body" maxlength="1000" class="jb-form" placeholder="What did you do or notice?">'+fv("jb-f-body")+'</textarea><div class="sp"><button data-jb="entry"'+dis()+'>Add entry</button></div>':'';
+ var e=(D.entries||[]).slice().reverse();
+ return box("Work log",h+(e.length?e.map(function(x){return'<div class="jb-ent"><p><span class="jb-tag'+(x.kind==="note"?' note':'')+'">'+(x.kind==="work"?"Work performed":"Note")+'</span>'+esc(x.body)+'</p><small>'+esc(x.author_name)+' · '+esc(X.ft(x.created_at))+'</small></div>'}).join(""):'<p class="note">Nothing logged yet.</p>'),e.length+"")}
+function partsBox(D,ed){
+ var cat=(JB.parts||[]).map(function(p){return'<option value="'+esc(p.id)+'"'+(JB.f["jb-f-part"]===p.id?" selected":"")+'>'+esc(p.name)+' \u2013 '+money(p.price)+'</option>'}).join("");
+ var add=ed?'<div class="jb-form"><label for="jb-f-part">Add a part from the catalogue</label><div class="jb-row"><select id="jb-f-part"><option value="">Choose a part\u2026</option>'+cat+'</select><input id="jb-f-pq" type="number" min="1" max="999" value="'+esc(JB.f["jb-f-pq"]||"1")+'" aria-label="Quantity" style="max-width:100px"><button data-jb="part"'+dis()+'>Add part</button></div>'+
+  '<details class="sp"><summary>Part not in the catalogue</summary><div class="jb-row sp"><input id="jb-f-cn" maxlength="80" placeholder="Part name" value="'+fv("jb-f-cn")+'" aria-label="Part name"><input id="jb-f-cp" type="number" min="0" step="0.01" placeholder="Unit price" value="'+fv("jb-f-cp")+'" aria-label="Unit price" style="max-width:130px"><input id="jb-f-cq" type="number" min="1" max="999" value="'+esc(JB.f["jb-f-cq"]||"1")+'" aria-label="Quantity" style="max-width:90px"><button class="alt" data-jb="part-custom"'+dis()+'>Add</button></div><p class="note">Management reviews typed-in parts before the job is closed.</p></details></div>':'';
+ var rows=(D.parts||[]).length?'<div class="tw sp"><table><tr><th>Part</th><th>Qty</th><th>Unit</th><th>Line</th><th>Added by</th>'+(ed?'<th></th>':'')+'</tr>'+D.parts.map(function(p){return'<tr><td>'+esc(p.name)+(p.custom?' <span class="pill">Typed in</span>':'')+'</td><td>'+p.quantity+'</td><td>'+money(p.unit_price)+'</td><td>'+money(p.unit_price*p.quantity)+'</td><td>'+esc(p.added_by_name)+'</td>'+(ed?'<td><button class="alt sm" data-jb="part-del" data-id="'+p.id+'"'+dis()+'>Remove</button></td>':'')+'</tr>'}).join("")+'</table></div><div class="jb-tot"><span>Parts total</span><b>'+money(partsSum(D))+'</b></div>':'<p class="note">No parts recorded.</p>';
+ return box("Parts used",add+rows,(D.parts||[]).length+"")}
+function labourBox(D,ed){
+ var add=ed?'<div class="jb-form"><label for="jb-f-lm">Add time not captured by the timer</label><div class="jb-row"><input id="jb-f-lm" type="number" min="1" max="1440" placeholder="Minutes" value="'+fv("jb-f-lm")+'" aria-label="Minutes" style="max-width:120px"><input id="jb-f-ld" maxlength="300" placeholder="What was the time spent on?" value="'+fv("jb-f-ld")+'" aria-label="Description"><button class="alt" data-jb="lab-add"'+dis()+'>Add time</button></div></div>':'';
+ var rows=(D.labour||[]).length?'<div class="tw sp"><table><tr><th>Who</th><th>Type</th><th>When</th><th>Time</th>'+(ed?'<th></th>':'')+'</tr>'+D.labour.map(function(l){var open=l.kind==="session"&&!l.ended_at;
+  return'<tr><td>'+esc(l.user_name)+'</td><td>'+(l.kind==="session"?"Timer":"Added by hand")+(l.description?'<br><small>'+esc(l.description)+'</small>':'')+'</td><td>'+esc(X.ft(l.started_at))+'</td><td>'+(open?'running':fmtMin(l.minutes||0))+'</td>'+(ed?'<td>'+(l.kind==="manual"?'<button class="alt sm" data-jb="lab-del" data-id="'+l.id+'"'+dis()+'>Remove</button>':'')+'</td>':'')+'</tr>'}).join("")+'</table></div><div class="jb-tot"><span>Recorded labour</span><b>'+fmtMin(mins(D))+'</b></div>':'<p class="note">No time recorded yet. The timer starts when the job starts.</p>';
+ return box("Labour",add+rows,fmtMin(mins(D)))}
+function histBox(D){var ev=(D.events||[]).slice().reverse();
+ return box("History",'<ol class="jb-tl">'+ev.map(function(e){return'<li><b>'+esc(EL[e.action]||e.action)+'</b><small>'+esc(e.actor_name)+' ('+esc(e.actor_role)+') \u00b7 '+esc(X.ft(e.at))+'</small>'+(e.detail?'<div class="d">'+esc(e.detail)+'</div>':'')+'</li>'}).join("")+'</ol>',ev.length+"")}
+function directClose(b){
+ return'<details class="card sp"><summary><b>Close without a work log</b></summary><p class="note">For work done in person that was never logged here. A reason is required and is recorded in the history.</p><label for="jb-f-cd">Reason</label><textarea id="jb-f-cd" maxlength="500">'+fv("jb-f-cd")+'</textarea><div class="sp"><button class="alt'+(JB.armed==="cd"?" jb-danger":"")+'" data-jb="'+(JB.armed==="cd"?"close-direct":"arm-cd")+'"'+dis()+'>'+(JB.armed==="cd"?"Click again to close this job":"Close job")+'</button></div></details>'}
+function detailView(){
+ var id=JB.open,b=(ST.list||[]).filter(function(x){return x.id===id})[0],D=JB.detail[id];
+ var back='<a class="jb-back" href="#jobs">\u2190 All jobs</a>';
+ if(!b||!D)return back+'<div class="card"><div class="empty">'+(JB.loading?'Loading the job\u2026':'This job could not be found, or it is not assigned to you.')+'</div></div>';
+ var s=stateOf(b),mgr=X.isMgr(),ed=editable(D,mgr);
+ var dl=[["Customer",b.character_name],["Contact (in-character)",b.contact],["Vehicle",b.vehicle],["Registration",b.vehicle_reg],["Service",X.SVC[b.service_type]||b.service_type],["Booking reference",b.reference],
+  ["Appointment",b.scheduled_at?X.ft(b.scheduled_at):X.ft(b.preferred_at)],["Mechanic",b.assigned_to?X.nameOf(b.assigned_to):"Not assigned"]].filter(function(x){return x[1]}).map(function(x){return'<div><dt>'+esc(x[0])+'</dt><dd>'+esc(x[1])+'</dd></div>'}).join("")+'<div class="wide"><dt>Work requested</dt><dd style="white-space:pre-wrap">'+esc(b.description)+'</dd></div>';
+ return back+'<div class="card"><div class="jb-head"><h2>'+esc(b.reference)+'</h2><span class="jb-st '+s+'">'+LBL[s]+'</span></div><dl class="jb-dl">'+dl+'</dl>'+
+  (JB.err?'<div class="jb-err" role="alert">'+esc(JB.err)+'</div>':'')+bar(b,s,D)+'</div>'+
+  (mgr&&s!=="closed"&&s!=="cancelled"?'<div class="card sp"><h3 class="hd bk-h3" style="margin-top:0">Assigned mechanic</h3>'+assignBox(b)+'</div>':'')+
+  (JB.submitOpen&&(s==="working"||s==="paused"||s==="changes")?submitForm(b):'')+
+  (mgr&&s==="review"?reviewPanel(D):'')+
+  (D.job&&D.job.work_summary&&(s==="review"&&!mgr||s==="closed")?box("Work summary",'<p style="white-space:pre-wrap;overflow-wrap:anywhere">'+esc(D.job.work_summary)+'</p>'+(D.job.review_note?'<p class="note">Management note: '+esc(D.job.review_note)+'</p>':'')):'')+
+  (D.job?logBox(D,ed)+partsBox(D,ed)+labourBox(D,ed)+histBox(D):'<div class="card sp"><p class="note">Nothing has been recorded yet. The work log, parts and labour open when the job starts.</p></div>')+
+  (mgr&&(s==="ready"||s==="working"||s==="paused"||s==="changes")?directClose(b):'')}
+
+/* ---------- render / lifecycle ---------- */
+function render(){var el=q("#jb");if(!el)return;
+ var keep=document.activeElement&&document.activeElement.id,sel=null;
+ try{if(keep&&/^jb-f-/.test(keep)&&document.activeElement.setSelectionRange)sel=[document.activeElement.selectionStart,document.activeElement.selectionEnd]}catch(e){}
+ if(!X.hasSession()){el.innerHTML='<div class="card">'+sec("\u2699","Jobs","Sign in to see your work")+'<p class="note">Sign in on the Bookings page with your staff account, then come back here.</p><a class="btn" href="#bookings">Go to sign in</a></div>';return}
+ if(ST.me===undefined){el.innerHTML='<div class="card"><div class="sk" style="height:140px"></div></div>';return}
+ if(!ST.me||!ST.me.active){el.innerHTML='<div class="card">'+sec("\u2699","Jobs","Staff access needed")+'<p class="note">Your account does not have staff access.</p></div>';return}
+ if(ST.me.role!=="manager"&&ST.me.role!=="mechanic"){el.innerHTML='<div class="card">'+sec("\u2699","Jobs","Not part of your role")+'<p class="note">Jobs are handled by mechanics and managers.</p></div>';return}
+ if(!JB.loaded){el.innerHTML='<div class="card"><div class="sk" style="height:200px"></div></div>';return}
+ el.innerHTML=JB.open?detailView():listView();
+ if(keep&&/^jb-f-/.test(keep)){var f=document.getElementById(keep);if(f){f.focus();try{if(sel)f.setSelectionRange(sel[0],sel[1])}catch(e){}}}
+ tick()}
+function tick(){var c=q("#jb-clock");if(!c||!c.dataset.since)return;var s=Math.max(0,Math.floor((Date.now()+JB.skew-Date.parse(c.dataset.since))/1000));
+ var p=function(n){return(n<10?"0":"")+n};c.textContent=p(Math.floor(s/3600))+":"+p(Math.floor(s%3600/60))+":"+p(s%60)}
+function navLink(){var l=document.querySelector('nav a[data-v="jobs"]');if(l)l.hidden=!(X.hasSession()&&ST.me&&ST.me.active&&(ST.me.role==="manager"||ST.me.role==="mechanic"))}
+function kick(){
+ navLink();var p=hash();JB.open=p[1]||null;JB.err="";if(!JB.open)JB.submitOpen=false;
+ render();
+ if(!X.hasSession())return;
+ if(ST.me===undefined)X.boot();
+ var n=0,w=setInterval(function(){n++;if(!q("#jb")){clearInterval(w);return}
+  if(ST.me!==undefined||n>60){clearInterval(w);navLink();
+   if(ST.me&&ST.me.active&&(ST.me.role==="manager"||ST.me.role==="mechanic")){JB.loading=true;load().then(function(){return JB.open?loadDetail(JB.open):null}).catch(fail).then(function(){JB.loading=false;render()})}else render()}},250)}
+window.V.jobs=function(){setTimeout(kick,0);return'<div id="jb"></div>'};
+
+/* ---------- events ---------- */
+document.addEventListener("click",function(e){
+ var b=e.target.closest&&e.target.closest("[data-jb]");if(!b||b.disabled)return;
+ var a=b.dataset.jb,id=JB.open;
+ if(a==="tab"){JB.tab=b.dataset.t;render()}
+ else if(a==="assign"){var tid=b.dataset.id,v=(document.getElementById("jb-as-"+tid)||{}).value||null;
+  if(JB.busy)return;JB.busy=true;JB.err="";render();
+  X.rpc("staff_booking_action",{p_id:tid,p_action:"assign",p:{mechanic_id:v}}).then(function(r){if(r&&r.ok===false)throw new Error(r.message||"Could not assign.");X.say(v?"Mechanic assigned":"Mechanic removed");return reload()}).catch(fail).then(function(){JB.busy=false;render()})}
+ else if(a==="act")act(id,b.dataset.act,{},b.dataset.act==="start"?"Job started":b.dataset.act==="pause"?"Job paused":"Job resumed");
+ else if(a==="submit-open"){JB.submitOpen=true;render();var t=q("#jb-f-summary");if(t)t.focus()}
+ else if(a==="submit-cancel"){JB.submitOpen=false;render()}
+ else if(a==="submit"){var sm=(JB.f["jb-f-summary"]||"").trim();if(sm.length<5){JB.err="Describe the work you performed before submitting.";render();return}
+  act(id,"submit",{summary:sm},"Submitted for review",function(){JB.submitOpen=false;JB.f["jb-f-summary"]=""})}
+ else if(a==="entry"){var body=(JB.f["jb-f-body"]||"").trim();if(!body){JB.err="Write something first.";render();return}
+  act(id,"add_entry",{kind:JB.f["jb-f-kind"]==="note"?"note":"work",body:body},"Added to the work log",function(){JB.f["jb-f-body"]=""})}
+ else if(a==="part"){var pid=JB.f["jb-f-part"];if(!pid){JB.err="Choose a part first.";render();return}
+  act(id,"add_part",{part_id:pid,quantity:JB.f["jb-f-pq"]||"1"},"Part added",function(){JB.f["jb-f-part"]="";JB.f["jb-f-pq"]="1"})}
+ else if(a==="part-custom")act(id,"add_part",{name:JB.f["jb-f-cn"]||"",price:JB.f["jb-f-cp"]||"",quantity:JB.f["jb-f-cq"]||"1"},"Part added",function(){JB.f["jb-f-cn"]="";JB.f["jb-f-cp"]="";JB.f["jb-f-cq"]="1"});
+ else if(a==="part-del")act(id,"remove_part",{id:b.dataset.id},"Part removed");
+ else if(a==="lab-add")act(id,"add_labour",{minutes:JB.f["jb-f-lm"]||"",description:JB.f["jb-f-ld"]||""},"Time added",function(){JB.f["jb-f-lm"]="";JB.f["jb-f-ld"]=""});
+ else if(a==="lab-del")act(id,"remove_labour",{id:b.dataset.id},"Time removed");
+ else if(a==="approve")act(id,"approve",{message:JB.f["jb-f-rv"]||""},"Job approved and closed",function(){JB.f["jb-f-rv"]=""});
+ else if(a==="changes"){if(!(JB.f["jb-f-rv"]||"").trim()){JB.err="Tell the mechanic what needs to change.";render();return}
+  act(id,"request_changes",{message:JB.f["jb-f-rv"]},"Sent back to the mechanic",function(){JB.f["jb-f-rv"]=""})}
+ else if(a==="arm-cd"){if(!(JB.f["jb-f-cd"]||"").trim()){JB.err="Give a reason first.";render();return}JB.armed="cd";render()}
+ else if(a==="close-direct"){JB.armed=null;act(id,"close_direct",{message:JB.f["jb-f-cd"]||""},"Job closed",function(){JB.f["jb-f-cd"]=""})}
+});
+function store(e){var t=e.target;if(t&&/^jb-f-/.test(t.id||"")){JB.f[t.id]=t.value;if(t.id==="jb-f-cd"&&JB.armed){JB.armed=null}}}
+document.addEventListener("input",store);document.addEventListener("change",store);
+setInterval(tick,1000);
+setInterval(function(){navLink();if(!/^#jobs/.test(location.hash)||!X.hasSession()||!ST.me||JB.busy||document.hidden||!q("#jb"))return;
+ var a=document.activeElement;if(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))return;
+ reload().then(render).catch(function(e){fail(e);render()})},30000);
+if(/^#jobs/.test(location.hash)&&typeof route==="function")route();
 })();
 </script></body></html>
