@@ -422,10 +422,81 @@ details[open]>summary>.hb-car::after,details[open]>.hb-sec-s::after,details[open
 .jb-err{margin-top:14px;padding:12px 14px;border:1px solid var(--bad);border-left-width:4px;color:var(--ink)}
 .jb-danger{background:transparent;color:var(--bad);border:1px solid var(--bad)}
 @media(max-width:640px){.jb-card{grid-template-columns:1fr}.jb-card .btn,.jb-card>button{width:100%;text-align:center}.jb-bar button{flex:1}.jb-tile b{font-size:30px}}
+
+/* ===== Operations menu, hubs, My Profile, Manager Access ===== */
+nav a.ag-navhid{display:none!important}
+nav a .ag-caret{margin-left:6px;font-size:11px;opacity:.8}
+nav a#ag-ops[aria-expanded="true"]{color:var(--acc)}
+.ag-menu{position:fixed;z-index:60;min-width:270px;max-width:calc(100vw - 16px);background:var(--panel2,#161616);border:1px solid var(--acc);border-top-width:4px;box-shadow:0 18px 40px rgba(0,0,0,.55);padding:6px;backdrop-filter:blur(10px)}
+.ag-menu[hidden]{display:none}
+.ag-menu a{display:block;padding:11px 14px;color:var(--ink);text-decoration:none;border-left:3px solid transparent}
+.ag-menu a:hover,.ag-menu a:focus{background:var(--glow);border-left-color:var(--acc);outline:none}
+.ag-menu b{display:block;font:700 14px Archivo,sans-serif;letter-spacing:.06em;text-transform:uppercase}
+.ag-menu small{display:block;color:var(--mute);margin-top:2px;font-size:12px}
+.op-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:18px}
+.op-card{display:flex;flex-direction:column;gap:8px;padding:20px;background:var(--panel2);border:1px solid var(--line);border-top:4px solid var(--acc);color:var(--ink);text-decoration:none;min-height:190px;transition:border-color .15s,transform .15s}
+.op-card:hover{border-color:var(--acc);transform:translateY(-2px)}
+.op-card:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.op-card h3{font-size:28px;line-height:1}.op-card p{margin:0;color:var(--mute);flex:1}
+.op-stat{font-size:14px}.op-stat b{color:var(--acc);font-size:18px}
+.op-go{font:700 12px Archivo,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
+.mg-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}.mg-tabs .btn{padding:10px 16px;font-size:12px}
+.mg-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:16px}.mg-bar select{width:auto;min-width:160px}
+.mg-row{cursor:pointer}.mg-row:hover,.mg-row:focus{background:var(--glow);outline:none}.mg-row.on{box-shadow:inset 4px 0 var(--acc);background:var(--glow)}
+.nw{white-space:nowrap}
+.pill.bad{color:var(--bad);border-color:var(--bad)}
+.pf-top{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap}
+.pf-main{flex:1;min-width:240px}.pf-main h2{font-size:clamp(34px,5vw,56px);line-height:1}
+.pf-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.pf-sub{margin:12px 0 0;color:var(--mute)}.pf-bio{margin:14px 0 0;white-space:pre-wrap;overflow-wrap:anywhere;max-width:70ch}
+.pf-av{flex:none;display:grid;place-items:center;width:56px;height:56px;object-fit:cover;background:var(--glow);border:2px solid var(--acc);color:var(--acc);font:800 24px "Big Shoulders Display",sans-serif}
+.pf-av.lg{width:128px;height:128px;font-size:54px}
+.pf-id{display:flex;gap:14px;align-items:center}
+.pf-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.pf-tile{padding:14px 16px;background:var(--panel2);border:1px solid var(--line)}
+.pf-tile b{display:block;font:800 36px/1 "Big Shoulders Display",sans-serif;color:var(--acc)}
+.pf-tile span{display:block;margin-top:4px;color:var(--mute);font:600 12px Archivo,sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.pf-tile small{display:block;color:var(--mute);margin-top:2px}
+.pf-photo{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}.pf-photo>div{flex:1;min-width:220px}
+.pf-locked{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:16px;padding:12px 14px;border:1px dashed var(--line);color:var(--mute)}
+.pf-locked b{flex-basis:100%;color:var(--ink);font:700 12px Archivo,sans-serif;letter-spacing:.12em;text-transform:uppercase}.pf-locked small{flex-basis:100%}
+@media(max-width:560px){.pf-av.lg{width:88px;height:88px;font-size:38px}.pf-top{gap:14px}.op-card{min-height:0}}
+
+/* ===== Bookings: compact list + details pane (drawer on mobile) ===== */
+.bk-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.bk-find{margin-top:18px}.bk-find input{max-width:560px}
+.bk-count{margin:2px 2px 8px;color:var(--mute);font-size:13px}
+.bk2{display:grid;grid-template-columns:minmax(300px,430px) minmax(0,1fr);gap:18px;align-items:start;margin-top:16px}
+.bk2-list{display:grid;gap:8px;max-height:calc(100vh - 260px);min-height:200px;overflow:auto;padding:2px 4px 2px 2px;overscroll-behavior:contain}
+.bk-row2{display:flex;flex-direction:column;gap:5px;width:100%;text-align:left;padding:12px 14px;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-left:4px solid var(--line);border-radius:0;font:inherit;text-transform:none;letter-spacing:0;cursor:pointer}
+.bk-row2:hover{border-color:var(--acc);transform:none;filter:none}
+.bk-row2.urgent{border-left-color:var(--bad)}.bk-row2.on{border-color:var(--acc);border-left-color:var(--acc);background:var(--glow)}
+.bk-row2:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.bk-r1{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.bk-r2{font-weight:600;overflow-wrap:anywhere}.bk-r3{color:var(--mute);font-size:13px;overflow-wrap:anywhere}
+.bk-na{display:inline-block;align-self:flex-start;padding:2px 9px;border:1px solid var(--mute);color:var(--mute);font:700 11px Archivo,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.bk-na.bad{border-color:var(--bad);color:var(--bad)}.bk-na.ok{border-color:var(--ok);color:var(--ok)}
+.bk2-pane{position:sticky;top:88px;max-height:calc(100vh - 110px);overflow:auto;border:1px solid var(--line);border-top:4px solid var(--acc);background:var(--panel2);padding:0;overscroll-behavior:contain}
+.bk2-empty{padding:34px 22px;color:var(--mute);text-align:center}.bk2-empty b{display:block;color:var(--ink);font:800 26px "Big Shoulders Display",sans-serif;text-transform:uppercase}
+.bk-d2{padding:0 20px 20px}
+.bk-dh{display:flex;justify-content:space-between;align-items:center;gap:12px;position:sticky;top:0;z-index:2;background:var(--panel2);padding:14px 0;border-bottom:1px solid var(--line);margin-bottom:6px}
+.bk-sec{padding:14px 0;border-bottom:1px solid var(--line)}.bk-sec:last-child{border-bottom:0}
+.bk-sec .bk-h3{margin-top:0}.bk-sec.bk-next{border-left:4px solid var(--acc);padding-left:14px;background:var(--glow);margin:8px 0}
+.bk-dl2{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px 18px;margin:0}
+.bk-dl2 dt{color:var(--acc);font:700 11px Archivo,sans-serif;letter-spacing:.12em;text-transform:uppercase}.bk-dl2 dd{margin:3px 0 0;overflow-wrap:anywhere}
+.bk-wr{margin-top:14px}.bk-wr b{color:var(--acc);font:700 11px Archivo,sans-serif;letter-spacing:.12em;text-transform:uppercase}.bk-wr p{margin:4px 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.bk-sec.bk-dz{border:1px dashed var(--bad);margin-top:18px;padding:14px;background:transparent}.bk-sec.bk-dz .bk-h3{color:var(--bad)}
+@media(max-width:900px){
+ .bk2{grid-template-columns:1fr}.bk2-list{max-height:none}
+ .bk2-pane{display:none}
+ .bk2.has-open .bk2-pane{display:block;position:fixed;inset:0;z-index:45;max-height:none;border:0;border-top:4px solid var(--acc);background:var(--bg,#0b0b0b)}
+ .bk2.has-open .bk2-pane .bk-d2{padding:0 16px calc(24px + env(safe-area-inset-bottom,0px))}
+ .bk2.has-open .bk2-list{display:none}
+}
 </style></head><body>
 <div class="app"><nav aria-label="Main">
 <div class="brand"><svg viewBox="0 0 48 48" fill="none" stroke="#ff7a1a" stroke-width="2.4"><ellipse cx="24" cy="24" rx="20" ry="8"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(60 24 24)"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(120 24 24)"/><circle cx="24" cy="24" r="3.5" fill="#ff7a1a"/></svg><b>Atomic<br>Garage</b></div>
-<a href="#home" data-v="home"><i aria-hidden="true">⌂</i>Home</a><a href="#dashboard" data-v="dashboard"><i aria-hidden="true">◫</i>Dashboard</a><a href="#calendar" data-v="calendar"><i aria-hidden="true">▦</i>Calendar</a><a href="#bookings" data-v="bookings"><i aria-hidden="true">✉</i>Bookings</a><a href="#jobs" data-v="jobs" hidden><i aria-hidden="true">⚙</i>Jobs</a><a href="#recruitment" data-v="recruitment" hidden><i aria-hidden="true">★</i>Recruitment</a><a href="#handbook" data-v="handbook"><i aria-hidden="true">☰</i>Handbook</a><a href="#parts" data-v="parts"><i aria-hidden="true">▦</i>Parts store</a><a href="#loa" data-v="loa"><i aria-hidden="true">✈</i>Leave of absence</a><a href="#id" data-v="id"><i aria-hidden="true">▣</i>Staff ID</a><a href="../" class="ag-public"><i aria-hidden="true">↗</i>Customer site</a></nav>
+<a href="#home" data-v="home"><i aria-hidden="true">⌂</i>Home</a><a href="#dashboard" data-v="dashboard"><i aria-hidden="true">◫</i>Dashboard</a><a href="#calendar" data-v="calendar"><i aria-hidden="true">▦</i>Calendar</a><a href="#operations" data-v="operations" id="ag-ops" aria-haspopup="menu" aria-expanded="false"><i aria-hidden="true">▤</i>Operations<i class="ag-caret" aria-hidden="true">▾</i></a><a href="#jobs" data-v="jobs" class="ag-navhid" hidden><i aria-hidden="true">⚙</i>Jobs</a><a href="#recruitment" data-v="recruitment" class="ag-navhid" hidden><i aria-hidden="true">★</i>Recruitment</a><a href="#handbook" data-v="handbook"><i aria-hidden="true">☰</i>Handbook</a><a href="#parts" data-v="parts"><i aria-hidden="true">▦</i>Parts store</a><a href="#loa" data-v="loa"><i aria-hidden="true">✈</i>Leave of absence</a><a href="#id" data-v="id"><i aria-hidden="true">▣</i>Staff ID</a><a href="#profile" data-v="profile" hidden><i aria-hidden="true">◉</i>My Profile</a><a href="../" class="ag-public"><i aria-hidden="true">↗</i>Customer site</a></nav>
 <main><div class="bar"><span class="clock" id="ck"></span><div class="who" id="me"></div></div><div id="v"></div></main></div>
 <script>
 var D={name:"New Mechanic",rank:"Mechanic",dos:"",phone:"",addr:"",photo:"",hours:0,life:0,shifts:0,start:null,
@@ -500,8 +571,9 @@ document.addEventListener("click",function(e){var b=e.target.closest("[data-a]")
 document.addEventListener("keydown",function(e){if(e.key=="Enter"&&e.target.id=="nt"){act.post();return}if((e.key=="Enter"||e.key==" ")&&e.target.dataset.a){e.preventDefault();act[e.target.dataset.a](e.target)}});
 document.addEventListener("input",function(e){var t=e.target;if(t.dataset.k){S[t.dataset.k]=t.value;save();idc();me()}if(t.id=="q"||t.id=="cat")grid();if(/^l[ftr]$/.test(t.id))loa()});
 var tick;
-function route(){ensureSelf();var v=(location.hash||"#home").slice(1).split("/")[0];if(!V[v])v="home";
-document.querySelectorAll("nav a").forEach(function(a){a.classList.toggle("on",a.dataset.v==v)});
+function route(){ensureSelf();var v=(location.hash||"#home").slice(1).split("/")[0];
+  if(window.AGR){var al=window.AGR(location.hash);if(al&&al!==location.hash){location.replace(al);return}}if(!V[v])v="home";
+document.querySelectorAll("nav a").forEach(function(a){a.classList.toggle("on",a.dataset.v==v)});if(window.AGNAV)window.AGNAV(v);
 $("#v").innerHTML=V[v]();me();idc();grid();if($("#pt"))upc();if($("#lo"))loa()}
 function clk(){$("#ck").textContent=utc(Date.now())+" UTC";document.querySelectorAll(".dur").forEach(function(d){d.textContent=fmt(Date.now()-d.dataset.s)});var r=$("#rt");if(r&&S.start)r.textContent=fmt(Date.now()-S.start)}
 var nt;function nav(){clearTimeout(nt);window.scrollTo(0,0);$("#v").innerHTML='<div class="sk" style="height:240px"></div><div class="sk sp" style="height:160px"></div>';nt=setTimeout(route,200)}window.addEventListener("storage",function(e){if(e.key!="ag2"||!e.newValue)return;try{S=Object.assign({},D,JSON.parse(e.newValue));route()}catch(_){}});window.addEventListener("hashchange",nav);route();clk();setInterval(clk,1000);
@@ -656,44 +728,59 @@ function chips(){var f=filters(),cur=curFilter()[0];
     return'<button type="button" class="sm '+(x[0]===cur?"":"alt")+'" data-bk="filter" data-f="'+x[0]+'" aria-pressed="'+(x[0]===cur)+'">'+esc(x[1])+' <b>'+n+'</b></button>'}).join("")+'</div>'}
 function appHtml(){var mgr=isMgr();
   var h='<div class="card bk-bar"><div class="bk-top"><div><b>'+esc(ST.me.display_name)+'</b> <span class="pill a">'+roleName(ST.me.role)+'</span></div><div class="bk-btns"><button class="alt sm" data-bk="reload">Refresh</button><button class="alt sm" data-bk="signout">Sign out</button></div></div>';
-  if(mgr)h+='<div class="bk-tabs"><button type="button" class="'+(ST.tab==="bookings"?"":"alt")+'" data-bk="tab" data-t="bookings">Bookings</button><button type="button" class="'+(ST.tab==="team"?"":"alt")+'" data-bk="tab" data-t="team">Team and site settings</button><button type="button" class="'+(ST.tab==="parts"?"":"alt")+'" data-bk="tab" data-t="parts">Parts</button><button type="button" class="'+(ST.tab==="apps"?"":"alt")+'" data-bk="tab" data-t="apps">Applications</button></div>';
+  if(mgr&&ST.ctx==="manager")h+=window.AGMGTABS?window.AGMGTABS():"";
   h+='</div>';
   if(ST.err)h+='<div class="bk-note bad" role="alert">'+esc(ST.err)+'</div>';
   return h+(mgr&&ST.tab==="apps"?appsHtml():mgr&&ST.tab==="parts"?partsHtml():mgr&&ST.tab==="team"?teamHtml():listHtml())}
-function listHtml(){var f=curFilter(),rows=f[2]?ST.list.filter(function(b){return f[2].indexOf(b.status)>=0}):ST.list;
-  var head=sec("✉","Bookings",isMgr()?"Review requests, propose times, assign mechanics":"Jobs assigned to you");
-  var body=rows.length?rows.map(cardHtml).join(""):'<div class="empty">'+(ST.list.length?"Nothing in this view.":(isMgr()?"No bookings yet. Requests from the public website appear here as Pending.":ST.me&&ST.me.role==="hr"?"Bookings are handled by managers and mechanics. Use the Recruitment section for applications and interviews.":"No bookings are assigned to you yet. A manager will assign work to you."))+'</div>';
-  return'<div class="card">'+head+chips()+'<div class="bk-list">'+body+'</div></div>'}
-function cardHtml(b){var open=ST.open===b.id;
-  return'<article class="bk-card'+(open?" open":"")+'"><div class="bk-row"><div class="bk-main"><b class="bk-ref">'+esc(b.reference)+'</b> '+pill(b.status)+
-   '<div class="bk-sub">'+esc(SVC[b.service_type]||b.service_type)+' · '+esc(b.vehicle)+' · '+esc(b.character_name)+'</div>'+
-   '<div class="bk-sub">'+(b.status==="approved"||b.status==="in_progress"||b.status==="completed"?"Appointment <b>"+esc(ft(b.scheduled_at))+"</b>":"Requested "+esc(ft(b.preferred_at)))+
-   (b.status==="alternative_proposed"||b.status==="alternative_accepted"?" · Proposed <b>"+esc(ft(b.proposed_at))+"</b>":"")+
-   (b.assigned_to?" · Mechanic: "+esc(nameOf(b.assigned_to)):"")+'</div></div>'+
-   '<button class="alt sm" data-bk="toggle" data-id="'+esc(b.id)+'" aria-expanded="'+open+'">'+(open?"Close":"Open")+'</button></div>'+(open?detailHtml(b):"")+'</article>'}
-function detailHtml(b){var ev=ST.events[b.id];
-  var dl='<dl class="bk-dl">'+[["Character",b.character_name],["Contact (in-character)",b.contact],["Vehicle",b.vehicle],["Registration",b.vehicle_reg],["Service",SVC[b.service_type]||b.service_type],
-   ["Requested time",ft(b.preferred_at)],["Proposed time",b.proposed_at?ft(b.proposed_at):""],["Approved appointment",b.scheduled_at&&(b.status==="approved"||b.status==="in_progress"||b.status==="completed")?ft(b.scheduled_at):""],
-   ["Submitted",ft(b.created_at)],["Work requested",b.description],["Message shown to customer",b.customer_message]].filter(function(x){return x[1]}).map(function(x){return"<dt>"+esc(x[0])+"</dt><dd>"+esc(x[1])+"</dd>"}).join("")+"</dl>";
-  var tl=ev?'<h3 class="hd bk-h3">History</h3><ol class="bk-tl">'+ev.map(function(e){return'<li class="'+(e.internal?"int":"")+'"><b>'+esc(EVT[e.action]||e.action)+'</b>'+(e.internal?' <span class="pill">Staff only</span>':"")+'<small>'+esc(ft(e.at))+(e.actor_name?" · "+esc(e.actor_name):"")+'</small>'+(e.message?'<span>'+esc(e.message)+'</span>':"")+'</li>'}).join("")+'</ol>':'<div class="sk" style="height:80px"></div>';
-  return'<div class="bk-detail">'+dl+actionsHtml(b)+tl+'</div>'}
+function nextAction(b){var m=isMgr(),s=b.status;
+  if(s==="pending")return m?["Needs a decision","bad"]:["Awaiting approval",""];
+  if(s==="alternative_accepted")return m?["Customer accepted a time: confirm it","bad"]:["Awaiting confirmation",""];
+  if(s==="alternative_proposed")return["Waiting for the customer",""];
+  if(s==="approved"){if(!b.assigned_to)return m?["Assign a mechanic","bad"]:["Not assigned yet",""];return["Ready to start","ok"]}
+  if(s==="in_progress")return["Work in progress","ok"];
+  return null}
+function bkMatch(b,toks){var h=[b.reference,b.character_name,b.vehicle,b.vehicle_reg,b.contact,SVC[b.service_type]||b.service_type,b.description,STAT[b.status]||b.status,b.assigned_to?nameOf(b.assigned_to):""].join(" ").toLowerCase();return toks.every(function(t){return h.indexOf(t)>-1})}
+function visibleRows(){var f=curFilter(),rows=f[2]?ST.list.filter(function(b){return f[2].indexOf(b.status)>=0}):ST.list,toks=String(ST.q||"").toLowerCase().split(/\s+/).filter(Boolean);return toks.length?rows.filter(function(b){return bkMatch(b,toks)}):rows}
+function emptyMsg(){if(String(ST.q||"").trim()&&ST.list.length)return"No bookings match your search. Try a reference, a name, a registration or a service.";
+  return ST.list.length?"Nothing in this view.":(isMgr()?"No bookings yet. Requests from the public website appear here as Pending.":ST.me&&ST.me.role==="hr"?"Bookings are handled by managers and mechanics. Use the Recruitment section for applications and interviews.":"No bookings are assigned to you yet. A manager will assign work to you.")}
+function rowsHtml(){var r=visibleRows();return r.length?'<p class="bk-count">'+r.length+' booking'+(r.length===1?"":"s")+'</p>'+r.map(cardHtml).join(""):'<div class="empty">'+emptyMsg()+'</div>'}
+function listHtml(){var head=sec("\u2709","Bookings",isMgr()?"Review requests, propose times, assign mechanics":"Jobs assigned to you");
+  var sel=ST.open?ST.list.filter(function(b){return b.id===ST.open})[0]:null;
+  return'<div class="card">'+head+'<div class="bk-find"><label for="bk-q" class="bk-sr">Search bookings</label><input id="bk-q" type="search" autocomplete="off" placeholder="Search reference, customer, vehicle, registration, service\u2026" value="'+esc(ST.q||"")+'"></div>'+chips()+
+   '<div class="bk2'+(sel?" has-open":"")+'"><div class="bk2-list" id="bk2-rows">'+rowsHtml()+'</div><aside class="bk2-pane" id="bk2-pane" aria-label="Booking details">'+
+   (sel?detailHtml(sel):'<div class="bk2-empty"><b>No booking selected</b><p>Choose a booking to see the customer, vehicle, schedule, assignment, notes and history.</p></div>')+'</aside></div></div>'}
+function cardHtml(b){var open=ST.open===b.id,na=nextAction(b),when=(b.status==="approved"||b.status==="in_progress"||b.status==="completed")?"Appointment "+ft(b.scheduled_at):"Requested "+ft(b.preferred_at);
+  return'<button type="button" class="bk-row2'+(open?" on":"")+(na&&na[1]==="bad"?" urgent":"")+'" data-bk="toggle" data-id="'+esc(b.id)+'" aria-pressed="'+open+'">'+
+   '<span class="bk-r1"><b class="bk-ref">'+esc(b.reference)+'</b>'+pill(b.status)+'</span>'+(na?'<span class="bk-na '+na[1]+'">'+esc(na[0])+'</span>':"")+
+   '<span class="bk-r2">'+esc(b.character_name)+' \u00b7 '+esc(b.vehicle)+(b.vehicle_reg?' ('+esc(b.vehicle_reg)+')':"")+'</span>'+
+   '<span class="bk-r3">'+esc(SVC[b.service_type]||b.service_type)+' \u00b7 '+esc(when)+(b.status==="alternative_proposed"||b.status==="alternative_accepted"?" \u00b7 Proposed "+esc(ft(b.proposed_at)):"")+(b.assigned_to?" \u00b7 "+esc(nameOf(b.assigned_to)):"")+'</span></button>'}
+function detailHtml(b){var ev=ST.events[b.id],na=nextAction(b),appr=b.scheduled_at&&(b.status==="approved"||b.status==="in_progress"||b.status==="completed")?ft(b.scheduled_at):"";
+  function row(l,v){return v?'<div><dt>'+esc(l)+'</dt><dd>'+esc(v)+'</dd></div>':""}
+  var head='<div class="bk-dh"><div><b class="bk-ref">'+esc(b.reference)+'</b> '+pill(b.status)+(na?' <span class="bk-na '+na[1]+'">'+esc(na[0])+'</span>':"")+'</div><button type="button" class="alt sm" data-bk="toggle" data-id="'+esc(b.id)+'" aria-label="Close details">Close</button></div>';
+  var cust='<section class="bk-sec"><h3 class="hd bk-h3">Customer &amp; vehicle</h3><dl class="bk-dl2">'+row("Character",b.character_name)+row("Contact (in-character)",b.contact)+row("Vehicle",b.vehicle)+row("Registration",b.vehicle_reg)+'</dl></section>';
+  var req='<section class="bk-sec"><h3 class="hd bk-h3">Request &amp; schedule</h3><dl class="bk-dl2">'+row("Service",SVC[b.service_type]||b.service_type)+row("Submitted",ft(b.created_at))+row("Requested time",ft(b.preferred_at))+row("Proposed time",b.proposed_at?ft(b.proposed_at):"")+row("Approved appointment",appr)+'</dl>'+
+   (b.description?'<div class="bk-wr"><b>Work requested</b><p>'+esc(b.description)+'</p></div>':"")+(b.customer_message?'<div class="bk-wr"><b>Message shown to customer</b><p>'+esc(b.customer_message)+'</p></div>':"")+'</section>';
+  var tl='<section class="bk-sec"><h3 class="hd bk-h3">Activity history</h3>'+(ev?'<ol class="bk-tl">'+ev.map(function(e){return'<li class="'+(e.internal?"int":"")+'"><b>'+esc(EVT[e.action]||e.action)+'</b>'+(e.internal?' <span class="pill">Staff only</span>':"")+'<small>'+esc(ft(e.at))+(e.actor_name?" \u00b7 "+esc(e.actor_name):"")+'</small>'+(e.message?'<span>'+esc(e.message)+'</span>':"")+'</li>'}).join("")+'</ol>':'<div class="sk" style="height:80px"></div>')+'</section>';
+  return'<div class="bk-detail bk-d2">'+head+cust+req+actionsHtml(b)+noteHtml(b)+tl+cancelHtml(b)+'</div>'}
 function arm(key,label,extra){var on=ST.armed===key;return'<button type="button" class="alt sm'+(on?" bk-danger":"")+'" data-bk="'+(on?"act":"arm")+'" data-act="'+key.split(":")[0]+'"'+(extra||"")+' data-key="'+esc(key)+'">'+(on?"Click again to confirm":label)+'</button>'}
 function actionsHtml(b){var mgr=isMgr(),s=b.status,closed=CLOSED.indexOf(s)>=0,h="";
-  if(closed)return mgr?noteHtml(b):'<p class="note">This booking is closed.</p>'+noteHtml(b);
+  if(closed)return'<section class="bk-sec"><p class="note">This booking is closed.</p></section>';
   if(mgr&&(s==="pending"||s==="alternative_accepted"||s==="alternative_proposed"))
-    h+='<div class="bk-grp"><h3 class="hd bk-h3">Decision</h3><label for="bk-msg">Message to customer (optional, shown on their tracking page)</label><textarea id="bk-msg" maxlength="500"></textarea><div class="bk-btns sp">'+
+    h+='<section class="bk-sec bk-next"><h3 class="hd bk-h3">Scheduling decision</h3><label for="bk-msg">Message to customer (optional, shown on their tracking page)</label><textarea id="bk-msg" maxlength="500"></textarea><div class="bk-btns sp">'+
       (s==="pending"?'<button data-bk="act" data-act="approve">Approve requested time</button>':"")+(s==="alternative_accepted"?'<button data-bk="act" data-act="approve">Approve the time they accepted</button>':"")+
       arm("decline","Decline request")+'</div>'+
       '<label for="bk-when">Propose a different time (your local time)</label><div class="bk-inline"><input id="bk-when" type="datetime-local"><button class="alt" data-bk="act" data-act="propose">Propose time</button></div>'+
-      '<p class="note">Nothing is confirmed to the customer until you approve. '+(s==="alternative_proposed"?"A time is already waiting for their reply.":"")+'</p></div>';
-  if(mgr)h+='<div class="bk-grp"><h3 class="hd bk-h3">Assigned mechanic</h3><div class="bk-inline"><select id="bk-mech" aria-label="Mechanic"><option value="">Unassigned</option>'+
+      '<p class="note">Nothing is confirmed to the customer until you approve. '+(s==="alternative_proposed"?"A time is already waiting for their reply.":"")+'</p></section>';
+  if(mgr)h+='<section class="bk-sec"><h3 class="hd bk-h3">Assigned mechanic</h3><div class="bk-inline"><select id="bk-mech" aria-label="Mechanic"><option value="">Unassigned</option>'+
       ST.staff.filter(function(x){return x.active&&x.role!=="hr"}).map(function(x){return'<option value="'+esc(x.user_id)+'"'+(x.user_id===b.assigned_to?" selected":"")+'>'+esc(x.display_name)+' ('+esc(x.role)+')</option>'}).join("")+
-      '</select><button class="alt" data-bk="act" data-act="assign">Save assignment</button></div></div>';
-  if(s==="approved"||s==="in_progress"){h+='<div class="bk-grp"><h3 class="hd bk-h3">Work</h3><div class="bk-btns"><a class="btn" href="#jobs/'+esc(b.id)+'">Open job</a>'+
-      (mgr&&s==="in_progress"?'<button class="alt" data-bk="act" data-act="set_status" data-status="approved">Back to approved</button>':"")+'</div><p class="note">Starting, pausing and completing work is done on the Jobs page, so the time, parts and notes are recorded and a manager can review them.</p></div>'}
-  if(mgr)h+='<div class="bk-grp">'+arm("set_status:cancelled","Cancel this booking",' data-status="cancelled"')+'</div>';
-  return h+noteHtml(b)}
-function noteHtml(b){return'<div class="bk-grp"><h3 class="hd bk-h3">Internal note</h3><div class="bk-inline"><input id="bk-note" maxlength="500" placeholder="Visible to staff only" aria-label="Internal note"><button class="alt" data-bk="act" data-act="note">Add note</button></div></div>'}
+      '</select><button class="alt" data-bk="act" data-act="assign">Save assignment</button></div></section>';
+  else if(b.assigned_to)h+='<section class="bk-sec"><h3 class="hd bk-h3">Assigned mechanic</h3><p>'+esc(nameOf(b.assigned_to))+'</p></section>';
+  if(s==="approved"||s==="in_progress"){h+='<section class="bk-sec bk-next"><h3 class="hd bk-h3">Work</h3><div class="bk-btns"><a class="btn" href="#jobs/'+esc(b.id)+'">Open job</a>'+
+      (mgr&&s==="in_progress"?'<button class="alt" data-bk="act" data-act="set_status" data-status="approved">Back to approved</button>':"")+'</div><p class="note">Starting, pausing and completing work is done on the Jobs page, so the time, parts and notes are recorded and a manager can review them.</p></section>'}
+  return h}
+function noteHtml(b){return'<section class="bk-sec"><h3 class="hd bk-h3">Internal notes</h3><div class="bk-inline"><input id="bk-note" maxlength="500" placeholder="Visible to staff only" aria-label="Internal note"><button class="alt" data-bk="act" data-act="note">Add note</button></div><p class="note">Notes appear in the activity history, marked Staff only.</p></section>'}
+function cancelHtml(b){if(!isMgr()||CLOSED.indexOf(b.status)>=0)return"";
+  return'<section class="bk-sec bk-dz"><h3 class="hd bk-h3">Cancel booking</h3><p class="note">Cancelling ends this booking and, if work has started, cancels the job too. It cannot be undone.</p>'+arm("set_status:cancelled","Cancel this booking",' data-status="cancelled"')+'</section>'}
 function teamHtml(){
   var staff=ST.staff.length?'<div class="tw"><table><tr><th>Name</th><th>Role</th><th>Status</th><th></th></tr>'+ST.staff.map(function(s){
     return'<tr><td>'+esc(s.display_name)+(ST.me.user_id===s.user_id?' <em class="you">You</em>':"")+'</td><td><select id="bk-r-'+esc(s.user_id)+'" aria-label="Role for '+esc(s.display_name)+'"><option value="mechanic"'+(s.role==="mechanic"?" selected":"")+'>Mechanic</option><option value="hr"'+(s.role==="hr"?" selected":"")+'>HR</option><option value="manager"'+(s.role==="manager"?" selected":"")+'>Manager</option></select></td>'+
@@ -711,13 +798,13 @@ function teamHtml(){
    '<div class="g g2"><div><label for="bk-s-loc">Location</label><textarea id="bk-s-loc" maxlength="300" rows="3">'+esc(s.location_text||"")+'</textarea></div><div><label for="bk-s-hours">Opening hours</label><textarea id="bk-s-hours" maxlength="500" rows="3">'+esc(s.hours_text||"")+'</textarea></div>'+
    '<div><label for="bk-s-contact">Contact details</label><textarea id="bk-s-contact" maxlength="500" rows="3">'+esc(s.contact_text||"")+'</textarea></div><div><label for="bk-s-map">Map link (https)</label><input id="bk-s-map" maxlength="500" value="'+esc(s.map_url||"")+'"><label for="bk-s-discord">Discord link (https)</label><input id="bk-s-discord" maxlength="300" value="'+esc(s.discord_url||"")+'"></div></div>'+
    ''+priceInputs()+'<div class="sp"><button data-bk="settings">Save public details</button></div></div>'+schedHtml()}
-function render(){var h;
+function render(){var h,bkls=(document.getElementById("bk2-rows")||{}).scrollTop||0;
   if(!sess)h=authHtml();else if(ST.me===undefined)h=ST.err?'<div class="card bk-narrow">'+sec("\u26A0","Could not load bookings","")+'<div class="bk-note bad" role="alert">'+esc(ST.err)+'</div><div class="sp"><button data-bk="retry">Try again</button> <button class="alt" data-bk="signout">Sign out</button></div></div>':'<div class="sk" style="height:220px"></div>';else if(ST.me===null)h=redeemHtml();else if(!ST.me.active)h=inactiveHtml();else h=appHtml();
   var authed=!!(sess&&ST.me&&ST.me.active);
   document.body.classList.toggle("ag-in",authed);
   var g=$b("#bkg"),root=$b("#bk");
   if(g)g.innerHTML=authed?"":'<div class="ag-gate-brand">Atomic Garage<small>Staff portal</small></div>'+h+'<a href="../" class="ag-back">← Back to customer site</a>';
-  if(root)root.innerHTML=authed?h:""}
+  if(root)root.innerHTML=authed?h:"";var bkl2=document.getElementById("bk2-rows");if(bkl2&&bkls)bkl2.scrollTop=bkls}
 
 /* ---------- actions ---------- */
 function doAct(id,action,extra){if(ST.busy)return;ST.busy=true;ST.err="";var p=extra||{},m=val("bk-msg");if(m)p.message=m;
@@ -1172,12 +1259,15 @@ function ciField(e){var m=/^ci-([nef])-(\w+)$/.exec(e.target.id||"");if(!m)retur
 document.addEventListener("input",function(e){ciField(e)});
 document.addEventListener("change",function(e){var m=ciField(e);
   if(m&&m[1]==="n"&&m[2]==="app"){var ap=CI.apps[e.target.value];if(ap&&ap.reviewer_id&&CI.staff.some(function(s){return s.user_id===ap.reviewer_id})){CI.fv.n.iv=ap.reviewer_id;calRender()}}});
-V.bookings=function(){setTimeout(function(){render();if(sess&&ST.me===undefined)boot()},0);return'<div id="bk"></div>'};
+function enterTab(){if(!sess||!ST.me||!ST.me.active||ST.me.role!=="manager")return;if(ST.tab==="team")Promise.all([loadStaff(),loadInvites(),loadSettings(),loadSched()]).then(render).catch(function(er){authErr(er);render()});if(ST.tab==="parts")loadParts().then(render).catch(function(er){authErr(er);render()})}
+V.bookings=function(){var hh=(location.hash||"").split("/")[0];ST.ctx=hh==="#manager"?"manager":"bookings";if(ST.ctx==="bookings")ST.tab="bookings";setTimeout(function(){render();if(sess&&ST.me===undefined)boot();var n=0,w=setInterval(function(){n++;if(ST.me!==undefined||!sess||n>60){clearInterval(w);enterTab()}},250)},0);return'<div id="bk"></div>'};
 setInterval(function(){if(location.hash!=="#bookings"||!sess||!ST.me||!ST.me.active||ST.open||ST.busy||document.hidden||ST.tab!=="bookings")return;
   loadList().then(function(){if(!ST.open&&$b("#bk")&&!(document.activeElement&&/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)))render()}).catch(authErr)},45000);
 document.body.insertAdjacentHTML("beforeend",'<div id="bkg"></div>');
 var bar=$b(".bar");if(bar)bar.insertAdjacentHTML("beforeend",'<button type="button" class="alt ag-signout" data-bk="signout">Sign out</button>');
-window.AGX={ST:ST,rpc:rpc,api:api,isMgr:isMgr,ft:ft,SVC:SVC,STAT:STAT,EVT:EVT,nameOf:nameOf,authErr:authErr,boot:boot,loadList:loadList,loadStaff:loadStaff,say:say,hasSession:function(){return!!sess}};
+document.addEventListener("input",function(e){if(e.target&&e.target.id==="bk-q"){ST.q=e.target.value;var r=document.getElementById("bk2-rows");if(r)r.innerHTML=rowsHtml()}});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&ST.open&&document.getElementById("bk2-pane")&&!(e.target&&/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))){ST.open=null;ST.armed=null;render()}});
+window.AGX={ST:ST,rpc:rpc,api:api,isMgr:isMgr,ft:ft,SVC:SVC,STAT:STAT,EVT:EVT,nameOf:nameOf,authErr:authErr,boot:boot,loadList:loadList,loadStaff:loadStaff,say:say,hasSession:function(){return!!sess},token:ensureToken,base:(CFG.url||CFG.SUPABASE_URL).replace(/\/$/,""),key:CFG.key||CFG.SUPABASE_KEY};
 render();if(sess)boot();
 /* a full page refresh on any section (Calendar, Recruitment, Parts...) must reopen that section: the views above are registered after the first route() call */
 if(location.hash&&location.hash!=="#home")route();
@@ -1558,5 +1648,242 @@ setInterval(function(){navLink();if(!/^#jobs/.test(location.hash)||!X.hasSession
  var a=document.activeElement;if(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))return;
  reload().then(render).catch(function(e){fail(e);render()})},30000);
 if(/^#jobs/.test(location.hash)&&typeof route==="function")route();
+})();
+</script>
+<script>
+/* ===== Atomic Garage: Operations hub, Manager Access, server-side attendance, My Profile =====
+   Every permission decision is made by the database (RLS + checked functions). This file only presents it. */
+(function(){
+"use strict";
+var X=window.AGX;if(!X)return;
+var ST=X.ST,ft=X.ft;
+function q(s){return document.querySelector(s)}
+function active(){return X.hasSession()&&ST.me&&ST.me.active}
+function role(){return ST.me&&ST.me.role}
+function isM(){return role()==="manager"}
+function isRec(){return role()==="manager"||role()==="hr"}
+function money(n){return"$"+Number(n).toFixed(2)}
+function hrs(n){return n==null?"\u2014":(+Number(n).toFixed(2))+" h"}
+function mins(m){m=Math.round(m||0);var h=Math.floor(m/60);return h?h+"h "+(m%60<10?"0":"")+(m%60)+"m":(m%60)+"m"}
+function span(a,b){return b?mins((Date.parse(b)-Date.parse(a))/60000):"running"}
+function day(d){return d?new Date(d).toLocaleDateString(undefined,{dateStyle:"medium"}):"\u2014"}
+function parts(){return(location.hash||"").slice(1).split("/")}
+function localIso(v){if(!v)return null;var d=new Date(v);return isNaN(d)?null:d.toISOString()}
+function toLocalInput(iso){if(!iso)return"";var d=new Date(iso);d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,16)}
+function initials(n){return String(n||"?").trim().split(/\s+/).slice(0,2).map(function(x){return x.charAt(0).toUpperCase()}).join("")}
+var EL={started:"Started a job",resumed:"Resumed a job",paused:"Paused a job",work_logged:"Logged work",note_added:"Added a note",part_added:"Added a part",part_removed:"Removed a part",labour_added:"Added labour",labour_removed:"Removed labour",submitted:"Submitted a job",changes_requested:"Requested changes",approved:"Approved a job",closed_direct:"Closed a job",reassigned:"Changed an assignment",cancelled:"Job cancelled"};
+var AL={clock_in:"Clocked in",clock_out:"Clocked out",auto_capped:"Clock-out capped at 16 hours",imported:"Imported device history",import_approved:"Imported shifts approved",import_rejected:"Imported shifts rejected",corrected:"Shift corrected",shift_added:"Shift added by a manager",shift_deleted:"Shift deleted by a manager",profile_updated:"Profile fields updated by a manager"};
+var OP={f:{},busy:false,err:"",pf:null,mg:null};
+function wait(done){if(!X.hasSession()){done();return}var n=0,w=setInterval(function(){n++;if(ST.me!==undefined||n>80){clearInterval(w);done()}},250);if(ST.me===undefined&&X.hasSession())X.boot();}
+
+/* ================= navigation: Operations menu, aliases ================= */
+var ALIAS={"operations/bookings":"#bookings","operations/jobs":"#jobs","operations/applications":"#recruitment","operations/manager":"#manager","bookings/team":"#manager/staff","bookings/parts":"#manager/parts","bookings/apps":"#recruitment","manager/applications":"#recruitment","manager/profiles":"#manager/attendance"};
+window.AGR=function(h){var k=(h||"").replace(/^#/,"");return ALIAS[k]||null};
+var OPSET=["operations","bookings","jobs","recruitment","manager"];
+window.AGNAV=function(v){var a=q("#ag-ops");if(a)a.classList.toggle("on",OPSET.indexOf(v)>-1);var p=q('nav a[data-v="profile"]');if(p)p.hidden=!active()};
+function menuItems(){var it=[["#operations","Operations overview","Everything in one place"],["#bookings","Bookings","Requests, scheduling, assignments"]];
+ if(role()==="manager"||role()==="mechanic")it.push(["#jobs","Jobs",isM()?"Dispatch and review work":"Your assigned work"]);
+ if(isRec())it.push(["#recruitment","Applications","Applicants, decisions, interviews"]);
+ if(isM())it.push(["#manager","Manager Access","Staff, attendance, parts, settings"]);return it}
+function closeMenu(refocus){var m=q("#ag-menu"),a=q("#ag-ops");if(m)m.hidden=true;if(a){a.setAttribute("aria-expanded","false");if(refocus)a.focus()}}
+function openMenu(){var a=q("#ag-ops");if(!a)return;var m=q("#ag-menu");
+ if(!m){m=document.createElement("div");m.id="ag-menu";m.className="ag-menu";m.setAttribute("role","menu");document.body.appendChild(m)}
+ m.innerHTML=menuItems().map(function(i){return'<a role="menuitem" href="'+i[0]+'"><b>'+i[1]+'</b><small>'+i[2]+'</small></a>'}).join("");
+ var r=a.getBoundingClientRect();m.hidden=false;m.style.top=Math.round(r.bottom)+"px";m.style.left=Math.max(8,Math.min(Math.round(r.left),window.innerWidth-m.offsetWidth-8))+"px";
+ a.setAttribute("aria-expanded","true");var f=m.querySelector("a");if(f)f.focus()}
+document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("#ag-ops");
+ if(a){e.preventDefault();var m=q("#ag-menu");if(m&&!m.hidden)closeMenu();else openMenu();return}
+ var m2=q("#ag-menu");if(m2&&!m2.hidden&&!(e.target.closest&&e.target.closest("#ag-menu")))closeMenu();else if(m2&&!m2.hidden)closeMenu()});
+document.addEventListener("keydown",function(e){var m=q("#ag-menu");if(!m||m.hidden)return;
+ if(e.key==="Escape"){closeMenu(true);return}
+ if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();var it=[].slice.call(m.querySelectorAll("a")),i=it.indexOf(document.activeElement);i=e.key==="ArrowDown"?(i+1)%it.length:(i-1+it.length)%it.length;it[i].focus()}});
+window.addEventListener("resize",function(){closeMenu()});
+window.addEventListener("hashchange",function(){closeMenu()});
+
+/* ================= Operations hub ================= */
+function card(icon,title,desc,stat,href,cta){return'<a class="op-card" href="'+href+'"><span class="ico" aria-hidden="true">'+icon+'</span><h3>'+title+'</h3><p>'+desc+'</p>'+(stat?'<div class="op-stat">'+stat+'</div>':'')+'<span class="op-go">'+cta+' \u2192</span></a>'}
+function opsRender(c){var el=q("#op");if(!el)return;
+ if(!X.hasSession()){el.innerHTML='<div class="card">'+sec("\u25A4","Operations","Sign in to see your work")+'<p class="note">Sign in on the Bookings page with your staff account.</p><a class="btn" href="#bookings">Go to sign in</a></div>';return}
+ if(ST.me===undefined||!c){el.innerHTML='<div class="card"><div class="sk" style="height:180px"></div></div>';return}
+ var h='<div class="card">'+sec("\u25A4","Operations","Bookings, jobs, applications and management tools")+'<div class="op-grid">';
+ h+=card("\u2709","Bookings","Customer requests, approvals, scheduling and mechanic assignments.",
+   isM()?'<b>'+c.needs+'</b> need a decision \u00b7 <b>'+c.unassigned+'</b> to assign':role()==="mechanic"?'<b>'+c.mine+'</b> assigned to you':'',"#bookings","Open Bookings");
+ if(role()==="manager"||role()==="mechanic")h+=card("\u2699","Jobs",isM()?"Dispatch approved work, review submitted jobs and close them.":"Start, pause and submit the work assigned to you.",
+   '<b>'+c.active+'</b> in progress \u00b7 <b>'+c.review+'</b> awaiting review',"#jobs","Open Jobs");
+ if(isRec())h+=card("\u2605","Applications","Recruitment applications, decisions and interview scheduling.","","#recruitment","Open Applications");
+ if(isM())h+=card("\u2692","Manager Access","Staff and permissions, attendance, profiles, parts and site settings.",'<b>'+c.onShift+'</b> on shift now \u00b7 <b>'+c.pendingImports+'</b> imports to review',"#manager","Open Manager Access");
+ el.innerHTML=h+'</div></div>'}
+window.V.operations=function(){setTimeout(function(){opsRender(null);wait(function(){
+  if(!active()){opsRender(null);return}
+  var jobs=(role()==="manager"||role()==="mechanic")?X.api("jobs?select=status&limit=1000").catch(function(){return[]}):Promise.resolve([]);
+  var att=isM()?X.rpc("staff_attendance_summary",{p_days:30}).catch(function(){return null}):Promise.resolve(null);
+  Promise.all([X.loadList().catch(function(){}),jobs,att]).then(function(r){var L=ST.list||[],J=r[1]||[],A=r[2]&&r[2].staff||[];
+   opsRender({needs:L.filter(function(b){return b.status==="pending"||b.status==="alternative_accepted"}).length,
+    unassigned:L.filter(function(b){return b.status==="approved"&&!b.assigned_to}).length,
+    mine:L.filter(function(b){return b.status==="approved"||b.status==="in_progress"}).length,
+    active:J.filter(function(j){return j.status==="in_progress"||j.status==="paused"}).length,review:J.filter(function(j){return j.status==="submitted"}).length,
+    onShift:A.filter(function(s){return s.on_shift_since}).length,pendingImports:A.reduce(function(n,s){return n+s.pending_imports},0)})})})},0);return'<div id="op"></div>'};
+
+/* ================= Manager Access ================= */
+var MGT=[["","Overview"],["staff","Staff & settings"],["attendance","Attendance & profiles"],["parts","Parts"]];
+window.AGMGTABS=function(){var s=parts()[1]||"";return'<div class="bk-tabs mg-tabs">'+MGT.map(function(t){return'<a class="btn'+(t[0]===s?"":" alt")+'" href="#manager'+(t[0]?"/"+t[0]:"")+'">'+t[1]+'</a>'}).join("")+'<a class="btn alt" href="#recruitment">Applications</a></div>'};
+function mgGate(){var el=q("#mg");if(!el)return false;
+ if(!X.hasSession()){el.innerHTML='<div class="card">'+sec("\u2692","Manager Access","Managers only")+'<p class="note">Sign in on the Bookings page with a manager account.</p><a class="btn" href="#bookings">Go to sign in</a></div>';return false}
+ if(ST.me===undefined){el.innerHTML='<div class="card"><div class="sk" style="height:160px"></div></div>';return false}
+ if(!isM()||!ST.me.active){el.innerHTML='<div class="card">'+sec("\u2692","Manager Access","Managers only")+'<p class="note">This area is for managers. Your account does not have access, and the database will not return management data to it.</p><a class="btn alt" href="#operations">Back to Operations</a></div>';return false}
+ return true}
+function mgOverview(){var el=q("#mg");
+ el.innerHTML='<div class="card">'+sec("\u2692","Manager Access","Administrative tools for managers")+window.AGMGTABS()+'<div class="sk sp" style="height:120px"></div></div>';
+ X.rpc("staff_attendance_summary",{p_days:30}).then(function(r){var S=(r&&r.staff)||[],on=S.filter(function(s){return s.on_shift_since}),pend=S.reduce(function(n,s){return n+s.pending_imports},0),fl=S.reduce(function(n,s){return n+s.flagged},0);
+  el.innerHTML='<div class="card">'+sec("\u2692","Manager Access","Administrative tools for managers")+window.AGMGTABS()+'<div class="op-grid sp">'+
+   card("\u263A","Staff & settings","Roles, active status, invitations, schedule and site settings.",'<b>'+S.filter(function(s){return s.active}).length+'</b> active staff',"#manager/staff","Open")+
+   card("\u23F1","Attendance & profiles","Review shifts, correct mistakes, approve imported history, set rank and department.",'<b>'+on.length+'</b> on shift \u00b7 <b>'+pend+'</b> imports \u00b7 <b>'+fl+'</b> flagged',"#manager/attendance","Open")+
+   card("\u25A6","Parts","Manage the parts catalogue used by the store and by jobs.","","#manager/parts","Open")+
+   card("\u2605","Applications","Recruitment applications and interviews.","","#recruitment","Open")+'</div></div>'}).catch(function(e){X.authErr(e);el.innerHTML='<div class="card"><p class="note">Could not load Manager Access ('+esc(e.message||"error")+').</p></div>'})}
+window.V.manager=function(){var sub=parts()[1]||"";
+ if(sub==="staff"||sub==="parts"){ST.tab=sub==="staff"?"team":"parts";return window.V.bookings()}
+ setTimeout(function(){wait(function(){if(!mgGate())return;if(sub==="attendance")mgStaff();else mgOverview()})},0);return'<div id="mg"></div>'};
+
+/* ---- staff records: attendance review + profile fields ---- */
+function mgStaff(){var M=OP.mg=OP.mg||{days:30,sel:null,d:null};var el=q("#mg");
+ X.rpc("staff_attendance_summary",{p_days:M.days}).then(function(r){if(r&&r.ok===false)throw new Error(r.message);M.list=r.staff;mgDraw();if(M.sel)mgLoadDetail(M.sel)}).catch(function(e){X.authErr(e);el.innerHTML='<div class="card"><p class="note">'+esc(e.message||"Could not load.")+'</p></div>'})}
+function mgDraw(){var M=OP.mg,el=q("#mg");if(!el)return;
+ var rows=(M.list||[]).map(function(s){return'<tr class="mg-row'+(M.sel===s.user_id?" on":"")+'" data-op="mg-open" data-id="'+esc(s.user_id)+'" tabindex="0"><td><b>'+esc(s.display_name)+'</b><br><small>'+esc(s.role)+(s.active?"":" \u00b7 inactive")+'</small></td><td>'+hrs(s.hours)+'</td><td>'+s.shifts+'</td><td>'+hrs(s.total_hours)+'</td><td>'+(s.on_shift_since?'<span class="pill a">On shift</span>':'\u2014')+'</td><td>'+(s.pending_imports?'<span class="pill">'+s.pending_imports+' to review</span>':'\u2014')+(s.flagged?' <span class="pill bad">'+s.flagged+' flagged</span>':'')+'</td></tr>'}).join("");
+ el.innerHTML='<div class="card">'+sec("\u23F1","Attendance & profiles","Server-recorded shifts. Corrections need a reason and are audited.")+window.AGMGTABS()+
+  '<div class="mg-bar"><label for="mg-days" style="margin:0">Show hours for</label><select id="mg-days">'+[7,30,90,365].map(function(d){return'<option value="'+d+'"'+(M.days===d?" selected":"")+'>Last '+d+' days</option>'}).join("")+'</select></div>'+
+  (OP.err?'<div class="jb-err" role="alert">'+esc(OP.err)+'</div>':'')+
+  '<div class="tw sp"><table><tr><th>Staff</th><th>Hours</th><th>Shifts</th><th>All-time</th><th>Now</th><th>Review</th></tr>'+rows+'</table></div></div><div id="mg-detail"></div>'}
+function mgLoadDetail(id){var M=OP.mg;M.sel=id;mgDraw();var el=q("#mg-detail");if(el)el.innerHTML='<div class="card sp"><div class="sk" style="height:200px"></div></div>';
+ Promise.all([X.rpc("profile_get",{p_user:id}),X.api("shifts?select=id,started_at,ended_at,source,verified,capped,corrected&user_id=eq."+id+"&order=started_at.desc&limit=100"),X.api("staff_audit?select=action,actor_name,actor_role,reason,before,after,at&subject_id=eq."+id+"&order=at.desc&limit=40")]).then(function(r){
+  M.d={p:r[0].profile,shifts:r[1]||[],audit:r[2]||[]};mgDetailDraw()}).catch(function(e){X.authErr(e);OP.err=e.message||"Could not load.";mgDraw()})}
+function shiftFlags(s){return(s.source==="imported"&&!s.verified?'<span class="pill">Imported \u00b7 pending</span> ':s.source==="imported"?'<span class="pill">Imported \u00b7 approved</span> ':'')+(s.source==="manual"?'<span class="pill">Added by manager</span> ':'')+(s.capped&&!s.corrected?'<span class="pill bad">Auto-capped</span> ':'')+(s.corrected?'<span class="pill a">Corrected</span> ':'')}
+function mgDetailDraw(){var M=OP.mg,d=M.d,p=d.p,el=q("#mg-detail");if(!el)return;var f=OP.f;var pending=d.shifts.filter(function(s){return s.source==="imported"&&!s.verified});
+ var sh=d.shifts.map(function(s){var ed=OP.edit===s.id;
+  return'<tr><td>'+esc(ft(s.started_at))+'</td><td>'+(s.ended_at?esc(ft(s.ended_at)):'<b>running</b>')+'</td><td>'+span(s.started_at,s.ended_at)+'</td><td>'+shiftFlags(s)+'</td><td class="nw"><button class="alt sm" data-op="mg-edit" data-id="'+s.id+'">Correct</button></td></tr>'+
+  (ed?'<tr><td colspan="5"><div class="jb-row"><div><label for="mg-f-cs">Start</label><input id="mg-f-cs" type="datetime-local" value="'+esc(f["mg-f-cs"]||toLocalInput(s.started_at))+'"></div><div><label for="mg-f-ce">End</label><input id="mg-f-ce" type="datetime-local" value="'+esc(f["mg-f-ce"]||toLocalInput(s.ended_at))+'"></div></div><label for="mg-f-cr">Reason (required)</label><input id="mg-f-cr" maxlength="300" value="'+esc(f["mg-f-cr"]||"")+'" placeholder="Why is this being changed?"><div class="bk-btns sp"><button data-op="mg-correct" data-id="'+s.id+'">Save correction</button><button class="alt" data-op="mg-delete" data-id="'+s.id+'">Delete this shift</button><button class="alt" data-op="mg-edit" data-id="">Cancel</button></div></td></tr>':'')}).join("");
+ el.innerHTML='<div class="card sp"><div class="pf-id"><span class="pf-av" aria-hidden="true">'+esc(initials(p.display_name))+'</span><div><h2 style="margin:0">'+esc(p.display_name)+'</h2><small>'+esc(p.role)+' \u00b7 '+(p.active?'Active':'Inactive')+' \u00b7 Contact: '+esc(p.phone||"not provided")+'</small></div></div>'+
+  (p.bio?'<p class="note" style="white-space:pre-wrap">'+esc(p.bio)+'</p>':'')+
+  '<h3 class="hd bk-h3">Management-controlled fields</h3><div class="jb-row"><div><label for="mg-f-rank">Rank</label><input id="mg-f-rank" maxlength="40" value="'+esc(f["mg-f-rank"]!=null?f["mg-f-rank"]:(p.rank_title||""))+'" placeholder="'+esc(p.rank_display)+' (from role)"></div><div><label for="mg-f-dept">Department</label><input id="mg-f-dept" maxlength="40" value="'+esc(f["mg-f-dept"]!=null?f["mg-f-dept"]:(p.department||""))+'" placeholder="'+esc(p.department_display)+' (from role)"></div><div><label for="mg-f-hired">Join date</label><input id="mg-f-hired" type="date" value="'+esc(f["mg-f-hired"]!=null?f["mg-f-hired"]:(p.hired_at||""))+'"></div><button data-op="mg-profile"'+(OP.busy?" disabled":"")+'>Save</button></div><p class="note">Role and active status are changed under <a href="#manager/staff">Staff &amp; settings</a>. Employees cannot edit any of these fields.</p></div>'+
+  (pending.length?'<div class="card sp"><h3 class="hd bk-h3" style="margin-top:0">Imported device history awaiting approval</h3><p class="note">'+pending.length+' shift(s), '+hrs(pending.reduce(function(n,s){return n+(Date.parse(s.ended_at)-Date.parse(s.started_at))/36e5},0))+'. These came from the employee\u2019s browser, so they are not counted until you approve them.</p><div class="bk-btns"><button data-op="mg-imp" data-ac="approve"'+(OP.busy?" disabled":"")+'>Approve all</button><button class="alt" data-op="mg-imp" data-ac="reject"'+(OP.busy?" disabled":"")+'>Reject all</button></div></div>':'')+
+  '<div class="card sp"><h3 class="hd bk-h3" style="margin-top:0">Shifts</h3><div class="tw"><table><tr><th>Start</th><th>End</th><th>Length</th><th>Flags</th><th></th></tr>'+(sh||'<tr><td colspan="5">No shifts recorded.</td></tr>')+'</table></div>'+
+  '<details class="sp"><summary><b>Add a missed shift</b></summary><div class="jb-row sp"><div><label for="mg-f-as">Start</label><input id="mg-f-as" type="datetime-local" value="'+esc(f["mg-f-as"]||"")+'"></div><div><label for="mg-f-ae">End</label><input id="mg-f-ae" type="datetime-local" value="'+esc(f["mg-f-ae"]||"")+'"></div></div><label for="mg-f-ar">Reason (required)</label><input id="mg-f-ar" maxlength="300" value="'+esc(f["mg-f-ar"]||"")+'"><div class="sp"><button class="alt" data-op="mg-add"'+(OP.busy?" disabled":"")+'>Add shift</button></div></details></div>'+
+  '<div class="card sp"><h3 class="hd bk-h3" style="margin-top:0">Audit history</h3><ol class="jb-tl">'+(d.audit.map(function(a){return'<li><b>'+esc(AL[a.action]||a.action)+'</b><small>'+esc(a.actor_name)+' ('+esc(a.actor_role)+') \u00b7 '+esc(ft(a.at))+'</small>'+(a.reason?'<div class="d">'+esc(a.reason)+'</div>':'')+(a.before&&a.after&&a.action==="corrected"?'<div class="d">'+esc(ft(a.before.started_at))+' \u2192 '+esc(ft(a.before.ended_at))+' &nbsp;became&nbsp; '+esc(ft(a.after.started_at))+' \u2192 '+esc(ft(a.after.ended_at))+'</div>':'')+'</li>'}).join("")||'<li>No history yet.</li>')+'</ol></div>'}
+function mgAct(rpcName,args,okMsg,after){if(OP.busy)return;OP.busy=true;OP.err="";mgDetailDraw();
+ X.rpc(rpcName,args).then(function(r){if(r&&r.ok===false)throw new Error(r.message||"Not allowed.");X.say(okMsg);if(after)after();return Promise.all([mgLoadSummary(),mgReload()])}).catch(function(e){X.authErr(e);OP.err=e.message||"Failed."}).then(function(){OP.busy=false;mgDraw();mgDetailDraw()})}
+function mgLoadSummary(){return X.rpc("staff_attendance_summary",{p_days:OP.mg.days}).then(function(r){OP.mg.list=r.staff})}
+function mgReload(){var id=OP.mg.sel;return Promise.all([X.rpc("profile_get",{p_user:id}),X.api("shifts?select=id,started_at,ended_at,source,verified,capped,corrected&user_id=eq."+id+"&order=started_at.desc&limit=100"),X.api("staff_audit?select=action,actor_name,actor_role,reason,before,after,at&subject_id=eq."+id+"&order=at.desc&limit=40")]).then(function(r){OP.mg.d={p:r[0].profile,shifts:r[1]||[],audit:r[2]||[]}})}
+
+/* ================= server-side attendance (Dashboard clock) ================= */
+var lastSync=0,clockBusy=false;
+function adoptServer(open){var S=window.S;if(!S)return false;var t=open?Date.parse(open.started_at):null;
+ if(t&&S.start!==t){S.start=t;ensureSelf();save();return true}
+ if(!t&&S.start){S.start=null;ensureSelf();save();return"cleared"}return false}
+function syncShift(force){if(!active())return Promise.resolve();var n=Date.now();if(!force&&n-lastSync<8000)return Promise.resolve();lastSync=n;
+ return X.rpc("shift_status").then(function(r){if(!r||r.ok===false)return;var ch=adoptServer(r.open);
+  if(ch==="cleared")toast("This device showed a session that was never recorded on the server. Clock in again to record your shift.");
+  if(ch&&/^#(dashboard|home|profile)/.test(location.hash||"#home"))route()}).catch(function(){})}
+function endLocal(endMs){var S=window.S,h=Math.max(0,(endMs-S.start)/36e5);S.hours+=h;S.life+=h;S.shifts++;S.log.push({n:S.name,s:S.start,e:endMs});if(S.log.length>200)S.log.shift();S.start=null}
+var legacy=window.act&&window.act.sess;
+if(window.act)window.act.sess=function(){
+ if(!active())return legacy&&legacy();                    // not signed in as staff: the original device-only behaviour, unchanged
+ if(clockBusy)return;clockBusy=true;
+ X.rpc("shift_status").then(function(st){if(st&&st.ok===false)throw new Error(st.message);var on=!!st.open;
+  return X.rpc(on?"shift_clock_out":"shift_clock_in").then(function(r){return{on:on,r:r}})}).then(function(o){var r=o.r;
+  if(r.ok===false&&r.error==="already_clocked_in"){S.start=Date.parse(r.started_at);toast("You were already clocked in. Your clock now matches the server.")}
+  else if(r.ok===false){toast(r.message||"Could not record that.")}
+  else if(o.on){if(S.start&&Date.parse(r.started_at)!==S.start)S.start=Date.parse(r.started_at);endLocal(Date.parse(r.ended_at));toast(r.capped?"Shift ended. It ran over 16 hours, so 16 hours were recorded and a manager will review it.":"Shift ended and recorded ("+mins(r.minutes)+")")}
+  else{S.start=Date.parse(r.started_at);toast("Shift started at "+utc(S.start)+" UTC (server time)")}
+  ensureSelf();save();route();if(q("#pf"))pfLoad()}).catch(function(e){X.authErr(e);toast("Could not reach the server, so nothing was recorded. Please try again.")}).then(function(){clockBusy=false})};
+setInterval(function(){if(!document.hidden)syncShift(false)},20000);
+document.addEventListener("visibilitychange",function(){if(!document.hidden)syncShift(true)});
+window.addEventListener("hashchange",function(){setTimeout(function(){syncShift(false);window.AGNAV&&window.AGNAV((parts()[0]||"home"))},300)});
+setInterval(function(){var p=q('nav a[data-v="profile"]');if(p)p.hidden=!active()},1500);
+var bootW=setInterval(function(){if(ST.me!==undefined){clearInterval(bootW);syncShift(true);window.AGNAV(parts()[0]||"home")}},500);
+
+/* ================= My Profile ================= */
+var URLS={};
+function signed(path){if(!path)return Promise.resolve(null);if(URLS[path])return Promise.resolve(URLS[path]);
+ return X.token().then(function(t){return fetch(X.base+"/storage/v1/object/sign/staff-avatars/"+path,{method:"POST",headers:{apikey:X.key,Authorization:"Bearer "+t,"Content-Type":"application/json"},body:JSON.stringify({expiresIn:3600})})})
+  .then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.signedURL)return null;URLS[path]=X.base+"/storage/v1"+j.signedURL;return URLS[path]}).catch(function(){return null})}
+function tile(l,v,s){return'<div class="pf-tile"><b>'+v+'</b><span>'+l+'</span>'+(s?'<small>'+s+'</small>':'')+'</div>'}
+function avatar(p,url,cls){return url?'<img class="pf-av '+(cls||"")+'" src="'+esc(url)+'" alt="Photo of '+esc(p.display_name)+'">':'<span class="pf-av '+(cls||"")+'" aria-hidden="true">'+esc(initials(p.display_name))+'</span>'}
+function pfHtml(){var P=OP.pf,p=P.p,st=P.s,A=st.attendance,J=st.jobs,F=st.performance,on=A.on_shift_since;
+ var head='<div class="card"><div class="pf-top">'+avatar(p,P.url,"lg")+'<div class="pf-main"><h2>'+esc(p.display_name)+'</h2><div class="pf-meta"><span class="pill a">'+esc(p.rank_display)+'</span><span class="pill">'+esc(p.department_display)+'</span><span class="pill '+(p.active?'':'bad')+'">'+(p.active?'Active':'Inactive')+'</span>'+(on?'<span class="pill a">On shift since '+esc(ft(on))+'</span>':'')+'</div>'+
+  '<p class="pf-sub">'+(p.join_is_recorded?'Joined '+esc(day(p.join_date)):'Account created '+esc(day(p.join_date))+' <small>(a manager can record your join date)</small>')+(p.phone?' \u00b7 '+esc(p.phone):'')+'</p>'+
+  (p.bio?'<p class="pf-bio">'+esc(p.bio)+'</p>':'<p class="note">No biography yet. Add one with Edit profile.</p>')+
+  '<div class="bk-btns"><button data-op="pf-edit">Edit profile</button><button class="alt" data-op="pf-clock"'+(OP.busy?" disabled":"")+'>'+(on?"Clock out":"Clock in")+'</button></div></div></div>'+(OP.err&&!P.edit?'<div class="jb-err" role="alert">'+esc(OP.err)+'</div>':'')+'</div>';
+ var edit=P.edit?pfEdit():"";
+ var att='<div class="card sp"><h3 class="hd bk-h3" style="margin-top:0">Attendance</h3>'+
+  (A.shifts_completed?'<div class="pf-tiles">'+tile("Total hours",hrs(A.total_hours),"verified shifts")+tile("Shifts completed",A.shifts_completed)+tile("This week",hrs(A.week_hours))+tile("Last 30 days",hrs(A.last30_hours))+tile("Average shift",hrs(A.avg_shift_hours))+tile("Longest shift",hrs(A.longest_shift_hours))+'</div>':
+   '<div class="empty">No verified shifts yet. Clock in from the Dashboard or the button above and your hours will appear here. They come from the server clock, so they cannot be edited.</div>')+
+  (A.pending_imports?'<p class="note">'+A.pending_imports+' imported shift(s) ('+hrs(A.pending_import_hours)+') are waiting for a manager to approve them. They are not in your totals yet.</p>':'')+
+  (A.flagged_shifts?'<p class="note">'+A.flagged_shifts+' shift(s) were capped at 16 hours because the clock-out came late. A manager can correct them.</p>':'')+
+  (A.recent.length?'<div class="tw sp"><table><tr><th>Start</th><th>End</th><th>Length</th><th></th></tr>'+A.recent.map(function(s){return'<tr><td>'+esc(ft(s.started_at))+'</td><td>'+(s.ended_at?esc(ft(s.ended_at)):'<b>running</b>')+'</td><td>'+span(s.started_at,s.ended_at)+'</td><td>'+shiftFlags(s)+'</td></tr>'}).join("")+'</table></div>':'')+'</div>';
+ var jobs='<div class="card sp"><h3 class="hd bk-h3" style="margin-top:0">Jobs</h3><div class="pf-tiles">'+tile("Assigned",J.assigned,"ready to start")+tile("In progress",J.in_progress)+tile("Awaiting review",J.awaiting_review)+tile("Completed",J.completed)+'</div>'+
+  ((role()==="mechanic"||isM())?'<p class="sp"><a class="btn alt" href="#jobs">Open my jobs</a></p>':'')+'</div>';
+ var perf='<div class="card sp"><h3 class="hd bk-h3" style="margin-top:0">Performance</h3>'+((F.closed_jobs||F.labour_minutes||F.parts_lines)?'<div class="pf-tiles">'+tile("Labour on jobs",mins(F.labour_minutes),"timer + manual entries")+tile("Average per job",F.avg_job_minutes!=null?mins(F.avg_job_minutes):"\u2014","closed jobs")+tile("Approved first time",F.first_time_rate!=null?F.first_time_rate+"%":"\u2014",F.closed_jobs?F.first_time_approvals+" of "+F.closed_jobs+" jobs":"")+tile("Parts logged",F.parts_lines,money(F.parts_value))+'</div>':'<div class="empty">No job records yet. Performance figures are calculated from your jobs once you complete some.</div>')+'</div>';
+ var act='<div class="card sp"><h3 class="hd bk-h3" style="margin-top:0">Recent job activity</h3>'+(st.recent_activity.length?'<ol class="jb-tl">'+st.recent_activity.map(function(e){return'<li><b>'+esc(EL[e.action]||e.action)+'</b> on <a href="#jobs/'+esc(e.booking_id)+'">'+esc(e.reference)+'</a><small>'+esc(ft(e.at))+'</small>'+(e.detail?'<div class="d">'+esc(e.detail)+'</div>':'')+'</li>'}).join("")+'</ol>':'<div class="empty">No job activity yet.</div>')+'</div>';
+ return head+edit+att+jobs+perf+act+pfLegacy()}
+function legacyShifts(){var S=window.S;if(!S||!S.log)return[];return S.log.filter(function(x){return x&&(x.n===S.name||x.n===S.meName)&&x.s&&x.e&&x.e>x.s})}
+function pfLegacy(){var L=legacyShifts();if(!L.length)return"";var h=L.reduce(function(n,x){return n+(x.e-x.s)/36e5},0);
+ return'<div class="card sp"><h3 class="hd bk-h3" style="margin-top:0">Shift history on this device</h3><p>This device holds <b>'+L.length+'</b> older shift(s) ('+hrs(h)+') recorded before attendance moved to the server. They were timed by this device\u2019s clock, so they are <b>not</b> counted automatically.</p><p class="note">You can send them for approval. A manager reviews them and only then do they count toward your hours. Nothing on this device is deleted either way.'+(OP.imp?'':'')+'</p>'+(OP.imp?'<div class="bk-note">'+esc(OP.imp)+'</div>':'')+'<button class="alt" data-op="pf-import"'+(OP.busy?" disabled":"")+'>Send '+L.length+' shift(s) for approval</button></div>'}
+function pfEdit(){var P=OP.pf,p=P.p,f=OP.f;var shown=P.pending?P.pending.url:(P.remove?null:P.url);
+ return'<div class="card sp pf-edit"><h3 class="hd bk-h3" style="margin-top:0">Edit profile</h3>'+(OP.err?'<div class="jb-err" role="alert">'+esc(OP.err)+'</div>':'')+
+  '<div class="pf-photo">'+avatar(p,shown,"lg")+'<div><label for="pf-file">Profile photo</label><input id="pf-file" type="file" accept="image/jpeg,image/png,image/webp"><p class="note">JPG, PNG or WebP. It is resized and re-saved as a 512 px JPEG before upload, and stored privately for staff only.</p>'+((P.url||P.pending)&&!P.remove?'<button class="alt sm" data-op="pf-rmphoto">Remove photo</button>':'')+'</div></div>'+
+  '<div class="jb-row sp"><div><label for="pf-f-name">Display name</label><input id="pf-f-name" maxlength="40" value="'+esc(f["pf-f-name"]!=null?f["pf-f-name"]:p.display_name)+'"></div><div><label for="pf-f-phone">Contact number</label><input id="pf-f-phone" maxlength="40" value="'+esc(f["pf-f-phone"]!=null?f["pf-f-phone"]:(p.phone||""))+'" placeholder="Optional"></div></div>'+
+  '<label for="pf-f-bio">Character biography</label><textarea id="pf-f-bio" maxlength="1000" placeholder="A short background for your character.">'+esc(f["pf-f-bio"]!=null?f["pf-f-bio"]:(p.bio||""))+'</textarea>'+
+  '<div class="pf-locked"><b>Set by management</b><span>Rank: '+esc(p.rank_display)+'</span><span>Department: '+esc(p.department_display)+'</span><span>Status: '+(p.active?'Active':'Inactive')+'</span><span>Join date: '+esc(day(p.join_date))+'</span><small>You cannot change these. Ask a manager if something is wrong.</small></div>'+
+  '<div class="bk-btns sp"><button data-op="pf-save"'+(OP.busy?" disabled":"")+'>Save profile</button><button class="alt" data-op="pf-cancel">Cancel</button></div></div>'}
+function pfDraw(){var el=q("#pf");if(!el||!OP.pf)return;var keep=document.activeElement&&document.activeElement.id;el.innerHTML=pfHtml();if(keep){var f=document.getElementById(keep);if(f&&keep!=="pf-file")f.focus()}}
+function pfLoad(){var el=q("#pf");if(!el)return;if(!active()){el.innerHTML='<div class="card">'+sec("\u25C9","My Profile","Sign in to see your profile")+'<p class="note">Sign in on the Bookings page with your staff account.</p><a class="btn" href="#bookings">Go to sign in</a></div>';return}
+ Promise.all([X.rpc("profile_get"),X.rpc("profile_stats")]).then(function(r){if(r[0].ok===false)throw new Error(r[0].message);if(r[1].ok===false)throw new Error(r[1].message);
+  var old=OP.pf||{};OP.pf={p:r[0].profile,s:r[1],edit:old.edit,pending:old.pending,remove:old.remove,url:old.url};return signed(r[0].profile.avatar_path).then(function(u){OP.pf.url=u;pfDraw()})}).catch(function(e){X.authErr(e);el.innerHTML='<div class="card"><p class="note">Could not load your profile ('+esc(e.message||"error")+').</p></div>'})}
+window.V.profile=function(){OP.pf=null;setTimeout(function(){var el=q("#pf");if(el)el.innerHTML='<div class="card"><div class="sk" style="height:240px"></div></div>';wait(pfLoad)},0);return'<div id="pf"></div>'};
+
+/* avatar: validate type + real file signature, decode, crop square, re-encode as JPEG (drops metadata and any embedded payload) */
+function sniff(buf){var b=new Uint8Array(buf);if(b[0]===0xFF&&b[1]===0xD8&&b[2]===0xFF)return"image/jpeg";if(b[0]===0x89&&b[1]===0x50&&b[2]===0x4E&&b[3]===0x47)return"image/png";
+ if(b[0]===0x52&&b[1]===0x49&&b[2]===0x46&&b[3]===0x46&&b[8]===0x57&&b[9]===0x45&&b[10]===0x42&&b[11]===0x50)return"image/webp";return null}
+function processImage(file){
+ if(window.__agProcessImage)return window.__agProcessImage(file);
+ if(["image/jpeg","image/png","image/webp"].indexOf(file.type)<0)return Promise.reject(new Error("Choose a JPG, PNG or WebP image."));
+ if(file.size>8*1024*1024)return Promise.reject(new Error("That file is too large (8 MB at most)."));
+ return file.slice(0,12).arrayBuffer().then(function(buf){if(!sniff(buf))throw new Error("That file is not a valid image.");return createImageBitmap(file)}).then(function(bm){
+  var s=Math.min(bm.width,bm.height),c=document.createElement("canvas");c.width=c.height=Math.min(512,s);c.getContext("2d").drawImage(bm,(bm.width-s)/2,(bm.height-s)/2,s,s,0,0,c.width,c.height);
+  return new Promise(function(res,rej){c.toBlob(function(b){b&&b.size<=2*1024*1024?res(b):rej(new Error("Could not prepare that image."))},"image/jpeg",0.85)})})}
+function upload(path,blob){return X.token().then(function(t){return fetch(X.base+"/storage/v1/object/staff-avatars/"+path,{method:"POST",headers:{apikey:X.key,Authorization:"Bearer "+t,"Content-Type":"image/jpeg","x-upsert":"false","cache-control":"3600"},body:blob})}).then(function(r){if(!r.ok)throw new Error("The photo could not be uploaded.")})}
+function removeFile(path){if(!path)return Promise.resolve();return X.token().then(function(t){return fetch(X.base+"/storage/v1/object/staff-avatars/"+path,{method:"DELETE",headers:{apikey:X.key,Authorization:"Bearer "+t}})}).catch(function(){})}
+function pfSave(){var P=OP.pf;if(OP.busy)return;OP.busy=true;OP.err="";pfDraw();var uid=P.p.user_id;var args={},f=OP.f;
+ if(f["pf-f-name"]!=null)args.display_name=f["pf-f-name"];if(f["pf-f-phone"]!=null)args.phone=f["pf-f-phone"];if(f["pf-f-bio"]!=null)args.bio=f["pf-f-bio"];
+ var path=null,step=Promise.resolve();
+ if(P.pending){path=uid+"/avatar-"+Date.now().toString(36)+".jpg";step=upload(path,P.pending.blob).then(function(){args.avatar_path=path})}else if(P.remove)args.avatar_path=null;
+ step.then(function(){return X.rpc("profile_update_self",{p:args})}).then(function(r){if(r&&r.ok===false)throw new Error(r.message||"Could not save.");
+  if(args.display_name)ST.me.display_name=args.display_name.trim();OP.f={};P.edit=false;P.pending=null;P.remove=false;URLS={};X.say("Profile saved");return removeFile(r.old_avatar_path)}).then(pfLoad)
+  .catch(function(e){X.authErr(e);OP.err=e.message||"Could not save.";if(path&&!(OP.pf.p.avatar_path===path))removeFile(path)}).then(function(){OP.busy=false;pfDraw()})}
+
+/* ================= events ================= */
+function val(id){var e=document.getElementById(id);return e?e.value:""}
+document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-op]");if(!b||b.disabled)return;var a=b.dataset.op,P=OP.pf;
+ if(a==="pf-edit"){P.edit=true;OP.err="";OP.f={};P.pending=null;P.remove=false;pfDraw()}
+ else if(a==="pf-cancel"){P.edit=false;P.pending=null;P.remove=false;OP.err="";OP.f={};pfDraw()}
+ else if(a==="pf-rmphoto"){P.remove=true;P.pending=null;pfDraw()}
+ else if(a==="pf-save")pfSave();
+ else if(a==="pf-clock"){if(window.act&&window.act.sess)window.act.sess()}
+ else if(a==="pf-import"){var L=legacyShifts().slice(-200).map(function(x){return{s:x.s,e:x.e}});OP.busy=true;pfDraw();
+  X.rpc("shift_import_local",{p:{shifts:L}}).then(function(r){if(r&&r.ok===false)throw new Error(r.message);OP.imp="Sent "+r.imported+" shift(s) for approval"+(r.overlapping?"; "+r.overlapping+" overlapped existing records and were skipped":"")+(r.invalid?"; "+r.invalid+" were not valid and were skipped":"")+". Nothing on this device was changed.";return pfLoad()}).catch(function(er){X.authErr(er);OP.imp=er.message||"Could not import."}).then(function(){OP.busy=false;pfDraw()})}
+ else if(a==="mg-open"){mgLoadDetail(b.dataset.id)}
+ else if(a==="mg-edit"){OP.edit=b.dataset.id||null;OP.f["mg-f-cs"]=OP.f["mg-f-ce"]=OP.f["mg-f-cr"]=undefined;mgDetailDraw()}
+ else if(a==="mg-correct"){var pp={reason:val("mg-f-cr")},cs=localIso(val("mg-f-cs")),ce=localIso(val("mg-f-ce"));if(cs)pp.started_at=cs;if(ce)pp.ended_at=ce;mgAct("staff_shift_correct",{p_shift:b.dataset.id,p:pp},"Shift corrected",function(){OP.edit=null})}
+ else if(a==="mg-delete"){if(!window.confirm("Delete this shift? The audit history keeps a record of it."))return;mgAct("staff_shift_delete",{p_shift:b.dataset.id,p_reason:val("mg-f-cr")},"Shift deleted",function(){OP.edit=null})}
+ else if(a==="mg-add")mgAct("staff_shift_add",{p_user:OP.mg.sel,p:{started_at:localIso(val("mg-f-as")),ended_at:localIso(val("mg-f-ae")),reason:val("mg-f-ar")}},"Shift added",function(){OP.f["mg-f-as"]=OP.f["mg-f-ae"]=OP.f["mg-f-ar"]=""});
+ else if(a==="mg-imp")mgAct("staff_review_import",{p_user:OP.mg.sel,p_action:b.dataset.ac},b.dataset.ac==="approve"?"Imported shifts approved":"Imported shifts rejected");
+ else if(a==="mg-profile")mgAct("staff_update_profile",{p_user:OP.mg.sel,p:{rank_title:val("mg-f-rank"),department:val("mg-f-dept"),hired_at:val("mg-f-hired")}},"Profile updated",function(){OP.f["mg-f-rank"]=OP.f["mg-f-dept"]=OP.f["mg-f-hired"]=undefined});
+});
+document.addEventListener("keydown",function(e){if((e.key==="Enter"||e.key===" ")&&e.target.classList&&e.target.classList.contains("mg-row")){e.preventDefault();e.target.click()}});
+document.addEventListener("input",function(e){var t=e.target;if(t&&/^(pf|mg)-f-/.test(t.id||""))OP.f[t.id]=t.value});
+document.addEventListener("change",function(e){var t=e.target;if(!t)return;
+ if(t.id==="mg-days"&&OP.mg){OP.mg.days=+t.value;mgLoadSummary().then(mgDraw)}
+ else if(t.id==="pf-file"&&t.files&&t.files[0]&&OP.pf){var file=t.files[0];OP.err="";processImage(file).then(function(blob){OP.pf.pending={blob:blob,url:URL.createObjectURL(blob)};OP.pf.remove=false;pfDraw()}).catch(function(er){OP.err=er.message||"That image could not be used.";pfDraw()})}});
+/* the router first ran before this file loaded, so redraw when the page was opened on one of these routes */
+if(/^#(operations|manager|profile)/.test(location.hash||"")&&typeof route==="function")route();
 })();
 </script></body></html>
