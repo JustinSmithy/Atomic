@@ -5,7 +5,7 @@
    staff_booking_action). Nothing here decides whether a time is valid: the database does.
    All times are shown in the workshop time zone (ST.tz, UTC by default) and labelled with it. */
 /* AGSCHED-INLINE-CSS */
-(function(){try{if(document.getElementById("sc-inline-css"))return;var s=document.createElement("style");s.id="sc-inline-css";s.textContent="/* Atomic Garage staff portal: shared scheduling UI (Calendar page + Operations > Bookings).\n   Uses the portal's theme variables so the black-and-yellow look is inherited. */\n:root{--sc-blue:#4da3ff;--sc-iv:#1565c0;--sc-slot:30px}\n\n/* ---------- calendar page layout ---------- */\n.sc-wrap{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}\n@media(min-width:1500px){.sc-wrap{grid-template-columns:minmax(0,1fr) 340px;align-items:start}.sc-side{position:sticky;top:84px;max-height:calc(100vh - 100px);overflow:auto}}\n.sc-main{padding:18px}\n.sc-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}\n.sc-bar .sc-title{flex:1 1 180px;text-align:center;font:700 18px Archivo,sans-serif;min-width:150px}\n.sc-bar select{width:auto;min-width:150px;max-width:100%}\n.sc-seg{display:inline-flex;gap:0;max-width:100%}.sc-seg button{flex:1 1 auto;padding-left:12px;padding-right:12px}.sc-seg button{border-radius:0}.sc-seg button+button{margin-left:-1px}\n.sc-tz{font-size:12px;color:var(--mute)}\n.sc-check{display:inline-flex;gap:6px;align-items:center;font-size:13px;color:var(--mute)}.sc-check input{width:auto}\n.sc-legend{display:flex;gap:6px 14px;flex-wrap:wrap;font-size:12px;color:var(--mute);margin:6px 0 10px}\n.sc-legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-2px;border:2px solid var(--line)}\n.sc-legend .l-pending{border-color:var(--acc);background:rgba(255,196,0,.25)}\n.sc-legend .l-proposed{border:2px dashed var(--sc-blue);background:rgba(77,163,255,.2)}\n.sc-legend .l-approved{border-color:var(--ok);background:rgba(91,224,122,.25)}\n.sc-legend .l-progress{border-color:var(--ok);background:var(--ok)}\n.sc-legend .l-done{border-color:var(--mute);background:var(--panel2);opacity:.7}\n.sc-legend .l-cancel{border-color:var(--bad);background:transparent}\n.sc-legend .l-iv{border-color:var(--sc-iv);background:rgba(21,101,192,.5)}\n.sc-banner{margin:8px 0;padding:10px 12px;border:1px solid var(--warn,#ffb020);border-left-width:4px;border-radius:6px;background:var(--glow);font-size:14px}\n.sc-banner.bad{border-color:var(--bad)}\n.sc-empty{padding:26px 16px;text-align:center;color:var(--mute);border:1px dashed var(--line);border-radius:8px;margin:10px 0}\n.sc-empty b{display:block;color:var(--ink);margin-bottom:4px}\n\n/* ---------- time grid (day + week) ---------- */\n.sc-grid{border:1px solid var(--line);border-radius:8px;background:var(--panel)}\n.sc-scroll{max-height:min(72vh,780px);overflow:auto;overscroll-behavior:contain;position:relative}\n.sc-head,.sc-body{display:grid;grid-template-columns:52px repeat(var(--cols),minmax(0,1fr))}\n.sc-head{position:sticky;top:0;z-index:5;background:var(--panel2);border-bottom:1px solid var(--line)}\n.sc-corner{border-right:1px solid var(--line)}\n.sc-dh{all:unset;box-sizing:border-box;cursor:pointer;text-align:center;padding:8px 4px;border-right:1px solid var(--line);font-size:13px;line-height:1.25}\n.sc-dh:last-child{border-right:0}.sc-dh b{display:block;font-size:16px}.sc-dh:hover{background:var(--glow)}\n.sc-dh.today b{color:var(--acc)}.sc-dh small{display:block;color:var(--mute);font-size:11px}\n.sc-dh:focus-visible{outline:2px solid var(--acc);outline-offset:-2px}\n.sc-gut{position:relative;border-right:1px solid var(--line);font-size:11px;color:var(--mute)}\n.sc-gut span{position:absolute;right:6px;transform:translateY(-50%)}\n.sc-col{position:relative;border-right:1px solid var(--line);\n  background-image:repeating-linear-gradient(to bottom,var(--line) 0 1px,transparent 1px var(--hour-px));}\n.sc-col:last-child{border-right:0}\n.sc-col.drop{background-color:var(--glow)}\n.sc-off{position:absolute;left:0;right:0;background:repeating-linear-gradient(135deg,rgba(128,128,128,.14) 0 6px,transparent 6px 12px);pointer-events:none;z-index:0}\n.sc-offlbl{position:absolute;left:0;right:0;top:8px;text-align:center;font-size:11px;color:var(--mute);z-index:1;pointer-events:none}\n.sc-now{position:absolute;left:0;right:0;height:0;border-top:2px solid var(--bad);z-index:3;pointer-events:none}\n.sc-drop{position:absolute;left:2px;right:2px;height:2px;background:var(--acc);z-index:4;pointer-events:none}\n.sc-drop b{position:absolute;right:0;top:-18px;background:var(--acc);color:var(--accink,#111);font:700 11px Archivo,sans-serif;padding:1px 6px;border-radius:3px}\n\n/* ---------- events ---------- */\n.sc-ev,.sc-card{box-sizing:border-box;border:1px solid var(--line);border-left-width:4px;background:var(--panel2);color:var(--ink);text-align:left;font:inherit;text-transform:none;letter-spacing:0}\n.sc-ev{position:absolute;z-index:2;overflow:hidden;border-radius:6px;padding:2px 6px;font-size:12px;line-height:1.25;cursor:pointer}\n.sc-ev:hover,.sc-card:hover{filter:none;transform:none;box-shadow:0 0 0 2px var(--acc)}\n.sc-ev:focus-visible,.sc-card:focus-visible{outline:2px solid var(--acc);outline-offset:1px}\n.sc-ev[draggable=true]{cursor:grab}.sc-ev.dragging{opacity:.4}\n.sc-ev b{font-weight:700}.sc-ev small{display:block;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}\n.sc-ev .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}\n.sc-ev .bd,.sc-card .bd{display:inline-block;margin-left:4px;padding:0 5px;border-radius:3px;font:700 9px Archivo,sans-serif;letter-spacing:.06em;text-transform:uppercase;background:var(--acc);color:var(--accink,#111);vertical-align:1px}\n.s-pending{border-color:var(--acc);background:rgba(255,196,0,.14)}\n.s-alternative_proposed{border-style:dashed;border-color:var(--sc-blue);background:rgba(77,163,255,.14)}\n.s-alternative_accepted{border-color:var(--sc-blue);border-left-color:var(--acc);background:rgba(77,163,255,.24)}\n.s-approved{border-color:var(--ok);background:rgba(91,224,122,.14)}\n.s-in_progress{background:var(--ok);color:#06120a;border-color:var(--ok)}.s-in_progress small{color:#143a1e}\n.s-completed{opacity:.62;border-color:var(--mute);background:var(--panel)}\n.s-cancelled,.s-declined{opacity:.55;border-color:var(--bad);text-decoration:line-through;background:var(--panel)}\n.s-reschedule{border-style:dashed;border-color:var(--acc);background:repeating-linear-gradient(135deg,rgba(255,196,0,.2) 0 6px,transparent 6px 12px)}\n.s-iv{border-color:var(--sc-iv);background:rgba(21,101,192,.3)}\n.s-iv.i-confirmed{border-color:#2e7d32}.s-iv.i-reschedule_requested{border-color:var(--warn,#ffb020)}.s-iv.i-completed,.s-iv.i-no_show,.s-iv.i-cancelled{opacity:.6}\n\n/* ---------- month ---------- */\n.sc-mg{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}\n.sc-mw{text-align:center;font-size:12px;color:var(--mute);padding:2px}\n.sc-md{all:unset;box-sizing:border-box;cursor:pointer;min-height:96px;padding:5px;border:1px solid var(--line);border-radius:8px;display:flex;flex-direction:column;gap:3px;overflow:hidden;background:var(--panel)}\n.sc-md b{font-size:13px}.sc-md.out{opacity:.45}.sc-md.today b{color:var(--acc)}.sc-md.sel{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc) inset}\n.sc-md.off{background:repeating-linear-gradient(135deg,rgba(128,128,128,.14) 0 6px,transparent 6px 12px)}\n.sc-md:focus-visible{outline:2px solid var(--acc)}.sc-md i{font-style:normal;font-size:11px;color:var(--mute)}\n.sc-chip{font-size:11px;line-height:1.2;padding:2px 4px;border-radius:4px;border:1px solid var(--line);border-left-width:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}\n.sc-cnt{display:none}\n\n/* ---------- cards / agenda / sidebar ---------- */\n.sc-card{display:block;width:100%;padding:9px 11px;border-radius:8px;margin:6px 0;cursor:pointer}\n.sc-card .ct{font-weight:700;font-variant-numeric:tabular-nums}.sc-card small{display:block;color:var(--mute);overflow-wrap:anywhere}\n.sc-card.s-in_progress small{color:#143a1e}\n.sc-agenda{display:none}.sc-ah{font:700 14px Archivo,sans-serif;margin:14px 0 2px;color:var(--acc)}\n.sc-side .card{padding:16px}.sc-side h3{margin:0 0 6px}\n.sc-need{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}\n.sc-need .n{padding:3px 9px;border:1px solid var(--bad);color:var(--bad);border-radius:99px;font-size:12px;font-weight:700}\n.sc-need .n.w{border-color:var(--warn,#ffb020);color:var(--warn,#ffb020)}\n.sc-dayh{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;margin-top:14px}\n\n/* ---------- details drawer ---------- */\n.sc-back{position:fixed;inset:0;z-index:58;background:rgba(0,0,0,.5)}\n.sc-drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100vw);z-index:59;background:var(--bg,#0b0b0b);border-left:4px solid var(--acc);overflow:auto;overscroll-behavior:contain;padding:0 18px calc(24px + env(safe-area-inset-bottom,0px))}\n.sc-dh2{display:flex;justify-content:space-between;align-items:center;gap:10px;position:sticky;top:0;z-index:2;background:var(--bg,#0b0b0b);padding:14px 0;border-bottom:1px solid var(--line)}\n.sc-dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px 16px;margin:12px 0}\n.sc-dl dt{color:var(--acc);font:700 11px Archivo,sans-serif;letter-spacing:.12em;text-transform:uppercase}.sc-dl dd{margin:3px 0 0;overflow-wrap:anywhere}\n.sc-sec{padding:12px 0;border-bottom:1px solid var(--line)}.sc-sec:last-child{border-bottom:0}\n.sc-sec h3{margin:0 0 8px}\n.sc-acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}\n.sc-inline{display:flex;gap:8px;flex-wrap:wrap}.sc-inline select{flex:1 1 200px;width:auto}\n\n/* ---------- confirmation modal ---------- */\n.sc-mback{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:14px}\n.sc-modal{width:min(520px,100%);max-height:calc(100vh - 28px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--acc);border-radius:10px;padding:18px}\n.sc-modal h2{margin:0 0 10px;font-size:22px}\n.sc-rows{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:8px 0;font-size:14px}.sc-rows dt{color:var(--mute)}.sc-rows dd{margin:0;overflow-wrap:anywhere}\n.sc-rows .from{text-decoration:line-through;color:var(--mute)}\n.sc-cf{margin:8px 0;padding:8px 10px;border-radius:6px;border:1px solid var(--warn,#ffb020);background:var(--glow);font-size:14px}\n.sc-cf.hard{border-color:var(--bad)}.sc-cf b{display:block}\n.sc-modal textarea{min-height:60px}.sc-modal .sc-acts{margin-top:12px;justify-content:flex-end}\n\n/* ---------- compact week scheduler (booking details + calendar drawer) ---------- */\n.sc-sch{margin-top:8px}\n.sc-sch-info{display:grid;gap:4px;font-size:14px;margin-bottom:8px}.sc-sch-info b{color:var(--ink)}\n.sc-sch-bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 0}\n.sc-sch-bar .t{flex:1 1 120px;text-align:center;font-weight:700;font-size:14px}\n.sc-sch-bar input[type=date],.sc-sch-bar select{width:auto;min-width:0;flex:0 1 auto}\n.sc-sch-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin:6px 0}\n.sc-sch-opts label{margin:0 0 3px}\n.sc-sl{border:1px solid var(--line);border-radius:6px;overflow:auto;max-height:290px;background:var(--panel);overscroll-behavior:contain}\n.sc-slg{display:grid;grid-template-columns:42px repeat(7,minmax(40px,1fr));min-width:340px}\n.sc-slh{position:sticky;top:0;z-index:2;background:var(--panel2);font-size:11px;text-align:center;padding:4px 0;border-bottom:1px solid var(--line);line-height:1.2}\n.sc-slh.today{color:var(--acc)}.sc-slh b{display:block;font-size:13px}\n.sc-slt{font-size:10px;color:var(--mute);text-align:right;padding:0 4px 0 0;display:flex;align-items:center;justify-content:flex-end;height:20px}\n.sc-c{all:unset;box-sizing:border-box;height:20px;border:1px solid var(--panel);border-radius:3px;cursor:pointer;font-size:10px;text-align:center;line-height:18px;color:var(--ink);background:rgba(91,224,122,.16)}\n.sc-c:hover:not(:disabled){box-shadow:0 0 0 2px var(--acc) inset}.sc-c:focus-visible{outline:2px solid var(--acc);outline-offset:-2px}\n.sc-c.used{background:rgba(91,224,122,.34)}\n.sc-c.full{background:rgba(255,176,32,.38)}\n.sc-c.mech{background:repeating-linear-gradient(135deg,rgba(255,80,80,.45) 0 4px,rgba(255,80,80,.15) 4px 8px);cursor:not-allowed}\n.sc-c.na{background:repeating-linear-gradient(135deg,rgba(128,128,128,.22) 0 4px,transparent 4px 8px);cursor:not-allowed;color:var(--mute)}\n.sc-c.past{background:rgba(128,128,128,.12);cursor:not-allowed}\n.sc-c.req{box-shadow:0 0 0 2px var(--acc) inset}.sc-c.cur{box-shadow:0 0 0 2px var(--ok) inset}.sc-c.prop{box-shadow:0 0 0 2px var(--sc-blue) inset}\n.sc-c.pick{background:var(--acc);color:var(--accink,#111);font-weight:800}\n.sc-sk{display:flex;gap:6px 12px;flex-wrap:wrap;font-size:11px;color:var(--mute);margin:6px 0}\n.sc-sk i{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:4px;vertical-align:-2px;border:1px solid var(--line)}\n.sc-pick{margin-top:8px;padding:10px 12px;border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:6px;background:var(--panel2);font-size:14px}\n.sc-pick ul{margin:6px 0;padding-left:18px}.sc-pick li.hard{color:var(--bad)}.sc-pick li.soft{color:var(--warn,#ffb020)}\n\n/* Operations > Bookings: give the details panel more room */\n.bk2{grid-template-columns:minmax(280px,380px) minmax(0,1fr)!important}\n\n/* ---------- mobile ---------- */\n@media(max-width:760px){\n  .sc-seg{width:100%}.sc-seg button{min-width:0;padding-left:6px;padding-right:6px;font-size:12px;letter-spacing:.02em}.sc-bar>.alt.sm{flex:1 1 auto}.sc-main{padding:12px}.sc-bar .sc-title{order:-1;flex:1 1 100%}\n  .sc-bar select{flex:1 1 100%}\n  .sc-wkgrid{display:none}.sc-agenda{display:block}\n  .sc-md{min-height:56px;padding:3px}.sc-md .sc-chip{display:none}.sc-md .sc-cnt{display:inline-block;align-self:flex-start;background:var(--acc);color:var(--accink,#111);font:700 11px Archivo,sans-serif;padding:0 6px;border-radius:99px}\n  .sc-head,.sc-body{grid-template-columns:44px repeat(var(--cols),minmax(0,1fr))}\n  .sc-drawer{width:100vw;border-left:0;border-top:4px solid var(--acc)}\n  .sc-modal{padding:14px}.sc-modal .sc-acts button{flex:1 1 100%}\n  .sc-acts button{flex:1 1 auto}\n}\n@media(prefers-reduced-motion:reduce){.sc-ev,.sc-card{transition:none}}\n";document.head.appendChild(s)}catch(e){}})();
+(function(){try{if(document.getElementById("sc-inline-css"))return;var s=document.createElement("style");s.id="sc-inline-css";s.textContent="/* Atomic Garage staff portal: shared scheduling UI (Calendar page + Operations > Bookings).\n   Uses the portal's theme variables so the black-and-yellow look is inherited. */\n:root{--sc-blue:#4da3ff;--sc-iv:#1565c0;--sc-slot:30px}\n\n/* ---------- calendar page layout ---------- */\n.sc-wrap{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}\n@media(min-width:1500px){.sc-wrap{grid-template-columns:minmax(0,1fr) 340px;align-items:start}.sc-side{position:sticky;top:84px;max-height:calc(100vh - 100px);overflow:auto}}\n.sc-main{padding:18px}\n.sc-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0}\n.sc-bar .sc-title{flex:1 1 180px;text-align:center;font:700 18px Archivo,sans-serif;min-width:150px}\n.sc-bar select{width:auto;min-width:150px;max-width:100%}\n.sc-seg{display:inline-flex;gap:0;max-width:100%}.sc-seg button{flex:1 1 auto;padding-left:12px;padding-right:12px}.sc-seg button{border-radius:0}.sc-seg button+button{margin-left:-1px}\n.sc-tz{font-size:12px;color:var(--mute)}\n.sc-check{display:inline-flex;gap:6px;align-items:center;font-size:13px;color:var(--mute)}.sc-check input{width:auto}\n.sc-legend{display:flex;gap:6px 14px;flex-wrap:wrap;font-size:12px;color:var(--mute);margin:6px 0 10px}\n.sc-legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-2px;border:2px solid var(--line)}\n.sc-legend .l-pending{border-color:var(--acc);background:rgba(255,196,0,.25)}\n.sc-legend .l-proposed{border:2px dashed var(--sc-blue);background:rgba(77,163,255,.2)}\n.sc-legend .l-approved{border-color:var(--ok);background:rgba(91,224,122,.25)}\n.sc-legend .l-progress{border-color:var(--ok);background:var(--ok)}\n.sc-legend .l-done{border-color:var(--mute);background:var(--panel2);opacity:.7}\n.sc-legend .l-cancel{border-color:var(--bad);background:transparent}\n.sc-legend .l-iv{border-color:var(--sc-iv);background:rgba(21,101,192,.5)}\n.sc-banner{margin:8px 0;padding:10px 12px;border:1px solid var(--warn,#ffb020);border-left-width:4px;border-radius:6px;background:var(--glow);font-size:14px}\n.sc-banner.bad{border-color:var(--bad)}\n.sc-empty{padding:26px 16px;text-align:center;color:var(--mute);border:1px dashed var(--line);border-radius:8px;margin:10px 0}\n.sc-empty b{display:block;color:var(--ink);margin-bottom:4px}\n\n/* ---------- time grid (day + week) ---------- */\n.sc-grid{border:1px solid var(--line);border-radius:8px;background:var(--panel)}\n.sc-scroll{max-height:min(72vh,780px);overflow:auto;overscroll-behavior:contain;position:relative}\n.sc-head,.sc-body{display:grid;grid-template-columns:52px repeat(var(--cols),minmax(0,1fr))}\n.sc-head{position:sticky;top:0;z-index:5;background:var(--panel2);border-bottom:1px solid var(--line)}\n.sc-corner{border-right:1px solid var(--line)}\n.sc-dh{all:unset;box-sizing:border-box;cursor:pointer;text-align:center;padding:8px 4px;border-right:1px solid var(--line);font-size:13px;line-height:1.25}\n.sc-dh:last-child{border-right:0}.sc-dh b{display:block;font-size:16px}.sc-dh:hover{background:var(--glow)}\n.sc-dh.today b{color:var(--acc)}.sc-dh small{display:block;color:var(--mute);font-size:11px}\n.sc-dh:focus-visible{outline:2px solid var(--acc);outline-offset:-2px}\n.sc-gut{position:relative;border-right:1px solid var(--line);font-size:11px;color:var(--mute)}\n.sc-gut span{position:absolute;right:6px;transform:translateY(-50%)}\n.sc-col{position:relative;border-right:1px solid var(--line);\n  background-image:repeating-linear-gradient(to bottom,var(--line) 0 1px,transparent 1px var(--hour-px));}\n.sc-col:last-child{border-right:0}\n.sc-col.drop{background-color:var(--glow)}\n.sc-off{position:absolute;left:0;right:0;background:repeating-linear-gradient(135deg,rgba(128,128,128,.14) 0 6px,transparent 6px 12px);pointer-events:none;z-index:0}\n.sc-offlbl{position:absolute;left:0;right:0;top:8px;text-align:center;font-size:11px;color:var(--mute);z-index:1;pointer-events:none}\n.sc-now{position:absolute;left:0;right:0;height:0;border-top:2px solid var(--bad);z-index:3;pointer-events:none}\n.sc-drop{position:absolute;left:2px;right:2px;height:2px;background:var(--acc);z-index:4;pointer-events:none}\n.sc-drop b{position:absolute;right:0;top:-18px;background:var(--acc);color:var(--accink,#111);font:700 11px Archivo,sans-serif;padding:1px 6px;border-radius:3px}\n\n/* ---------- events ---------- */\n.sc-ev,.sc-card{box-sizing:border-box;border:1px solid var(--line);border-left-width:4px;background:var(--panel2);color:var(--ink);text-align:left;font:inherit;text-transform:none;letter-spacing:0}\n.sc-ev{position:absolute;z-index:2;overflow:hidden;border-radius:6px;padding:2px 6px;font-size:12px;line-height:1.25;cursor:pointer}\n.sc-ev:hover,.sc-card:hover{filter:none;transform:none;box-shadow:0 0 0 2px var(--acc)}\n.sc-ev:focus-visible,.sc-card:focus-visible{outline:2px solid var(--acc);outline-offset:1px}\n.sc-ev[draggable=true]{cursor:grab}.sc-ev.dragging{opacity:.4}\n.sc-ev b{font-weight:700}.sc-ev small{display:block;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}\n.sc-ev .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}\n.sc-ev .bd,.sc-card .bd{display:inline-block;margin-left:4px;padding:0 5px;border-radius:3px;font:700 9px Archivo,sans-serif;letter-spacing:.06em;text-transform:uppercase;background:var(--acc);color:var(--accink,#111);vertical-align:1px}\n.s-pending{border-color:var(--acc);background:rgba(255,196,0,.14)}\n.s-alternative_proposed{border-style:dashed;border-color:var(--sc-blue);background:rgba(77,163,255,.14)}\n.s-alternative_accepted{border-color:var(--sc-blue);border-left-color:var(--acc);background:rgba(77,163,255,.24)}\n.s-approved{border-color:var(--ok);background:rgba(91,224,122,.14)}\n.s-in_progress{background:var(--ok);color:#06120a;border-color:var(--ok)}.s-in_progress small{color:#143a1e}\n.s-completed{opacity:.62;border-color:var(--mute);background:var(--panel)}\n.s-cancelled,.s-declined{opacity:.55;border-color:var(--bad);text-decoration:line-through;background:var(--panel)}\n.s-reschedule{border-style:dashed;border-color:var(--acc);background:repeating-linear-gradient(135deg,rgba(255,196,0,.2) 0 6px,transparent 6px 12px)}\n.s-iv{border-color:var(--sc-iv);background:rgba(21,101,192,.3)}\n.s-iv.i-confirmed{border-color:#2e7d32}.s-iv.i-reschedule_requested{border-color:var(--warn,#ffb020)}.s-iv.i-completed,.s-iv.i-no_show,.s-iv.i-cancelled{opacity:.6}\n\n/* ---------- month ---------- */\n.sc-mg{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}\n.sc-mw{text-align:center;font-size:12px;color:var(--mute);padding:2px}\n.sc-md{all:unset;box-sizing:border-box;cursor:pointer;min-height:96px;padding:5px;border:1px solid var(--line);border-radius:8px;display:flex;flex-direction:column;gap:3px;overflow:hidden;background:var(--panel)}\n.sc-md b{font-size:13px}.sc-md.out{opacity:.45}.sc-md.today b{color:var(--acc)}.sc-md.sel{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc) inset}\n.sc-md.off{background:repeating-linear-gradient(135deg,rgba(128,128,128,.14) 0 6px,transparent 6px 12px)}\n.sc-md:focus-visible{outline:2px solid var(--acc)}.sc-md i{font-style:normal;font-size:11px;color:var(--mute)}\n.sc-chip{font-size:11px;line-height:1.2;padding:2px 4px;border-radius:4px;border:1px solid var(--line);border-left-width:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}\n.sc-cnt{display:none}\n\n/* ---------- cards / agenda / sidebar ---------- */\n.sc-card{display:block;width:100%;padding:9px 11px;border-radius:8px;margin:6px 0;cursor:pointer}\n.sc-card .ct{font-weight:700;font-variant-numeric:tabular-nums}.sc-card small{display:block;color:var(--mute);overflow-wrap:anywhere}\n.sc-card.s-in_progress small{color:#143a1e}\n.sc-agenda{display:none}.sc-ah{font:700 14px Archivo,sans-serif;margin:14px 0 2px;color:var(--acc)}\n.sc-side .card{padding:16px}.sc-side h3{margin:0 0 6px}\n.sc-need{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}\n.sc-need .n{padding:3px 9px;border:1px solid var(--bad);color:var(--bad);border-radius:99px;font-size:12px;font-weight:700}\n.sc-need .n.w{border-color:var(--warn,#ffb020);color:var(--warn,#ffb020)}\n.sc-dayh{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap;margin-top:14px}\n\n/* ---------- details drawer ---------- */\n.sc-back{position:fixed;inset:0;z-index:58;background:rgba(0,0,0,.5)}\n.sc-drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100vw);z-index:59;background:var(--bg,#0b0b0b);border-left:4px solid var(--acc);overflow:auto;overscroll-behavior:contain;padding:0 18px calc(24px + env(safe-area-inset-bottom,0px))}\n.sc-dh2{display:flex;justify-content:space-between;align-items:center;gap:10px;position:sticky;top:0;z-index:2;background:var(--bg,#0b0b0b);padding:14px 0;border-bottom:1px solid var(--line)}\n.sc-dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px 16px;margin:12px 0}\n.sc-dl dt{color:var(--acc);font:700 11px Archivo,sans-serif;letter-spacing:.12em;text-transform:uppercase}.sc-dl dd{margin:3px 0 0;overflow-wrap:anywhere}\n.sc-sec{padding:12px 0;border-bottom:1px solid var(--line)}.sc-sec:last-child{border-bottom:0}\n.sc-sec h3{margin:0 0 8px}\n.sc-acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}\n.sc-inline{display:flex;gap:8px;flex-wrap:wrap}.sc-inline select{flex:1 1 200px;width:auto}\n\n/* ---------- confirmation modal ---------- */\n.sc-mback{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.65);display:flex;align-items:center;justify-content:center;padding:14px}\n.sc-modal{width:min(520px,100%);max-height:calc(100vh - 28px);overflow:auto;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--acc);border-radius:10px;padding:18px}\n.sc-modal h2{margin:0 0 10px;font-size:22px}\n.sc-rows{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:8px 0;font-size:14px}.sc-rows dt{color:var(--mute)}.sc-rows dd{margin:0;overflow-wrap:anywhere}\n.sc-rows .from{text-decoration:line-through;color:var(--mute)}\n.sc-cf{margin:8px 0;padding:8px 10px;border-radius:6px;border:1px solid var(--warn,#ffb020);background:var(--glow);font-size:14px}\n.sc-cf.hard{border-color:var(--bad)}.sc-cf b{display:block}\n.sc-modal textarea{min-height:60px}.sc-modal .sc-acts{margin-top:12px;justify-content:flex-end}\n\n/* ---------- compact week scheduler (booking details + calendar drawer) ---------- */\n.sc-sch{margin-top:8px}\n.sc-sch-info{display:grid;gap:4px;font-size:14px;margin-bottom:8px}.sc-sch-info b{color:var(--ink)}\n.sc-sch-bar{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:8px 0}\n.sc-sch-bar .t{flex:1 1 120px;text-align:center;font-weight:700;font-size:14px}\n.sc-sch-bar input[type=date],.sc-sch-bar select{width:auto;min-width:0;flex:0 1 auto}\n.sc-sch-opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin:6px 0}\n.sc-sch-opts label{margin:0 0 3px}\n.sc-sl{border:1px solid var(--line);border-radius:6px;overflow:auto;max-height:290px;background:var(--panel);overscroll-behavior:contain}\n.sc-slg{display:grid;grid-template-columns:42px repeat(7,minmax(40px,1fr));min-width:340px}\n.sc-slh{position:sticky;top:0;z-index:2;background:var(--panel2);font-size:11px;text-align:center;padding:4px 0;border-bottom:1px solid var(--line);line-height:1.2}\n.sc-slh.today{color:var(--acc)}.sc-slh b{display:block;font-size:13px}\n.sc-slt{font-size:10px;color:var(--mute);text-align:right;padding:0 4px 0 0;display:flex;align-items:center;justify-content:flex-end;height:20px}\n.sc-c{all:unset;box-sizing:border-box;height:20px;border:1px solid var(--panel);border-radius:3px;cursor:pointer;font-size:10px;text-align:center;line-height:18px;color:var(--ink);background:rgba(91,224,122,.16)}\n.sc-c:hover:not(:disabled){box-shadow:0 0 0 2px var(--acc) inset}.sc-c:focus-visible{outline:2px solid var(--acc);outline-offset:-2px}\n.sc-c.used{background:rgba(91,224,122,.34)}\n.sc-c.full{background:rgba(255,176,32,.38)}\n.sc-c.mech{background:repeating-linear-gradient(135deg,rgba(255,80,80,.45) 0 4px,rgba(255,80,80,.15) 4px 8px);cursor:not-allowed}\n.sc-c.na{background:repeating-linear-gradient(135deg,rgba(128,128,128,.22) 0 4px,transparent 4px 8px);cursor:not-allowed;color:var(--mute)}\n.sc-c.past{background:rgba(128,128,128,.12);cursor:not-allowed}\n.sc-c.req{box-shadow:0 0 0 2px var(--acc) inset}.sc-c.cur{box-shadow:0 0 0 2px var(--ok) inset}.sc-c.prop{box-shadow:0 0 0 2px var(--sc-blue) inset}\n.sc-c.pick{background:var(--acc);color:var(--accink,#111);font-weight:800}\n.sc-sk{display:flex;gap:6px 12px;flex-wrap:wrap;font-size:11px;color:var(--mute);margin:6px 0}\n.sc-sk i{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:4px;vertical-align:-2px;border:1px solid var(--line)}\n.sc-pick{margin-top:8px;padding:10px 12px;border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:6px;background:var(--panel2);font-size:14px}\n.sc-pick ul{margin:6px 0;padding-left:18px}.sc-pick li.hard{color:var(--bad)}.sc-pick li.soft{color:var(--warn,#ffb020)}\n\n/* Operations > Bookings: give the details panel more room */\n.bk2{grid-template-columns:minmax(280px,380px) minmax(0,1fr)!important}\n\n/* ---------- mobile ---------- */\n@media(max-width:760px){\n  .sc-seg{width:100%}.sc-seg button{min-width:0;padding-left:6px;padding-right:6px;font-size:12px;letter-spacing:.02em}.sc-bar>.alt.sm{flex:1 1 auto}.sc-main{padding:12px}.sc-bar .sc-title{order:-1;flex:1 1 100%}\n  .sc-bar select{flex:1 1 100%}\n  .sc-wkgrid{display:none}.sc-agenda{display:block}\n  .sc-md{min-height:56px;padding:3px}.sc-md .sc-chip{display:none}.sc-md .sc-cnt{display:inline-block;align-self:flex-start;background:var(--acc);color:var(--accink,#111);font:700 11px Archivo,sans-serif;padding:0 6px;border-radius:99px}\n  .sc-head,.sc-body{grid-template-columns:44px repeat(var(--cols),minmax(0,1fr))}\n  .sc-drawer{width:100vw;border-left:0;border-top:4px solid var(--acc)}\n  .sc-modal{padding:14px}.sc-modal .sc-acts button{flex:1 1 100%}\n  .sc-acts button{flex:1 1 auto}\n}\n@media(prefers-reduced-motion:reduce){.sc-ev,.sc-card{transition:none}}\n\n/* ================= v2: three-column Calendar, booking panel, top bar ================= */\n.sc-page{display:block}\n.sc-left{display:none}\n.sc-center{min-width:0;display:block}\n.sc-center>.card{margin-bottom:16px}\n.sc-legend.v{display:grid;gap:6px;margin:0}\n.sc-lc{padding:14px}\n.sc-lt{margin:16px 0 6px;font:700 11px Archivo,sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}\n.sc-lc select{width:100%}\n.sc-rad{display:grid;gap:6px}.sc-rad label{display:flex;gap:8px;align-items:center;margin:0;font-size:14px;cursor:pointer}.sc-rad input{width:auto;accent-color:var(--acc)}\n.sc-cc{margin-top:8px}\n.sc-hrs{display:grid;gap:4px;font-size:13px}.sc-hrs div{display:flex;justify-content:space-between;gap:8px}.sc-hrs span{color:var(--mute)}\n.sc-mini .sc-mh{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:6px;font-size:14px}\n.sc-mg2{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}\n.sc-mg2 span{font-size:10px;color:var(--mute);padding:2px 0}\n.sc-mg2 button{all:unset;box-sizing:border-box;cursor:pointer;font-size:12px;line-height:26px;height:26px;border-radius:6px;text-align:center;color:var(--ink)}\n.sc-mg2 button.out{color:var(--mute);opacity:.5}.sc-mg2 button.wk{background:var(--glow)}\n.sc-mg2 button.today{box-shadow:0 0 0 1px var(--acc) inset}.sc-mg2 button.sel{background:var(--acc);color:var(--accink,#111);font-weight:800;opacity:1}\n.sc-mg2 button:hover{background:var(--glow)}.sc-mg2 button:focus-visible{outline:2px solid var(--acc)}\n\n/* upcoming table */\n.sc-uh{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}.sc-uh h3{margin:0}\n.sc-ut table{width:100%;border-collapse:collapse;font-size:14px}\n.sc-ut th{text-align:left;font:700 11px Archivo,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);padding:6px 10px}\n.sc-ut td{padding:9px 10px;border-top:1px solid var(--line)}\n.sc-ut tbody tr{cursor:pointer}.sc-ut tbody tr:hover{background:var(--glow)}.sc-ut tbody tr:focus-visible{outline:2px solid var(--acc);outline-offset:-2px}\n.sc-ucards{display:none}\n\n/* booking panel + drawer */\n.sc-tabs{display:flex;gap:0;margin:12px 0;border:1px solid var(--line);border-radius:8px;overflow:hidden}\n.sc-tabs button{all:unset;box-sizing:border-box;flex:1;text-align:center;padding:9px 6px;cursor:pointer;font:700 13px Archivo,sans-serif;color:var(--mute)}\n.sc-tabs button.on{background:var(--acc);color:var(--accink,#111)}.sc-tabs button:focus-visible{outline:2px solid var(--acc);outline-offset:-2px}\n.sc-sum{margin:6px 0}\n.sc-tl{list-style:none;margin:0;padding:0;display:grid;gap:10px}.sc-tl li{border-left:3px solid var(--acc);padding-left:10px}.sc-tl li.int{border-left-color:var(--mute)}\n.sc-tl small{display:block;color:var(--mute)}.sc-tl span{display:block;overflow-wrap:anywhere}\n\n/* scheduler: day chips + time buttons */\n.sc-days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:8px 0}\n.sc-dc{all:unset;box-sizing:border-box;cursor:pointer;text-align:center;padding:6px 0;border:1px solid var(--line);border-radius:8px;font-size:11px;color:var(--mute);position:relative;background:var(--panel)}\n.sc-dc b{display:block;font-size:16px;color:var(--ink)}.sc-dc.off{opacity:.45}.sc-dc.today{border-color:var(--acc)}\n.sc-dc.on{background:var(--acc);border-color:var(--acc);color:var(--accink,#111);opacity:1}.sc-dc.on b{color:var(--accink,#111)}\n.sc-dc i{position:absolute;right:4px;top:4px;width:6px;height:6px;border-radius:50%;background:var(--acc)}.sc-dc.on i{background:var(--accink,#111)}\n.sc-dc:focus-visible{outline:2px solid var(--acc);outline-offset:1px}\n.sc-th{margin:12px 0 6px;font:700 13px Archivo,sans-serif}\n.sc-times{display:grid;grid-template-columns:repeat(auto-fill,minmax(66px,1fr));gap:6px;max-height:300px;overflow:auto;overscroll-behavior:contain;padding:2px}\n.sc-tb{all:unset;box-sizing:border-box;cursor:pointer;text-align:center;padding:8px 2px;border:1px solid var(--line);border-radius:8px;font-size:13px;color:var(--ink);background:rgba(91,224,122,.1);position:relative}\n.sc-tb sup{position:absolute;right:3px;top:1px;font-size:9px}\n.sc-tb.used{background:rgba(91,224,122,.28)}.sc-tb.full{background:rgba(255,176,32,.3);border-color:var(--warn,#ffb020)}\n.sc-tb.mech{background:repeating-linear-gradient(135deg,rgba(255,80,80,.4) 0 4px,rgba(255,80,80,.12) 4px 8px);cursor:not-allowed}\n.sc-tb.na,.sc-tb.past{background:rgba(128,128,128,.1);color:var(--mute);cursor:not-allowed}.sc-tb.na{background:repeating-linear-gradient(135deg,rgba(128,128,128,.2) 0 4px,transparent 4px 8px)}\n.sc-tb.req{box-shadow:0 0 0 2px var(--acc) inset}.sc-tb.cur{box-shadow:0 0 0 2px var(--ok) inset}.sc-tb.prop{box-shadow:0 0 0 2px var(--sc-blue) inset}\n.sc-tb:hover:not(:disabled){box-shadow:0 0 0 2px var(--acc) inset}.sc-tb.pick{background:var(--acc);color:var(--accink,#111);font-weight:800;border-color:var(--acc)}\n.sc-tb:focus-visible{outline:2px solid var(--acc);outline-offset:1px}\n.sc-final{margin-top:12px}\n.sc-final button{background:transparent;font-weight:700}\n.sc-final .sc-ok{color:var(--ok);border:1px solid var(--ok)}.sc-final .sc-alt{color:var(--acc);border:1px solid var(--acc)}.sc-final .sc-no{color:var(--bad);border:1px solid var(--bad)}\n.sc-final button:disabled{opacity:.4;cursor:not-allowed}\n.sc-pick .alt.sm{float:right}\n\n/* docked panel + three columns on wide screens */\n@media(min-width:1300px){\n  .sc-page{display:grid;grid-template-columns:230px minmax(0,1fr) 360px;gap:16px;align-items:start}\n  .sc-left{display:block;position:sticky;top:84px;max-height:calc(100vh - 100px);overflow:auto}\n  .sc-filters,.sc-legend-wrap{display:none}\n  .sc-docked{position:sticky;top:84px;right:auto;bottom:auto;width:auto;max-height:calc(100vh - 100px);z-index:auto;border:1px solid var(--line);border-top:4px solid var(--acc);border-radius:10px;background:var(--panel);padding:0 16px 16px}\n  .sc-docked .sc-dh2{background:var(--panel)}\n  .sc-docked .sc-empty{border:0;margin-top:40px}\n  .sc-scroll{max-height:min(68vh,720px)}\n}\n@media(max-width:760px){\n  .sc-ut{display:none}.sc-ucards{display:block}\n  .sc-times{grid-template-columns:repeat(auto-fill,minmax(60px,1fr))}\n}\n\n/* top bar: notifications + profile menu */\n.bar.ag-tb{position:relative;display:flex;align-items:center;gap:10px;flex-wrap:wrap}\n.ag-tb .ag-signout{display:none}\n.ag-bell{position:relative;margin-left:auto;width:44px;height:44px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:12px}\n.ag-bell[hidden]{display:none}\n.ag-n{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;border-radius:9px;background:var(--bad);color:#fff;font:700 11px Archivo,sans-serif;display:flex;align-items:center;justify-content:center;padding:0 4px}\n.ag-n[hidden]{display:none}\n.ag-meb.ag-on{cursor:pointer}.ag-meb.ag-on::after{content:\"\u25be\";color:var(--mute);margin-left:4px;font-size:12px}\n.ag-meb:focus-visible{outline:2px solid var(--acc)}\n.ag-pop{position:absolute;right:0;top:calc(100% + 6px);z-index:70;width:min(380px,calc(100vw - 24px));background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--acc);border-radius:10px;box-shadow:0 12px 40px rgba(0,0,0,.5);overflow:hidden}\n.ag-pop[hidden]{display:none}\n.ag-ph{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line)}.ag-ph small{display:block;color:var(--mute)}\n.ag-pl{max-height:min(60vh,420px);overflow:auto}\n.ag-pi{all:unset;box-sizing:border-box;display:flex;gap:10px;width:100%;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer;color:var(--ink)}\n.ag-pi:hover,.ag-pi:focus-visible{background:var(--glow)}.ag-pi span{display:block;min-width:0}.ag-pi b{display:block}\n.ag-pi small{display:block;color:var(--mute);overflow-wrap:anywhere}.ag-pi em{display:block;font-style:normal;font-size:11px;color:var(--mute);margin-top:2px}\n.ag-pi .dot{flex:none;width:8px;height:8px;border-radius:50%;background:var(--acc);margin-top:6px}.ag-pi .dot.off{background:transparent;border:1px solid var(--line)}\n.ag-pf{margin:0;padding:10px 14px;font-size:12px;color:var(--mute)}\n.ag-um{width:min(260px,calc(100vw - 24px))}\n.ag-um a,.ag-um button[role=menuitem]{all:unset;box-sizing:border-box;display:block;width:100%;padding:11px 14px;cursor:pointer;color:var(--ink);border-bottom:1px solid var(--line)}\n.ag-um a:hover,.ag-um button[role=menuitem]:hover,.ag-um a:focus-visible,.ag-um button[role=menuitem]:focus-visible{background:var(--glow)}\n.ag-um button[role=menuitem]{color:var(--bad);border-bottom:0}\n.ag-bell{background:#111;color:var(--acc);border:1px solid var(--line)}\n.ag-bell:hover{border-color:var(--acc)}\n.sc-docked .bk-ref{font-size:20px}\n.sc-dh2 .pill{vertical-align:middle}\n";document.head.appendChild(s)}catch(e){}})();
 (function () {
   "use strict";
   var X = window.AGX;
@@ -247,7 +247,7 @@
     function mb(m, l) { return '<button class="' + (S.mode === m ? "" : "alt ") + 'sm" data-sc="mode" data-m="' + m + '" aria-pressed="' + (S.mode === m) + '">' + l + '</button>'; }
     var h = '<div class="sc-bar"><button class="alt sm" data-sc="nav" data-d="-1" aria-label="Previous">‹</button><button class="alt sm" data-sc="today">Today</button><button class="alt sm" data-sc="nav" data-d="1" aria-label="Next">›</button>' +
       '<strong class="sc-title" aria-live="polite">' + esc(label()) + '</strong><span class="sc-seg" role="group" aria-label="View">' + mb("day", "Day") + mb("week", "Week") + mb("month", "Month") + '</span></div>';
-    h += '<div class="sc-bar">';
+    h += '<div class="sc-bar sc-filters">';
     if (rec) h += '<span class="sc-seg" role="group" aria-label="Show">' + [["all", "Everything"], ["bookings", "Bookings"], ["interviews", "Interviews"]].map(function (x) { return '<button type="button" class="' + (S.layer === x[0] ? "" : "alt ") + 'sm" data-sc="layer" data-l="' + x[0] + '" aria-pressed="' + (S.layer === x[0]) + '">' + x[1] + '</button>'; }).join("") + '</span>';
     if (mgr) h += '<label class="bk-sr" for="sc-mech">Mechanic</label><select id="sc-mech" data-scf="mech"><option value="all">All mechanics</option><option value="none"' + (S.mech === "none" ? " selected" : "") + '>Unassigned</option>' +
       mechs().map(function (m) { return '<option value="' + esc(m.user_id) + '"' + (S.mech === m.user_id ? " selected" : "") + '>' + esc(m.display_name) + '</option>'; }).join("") + '</select>';
@@ -266,26 +266,64 @@
     else msg = "Nothing is scheduled in this period.";
     return '<div class="sc-empty"><b>' + esc(msg) + '</b>' + (mgr && S.av && !S.av.enabled ? 'Opening hours are not set up yet, so customers cannot pick times. Set them in Operations › Staff &amp; settings.' : 'Use the arrows or the Month view to look at other dates.') + '</div>';
   }
-  function sideHtml() {
-    var mgr = X.isMgr(), rec = X.isRec(), t = today(), h = '<aside class="sc-side">';
+  function wide() { try { return window.matchMedia("(min-width:1300px)").matches; } catch (e) { return false; } }
+  function miniHtml() {
+    if (!S.mini) S.mini = S.anchor.slice(0, 8) + "01";
+    var f = S.mini, st = wkStart(f), n = Math.ceil((((dow(f) + 6) % 7) + daysIn(f)) / 7) * 7, td = today(), w0 = wkStart(S.anchor), i, k, inWk;
+    var h = '<div class="sc-mini"><div class="sc-mh"><button type="button" class="alt sm" data-sc="mini-nav" data-d="-1" aria-label="Previous month">‹</button><b>' + esc(fDay(f, { month: "long", year: "numeric" })) + '</b><button type="button" class="alt sm" data-sc="mini-nav" data-d="1" aria-label="Next month">›</button></div><div class="sc-mg2">';
+    ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].forEach(function (w) { h += '<span>' + w + '</span>'; });
+    for (i = 0; i < n; i++) {
+      k = addDays(st, i); inWk = S.mode === "week" ? (k >= w0 && k <= addDays(w0, 6)) : false;
+      h += '<button type="button" class="' + (k === td ? "today " : "") + (k === S.anchor ? "sel " : "") + (inWk ? "wk " : "") + (k.slice(0, 7) !== f.slice(0, 7) ? "out" : "") + '" data-sc="mini-go" data-k="' + k + '" aria-label="' + esc(fDay(k, { weekday: "long", day: "numeric", month: "long" })) + '">' + Number(k.slice(8)) + '</button>';
+    }
+    return h + '</div></div>';
+  }
+  function hoursHtml() {
+    var a = S.av; if (!a || !a.enabled) return "";
+    var nm = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"], h = '<h4 class="sc-lt">Workshop hours</h4><div class="sc-hrs">';
+    [1, 2, 3, 4, 5, 6, 0].forEach(function (d) { var x = a.hm[d]; h += '<div><span>' + nm[d] + '</span><b>' + (x && x.is_open ? esc(String(x.open).slice(0, 5)) + " – " + esc(String(x.close).slice(0, 5)) : "Closed") + '</b></div>'; });
+    return h + '</div><p class="sc-tz">Time zone: <b>' + esc(tz()) + '</b></p>';
+  }
+  function leftHtml() {
+    var rec = X.isRec(), mgr = X.isMgr(), h = '<div class="card sc-lc">' + miniHtml();
+    if (rec) h += '<h4 class="sc-lt">Filters</h4><div class="sc-rad" role="radiogroup" aria-label="Show">' + [["all", "Everything"], ["bookings", "Bookings"], ["interviews", "Interviews"]].map(function (x) { return '<label><input type="radio" name="sc-layer" data-sc="layer" data-l="' + x[0] + '"' + (S.layer === x[0] ? " checked" : "") + '> ' + x[1] + '</label>'; }).join("") + '</div>';
+    if (mgr) h += '<h4 class="sc-lt">Mechanic</h4><label class="bk-sr" for="sc-mech2">Mechanic</label><select id="sc-mech2" data-scf="mech"><option value="all">All mechanics</option><option value="none"' + (S.mech === "none" ? " selected" : "") + '>Unassigned</option>' + mechs().map(function (m) { return '<option value="' + esc(m.user_id) + '"' + (S.mech === m.user_id ? " selected" : "") + '>' + esc(m.display_name) + '</option>'; }).join("") + '</select>';
+    h += '<label class="sc-check sc-cc"><input type="checkbox" id="sc-closed2" data-scf="closed"' + (S.closed ? " checked" : "") + '> Show cancelled</label>';
+    h += '<h4 class="sc-lt">Status</h4>' + legend().replace('class="sc-legend"', 'class="sc-legend v"') + hoursHtml();
+    return h + '</div>';
+  }
+  function upFilter(e) {
+    if (+new Date(e.start) + e.mins * 6e4 < Date.now()) return false;
+    if (e.k === "b") return CLOSED.indexOf(e.b.status) < 0 && e.b.status !== "completed";
+    return e.i.status === "invited" || e.i.status === "confirmed" || e.i.status === "reschedule_requested";
+  }
+  function upcomingHtml() {
+    var t = today(), all = evList(t, addDays(t, 90)).filter(upFilter), up = all.slice(0, S.upAll ? 40 : 8), h = '<div class="card sp sc-up"><div class="sc-uh"><h3 class="hd bk-h3">Upcoming appointments</h3>' + (all.length > 8 ? '<button type="button" class="alt sm" data-sc="upall">' + (S.upAll ? "Show fewer" : "View all (" + all.length + ")") + '</button>' : "") + '</div>';
+    if (!up.length) return h + '<p class="note">Nothing coming up' + (S.mech !== "all" ? " for this mechanic" : "") + '. New bookings appear here once approved or proposed.</p></div>';
+    h += '<div class="tw sc-ut"><table><thead><tr><th>Time (' + esc(tz()) + ')</th><th>Type</th><th>Customer</th><th>Service</th><th>Mechanic</th><th>Status</th></tr></thead><tbody>';
+    up.forEach(function (e) {
+      var b = e.b, iv = e.i, a = iv ? (X.CI.apps[iv.application_id] || {}) : null;
+      h += '<tr role="button" tabindex="0" data-sc="open" data-k="' + e.k + '" data-id="' + esc(e.id) + '"><td>' + esc(relDay(e.key)) + ', ' + hhmm(e.sm) + '</td><td>' + (b ? esc(b.reference) : "Interview") + '</td><td>' + esc(b ? b.character_name : (a.character_name || "Applicant")) + '</td><td>' + (b ? esc(svc(b)) : "Job interview") + '</td><td>' + esc(b ? (b.assigned_to ? mechName(b.assigned_to) : "Unassigned") : (ivWho(iv.interviewer_id) || "—")) + '</td><td>' + (b ? X.pill(b.status) + (pending(b) ? ' <span class="pill">Change pending</span>' : "") : '<span class="pill">' + esc(X.IS[iv.status] || iv.status) + '</span>') + '</td></tr>';
+    });
+    h += '</tbody></table></div><div class="sc-ucards">';
+    var last = ""; up.forEach(function (e) { if (e.key !== last) { last = e.key; h += '<div class="sc-ah">' + esc(relDay(e.key)) + (relDay(e.key) === fDay(e.key) ? "" : " · " + esc(fDay(e.key))) + '</div>'; } h += card(e); });
+    return h + '</div></div>';
+  }
+  function extraHtml() {
+    var mgr = X.isMgr(), rec = X.isRec(), h = "";
     if (mgr) {
       var l = ST.list || [], c1 = l.filter(function (b) { return b.status === "pending"; }), c2 = l.filter(function (b) { return b.status === "alternative_accepted"; }),
         c3 = l.filter(function (b) { return b.status === "alternative_proposed" || pending(b); }), c4 = l.filter(function (b) { return b.status === "approved" && !b.assigned_to; });
-      h += '<div class="card"><h3 class="hd bk-h3">Needs attention</h3>' + ((c1.length + c2.length + c3.length + c4.length) ? '<div class="sc-need">' +
+      h += '<div class="card sp"><h3 class="hd bk-h3">Needs attention</h3>' + ((c1.length + c2.length + c3.length + c4.length) ? '<div class="sc-need">' +
         (c1.length ? '<span class="n">' + c1.length + ' pending</span>' : "") + (c2.length ? '<span class="n">' + c2.length + ' to confirm</span>' : "") + (c4.length ? '<span class="n">' + c4.length + ' unassigned</span>' : "") + (c3.length ? '<span class="n w">' + c3.length + ' awaiting customer</span>' : "") + '</div>' +
         c1.concat(c2).concat(c4).slice(0, 4).map(function (b) { return '<div class="sc-card s-' + b.status + '" role="button" tabindex="0" data-sc="open" data-k="b" data-id="' + esc(b.id) + '"><b>' + esc(b.character_name) + '</b> <small>' + esc(b.reference) + ' · ' + esc(X.STAT[b.status] || b.status) + (b.status === "approved" ? " · no mechanic" : "") + '</small></div>'; }).join("") : '<p class="note">Nothing needs a decision right now.</p>') + '</div>';
     }
-    var up = evList(t, addDays(t, 90)).filter(function (e) { return +new Date(e.start) + e.mins * 6e4 >= Date.now() && !(e.k === "b" && CLOSED.indexOf(e.b.status) >= 0) && !(e.k === "b" && e.b.status === "completed") && !(e.k === "i" && e.i.status !== "invited" && e.i.status !== "confirmed" && e.i.status !== "reschedule_requested"); }).slice(0, 8);
-    h += '<div class="card sp"><h3 class="hd bk-h3">Upcoming appointments</h3>';
-    if (up.length) { var last = ""; up.forEach(function (e) { if (e.key !== last) { last = e.key; h += '<div class="sc-ah">' + esc(relDay(e.key)) + (relDay(e.key) === fDay(e.key) ? "" : " · " + esc(fDay(e.key))) + '</div>'; } h += card(e); }); }
-    else h += '<p class="note">Nothing coming up' + (S.mech !== "all" ? " for this mechanic" : "") + '. New bookings appear here once approved or proposed.</p>';
-    h += '</div>';
     if (rec) {
       var ask = (X.CI.ivs || []).filter(function (i) { return i.status === "reschedule_requested" && new Date(i.scheduled_at) > Date.now(); });
       if (ask.length) h += '<div class="card sp"><h3 class="hd bk-h3">Waiting for your reply (' + ask.length + ')</h3><p class="note">These applicants asked for another time. Use their time, or reschedule.</p>' + ask.map(function (i) { return X.ivCard(i); }).join("") + '</div>';
       h += X.ivNewForm();
     }
-    return h + '</aside>';
+    return h;
   }
   function html() {
     var rg = viewRange(), body, keys, i;
@@ -295,21 +333,21 @@
       var w = wkStart(S.anchor); keys = []; for (i = 0; i < 7; i++) keys.push(addDays(w, i));
       body = '<div class="sc-wkgrid">' + gridView(keys) + '</div>' + agendaView(keys);
     }
-    var h = '<div class="sc-wrap"><div class="sc-main card">' + X.sec("▦", "Calendar", (X.isRec() ? "Bookings and interviews" : "Your assigned bookings") + " – times in " + esc(tz())) + toolbar();
+    var h = '<div class="sc-page"><aside class="sc-left">' + leftHtml() + '</aside><div class="sc-center"><div class="sc-main card">' + X.sec("▦", "Calendar", (X.isRec() ? "Bookings and interviews" : "Your assigned bookings") + " – times in " + esc(tz())) + toolbar();
     if (S.avErr) h += '<div class="sc-banner bad" role="alert">' + esc(S.avErr) + '</div>';
     if (S.err) h += '<div class="sc-banner bad" role="alert">' + esc(S.err) + '</div>';
     if (X.isRec() && S.mode === "day") h += '<div class="sc-acts"><button class="alt sm" data-ci="sched-day" data-k="' + esc(S.anchor) + '">Schedule an interview on this day</button></div>';
-    h += legend() + emptyState(rg) + body + '<p class="note">Select an appointment for its full details' + (X.isMgr() ? '. Drag a booking or interview in the Day or Week view to propose a new time: you will always be asked to confirm first, and customers confirm changes to approved appointments themselves.' : '.') + '</p></div>' + sideHtml() + '</div>';
-    return h + drawerHtml();
+    h += '<div class="sc-legend-wrap">' + legend() + '</div>' + emptyState(rg) + body + '<p class="note">Select an appointment for its full details' + (X.isMgr() ? '. Drag a booking or interview in the Day or Week view to propose a new time: you will always be asked to confirm first, and customers confirm changes to approved appointments themselves.' : '.') + '</p></div>' + upcomingHtml() + extraHtml() + '</div>';
+    return h + drawerHtml() + '</div>';
   }
   function renderCalendar(el) {
     if (!el) el = document.getElementById("cl");
     if (!el) return;
     if (!S.anchor) S.anchor = today();
-    var old = el.querySelector(".sc-scroll"), top = old ? old.scrollTop : null;
+    var old = el.querySelector(".sc-scroll"), top = old ? old.scrollTop : null, pnl = el.querySelector(".sc-drawer"), ptop = pnl ? pnl.scrollTop : 0, pkey = S.drawer ? S.drawer.id + (S.drawer.tab || "") : "";
     var ae = document.activeElement, fid = ae && ae.id && /^(ci-|sc-)/.test(ae.id) ? ae.id : null, sel = fid && ae.selectionStart;
     el.innerHTML = html();
-    var sc = el.querySelector(".sc-scroll");
+    var sc = el.querySelector(".sc-scroll"), np = el.querySelector(".sc-drawer"); if (np && pkey && pkey === S.pkey) np.scrollTop = ptop; S.pkey = pkey;
     if (sc) { if (top != null && S.scrolled) sc.scrollTop = top; else autoScroll(sc); S.scrolled = true; }
     if (fid) { var f2 = document.getElementById(fid); if (f2) { f2.focus(); try { if (sel != null) f2.setSelectionRange(sel, sel); } catch (x) { } } }
     var rg = viewRange(), key = rg.join("|");
@@ -329,42 +367,53 @@
 
   /* ---------------------------------------------------------------- details drawer */
   function drawerHtml() {
-    var d = S.drawer; if (!d) return "";
-    var body, title;
+    var d = S.drawer, dock = wide();
+    if (!d) return dock ? '<aside class="sc-drawer sc-docked" aria-label="Appointment details"><div class="sc-empty"><b>No appointment selected</b>Select an appointment in the calendar to see its details and to schedule or reschedule it.</div></aside>' : "";
+    var body, title, pill = "";
     if (d.k === "i") {
       var i = iById(d.id); if (!i) return "";
       title = "Interview";
       body = '<div class="sc-sec">' + X.ivCard(i) + '</div><div class="sc-sec"><button class="alt sm" data-ci="app" data-aid="' + esc(i.application_id) + '">Open application</button></div>';
     } else {
       var b = bById(d.id); if (!b) return "";
-      title = b.reference; body = bookingDetails(b, d);
+      title = "Booking " + b.reference; pill = X.pill(b.status); body = bookingPanel(b, d);
     }
-    return '<div class="sc-back" data-sc="close"></div><aside class="sc-drawer" role="dialog" aria-modal="true" aria-label="' + esc(title) + ' details"><div class="sc-dh2"><div><b class="bk-ref">' + esc(title) + '</b>' + (d.k === "b" ? ' ' + X.pill(bById(d.id).status) : "") + '</div><button class="alt sm" data-sc="close" aria-label="Close details">Close</button></div>' + body + '</aside>';
+    return (dock ? "" : '<div class="sc-back" data-sc="close"></div>') + '<aside class="sc-drawer' + (dock ? " sc-docked" : "") + '" role="' + (dock ? "complementary" : "dialog") + '"' + (dock ? "" : ' aria-modal="true"') + ' aria-label="' + esc(title) + ' details"><div class="sc-dh2"><div><b class="bk-ref">' + esc(title) + '</b> ' + pill + '</div><button class="alt sm" data-sc="close" aria-label="Close details">Close</button></div>' + body + '</aside>';
   }
   function row(l, v) { return v ? '<div><dt>' + esc(l) + '</dt><dd>' + esc(v) + '</dd></div>' : ""; }
-  function bookingDetails(b, d) {
-    var mgr = X.isMgr(), closed = ["declined", "cancelled", "completed"].indexOf(b.status) >= 0, s = b.status, h = "";
-    var appt = b.scheduled_at && (s === "approved" || s === "in_progress" || s === "completed") ? fFull(b.scheduled_at) : "";
+  function bookingPanel(b, d) {
+    var mgr = X.isMgr(), closed = ["declined", "cancelled", "completed"].indexOf(b.status) >= 0, canSch = mgr && !closed, tab = d.tab || (canSch ? "schedule" : "details");
+    if (tab === "schedule" && !canSch) tab = "details";
+    var tabs = [["schedule", "Schedule"], ["details", "Details"], ["history", "History"]].filter(function (t) { return t[0] !== "schedule" || canSch; });
+    var h = '<div class="sc-tabs" role="tablist">' + tabs.map(function (t) { return '<button type="button" role="tab" class="' + (t[0] === tab ? "on" : "") + '" aria-selected="' + (t[0] === tab) + '" data-sc="tab" data-t="' + t[0] + '">' + t[1] + '</button>'; }).join("") + '</div>';
+    if (tab === "schedule") return h + scheduleTab(b, d);
+    if (tab === "history") return h + historyTab(b);
+    return h + detailsTab(b, closed);
+  }
+  function scheduleTab(b, d) {
+    var s = b.status, h = "";
     if (pending(b)) h += '<div class="sc-banner"><b>Change awaiting customer confirmation.</b> The appointment stays at ' + esc(fFull(b.scheduled_at)) + ' until the customer confirms ' + esc(fFull(b.reschedule_proposed_at)) + ' on Track Booking. Both times are held.</div>';
     if (s === "alternative_proposed") h += '<div class="sc-banner">A different time (<b>' + esc(fFull(b.proposed_at)) + '</b>) is waiting for the customer to accept.</div>';
     if (s === "alternative_accepted") h += '<div class="sc-banner bad">The customer accepted <b>' + esc(fFull(b.proposed_at)) + '</b>. Confirm it to approve the booking.</div>';
+    h += '<dl class="sc-dl sc-sum">' + row("Customer", b.character_name) + row("Service", svc(b) + " · " + b.vehicle) + row("Duration", (b.duration_minutes || 20) + " minutes") + '</dl>';
+    h += '<div class="sc-sec"><label for="sc-asg">Assigned mechanic</label><div class="sc-inline"><select id="sc-asg" aria-label="Mechanic"><option value="">Unassigned</option>' + mechs().map(function (m) { return '<option value="' + esc(m.user_id) + '"' + (m.user_id === b.assigned_to ? " selected" : "") + '>' + esc(m.display_name) + ' (' + esc(m.role) + ')</option>'; }).join("") + '</select><button class="alt" data-sc="assign" data-id="' + esc(b.id) + '">Save</button></div>' + (d.err ? '<div class="sc-banner bad" role="alert">' + esc(d.err) + '</div>' : "") + '<p class="note">A mechanic cannot be given two overlapping appointments.</p></div>';
+    return h + '<div class="sc-sec"><h3 class="hd bk-h3">' + (s === "approved" ? "Reschedule" : "Schedule appointment") + '</h3>' + schedHtml(b) + '</div>';
+  }
+  function detailsTab(b, closed) {
+    var s = b.status, appt = b.scheduled_at && (s === "approved" || s === "in_progress" || s === "completed") ? fFull(b.scheduled_at) : "", h = "";
     h += '<dl class="sc-dl">' + row("Customer", b.character_name) + row("Contact (in-character)", b.contact) + row("Vehicle", b.vehicle + (b.vehicle_reg ? " (" + b.vehicle_reg + ")" : "")) + row("Service", svc(b)) +
       row("Requested time", fFull(b.preferred_at)) + row("Proposed time", b.proposed_at && (s === "alternative_proposed" || s === "alternative_accepted") ? fFull(b.proposed_at) : "") + row("Appointment", appt) +
-      row("New time (awaiting customer)", pending(b) ? fFull(b.reschedule_proposed_at) : "") + row("Length", (b.duration_minutes || 20) + " minutes") + row("Mechanic", mechName(b.assigned_to)) + '</dl>';
+      row("New time (awaiting customer)", pending(b) ? fFull(b.reschedule_proposed_at) : "") + row("Duration", (b.duration_minutes || 20) + " minutes") + row("Time zone", tz()) + row("Mechanic", mechName(b.assigned_to)) + '</dl>';
     if (b.description) h += '<div class="sc-sec"><h3 class="hd bk-h3">Work requested</h3><p style="white-space:pre-wrap;overflow-wrap:anywhere;margin:0">' + esc(b.description) + '</p></div>';
     if (b.customer_message) h += '<div class="sc-sec"><h3 class="hd bk-h3">Message shown to customer</h3><p style="margin:0;overflow-wrap:anywhere">' + esc(b.customer_message) + '</p></div>';
-    if (mgr && !closed) {
-      h += '<div class="sc-sec"><h3 class="hd bk-h3">Mechanic</h3><div class="sc-inline"><select id="sc-asg" aria-label="Mechanic"><option value="">Unassigned</option>' + mechs().map(function (m) { return '<option value="' + esc(m.user_id) + '"' + (m.user_id === b.assigned_to ? " selected" : "") + '>' + esc(m.display_name) + ' (' + esc(m.role) + ')</option>'; }).join("") + '</select><button class="alt" data-sc="assign" data-id="' + esc(b.id) + '">Save assignment</button></div>' + (d.err ? '<div class="sc-banner bad" role="alert">' + esc(d.err) + '</div>' : "") + '<p class="note">A mechanic cannot be given two overlapping appointments.</p></div>';
-      h += '<div class="sc-sec"><h3 class="hd bk-h3">Schedule</h3><div class="sc-acts">';
-      if (s === "pending") h += '<button data-sc="sch-act" data-sa="approve-req" data-id="' + esc(b.id) + '">Approve requested time</button>';
-      if (s === "alternative_accepted") h += '<button data-sc="sch-act" data-sa="approve-acc" data-id="' + esc(b.id) + '">Approve the time they accepted</button>';
-      if (pending(b)) h += '<button class="alt" data-sc="sch-act" data-sa="withdraw" data-id="' + esc(b.id) + '">Withdraw the change</button>';
-      h += '<button class="alt" data-sc="dsch" data-id="' + esc(b.id) + '">' + (d.sch ? "Hide scheduler" : (s === "approved" ? "Reschedule…" : "Choose another time…")) + '</button></div>' + (d.sch ? schedHtml(b) : "") + '</div>';
-    } else if (!mgr && !closed) {
-      h += '<div class="sc-sec"><p class="note">Only managers can approve or change appointment times.</p></div>';
-    }
-    h += '<div class="sc-sec"><div class="sc-acts">' + ((s === "approved" || s === "in_progress") ? '<a class="btn" href="#jobs/' + esc(b.id) + '">Open job</a>' : "") + '<button class="alt" data-bk="cal-open" data-id="' + esc(b.id) + '">Open in Bookings</button></div></div>';
-    return h;
+    if (!X.isMgr() && !closed) h += '<div class="sc-sec"><p class="note">Only managers can approve or change appointment times.</p></div>';
+    return h + '<div class="sc-sec"><div class="sc-acts">' + ((s === "approved" || s === "in_progress") ? '<a class="btn" href="#jobs/' + esc(b.id) + '">Open job</a>' : "") + '<button class="alt" data-bk="cal-open" data-id="' + esc(b.id) + '">Open in Bookings</button></div></div>';
+  }
+  function historyTab(b) {
+    var ev = ST.events && ST.events[b.id];
+    if (!ev) { if (!S.histBusy) { S.histBusy = true; X.loadEvents(b.id).then(function () { S.histBusy = false; renderCalendar(); }).catch(function (e) { S.histBusy = false; X.authErr(e); }); } return '<div class="sc-sec"><p class="note" role="status">Loading history…</p></div>'; }
+    if (!ev.length) return '<div class="sc-sec"><p class="note">No activity recorded yet.</p></div>';
+    return '<div class="sc-sec"><ol class="sc-tl">' + ev.map(function (e) { return '<li' + (e.internal ? ' class="int"' : "") + '><b>' + esc(X.EVT[e.action] || e.action) + '</b>' + (e.internal ? ' <span class="pill">Staff only</span>' : "") + '<small>' + esc(fFull(e.at)) + (e.actor_name ? " · " + esc(e.actor_name) : "") + '</small>' + (e.message ? '<span>' + esc(e.message) + '</span>' : "") + '</li>'; }).join("") + '</ol></div>';
   }
 
   /* ---------------------------------------------------------------- confirmation modal (shared) */
@@ -424,12 +473,16 @@
       title = "Reschedule an approved appointment"; ok = "Send change to customer"; done = "Change sent to the customer";
       rows.push(["Appointment", fFull(o.startIso), fFull(cur)], ["Length", mins + " minutes"]); payload.scheduled_at = o.startIso;
       note = "The appointment stays at the current time until the customer confirms the new one on Track Booking. Both times are held so nobody else can take them.";
+    } else if (a === "decline") {
+      title = "Decline this request"; ok = "Decline request"; done = "Request declined";
+      rows.push(["Requested", fFull(b.preferred_at)]);
+      note = "The booking is closed and the customer sees it as declined. Add a message below to explain why.";
     } else if (a === "cancel_reschedule") {
       title = "Withdraw the change"; ok = "Withdraw change"; done = "Change withdrawn";
       rows.push(["Stays at", fFull(b.scheduled_at)], ["Withdrawn time", fFull(b.reschedule_proposed_at)]);
       note = "The customer keeps their current appointment.";
     }
-    var pre = a === "cancel_reschedule" ? Promise.resolve(null) : checkSlot(b, o.startIso, mins);
+    var pre = (a === "cancel_reschedule" || a === "decline") ? Promise.resolve(null) : checkSlot(b, o.startIso, mins);
     openModal({ kind: "b", id: b.id, action: a, startIso: o.startIso, title: title, rows: rows, note: note, ok: ok, done: done, payload: payload }, pre);
   }
   function confirmInterview(i, startIso) {
@@ -471,7 +524,7 @@
     var s = S.sch[b.id];
     if (!s) {
       var base = b.status === "approved" ? b.scheduled_at : (b.status === "alternative_proposed" || b.status === "alternative_accepted") ? b.proposed_at : b.preferred_at;
-      s = S.sch[b.id] = { wk: wkStart(wall(base || new Date().toISOString()).d), pick: null, chk: null, mech: "", dur: b.duration_minutes || 20, fetch: "" };
+      s = S.sch[b.id] = { wk: wkStart(wall(base || new Date().toISOString()).d), day: null, pick: null, chk: null, mech: "", dur: b.duration_minutes || 20, fetch: "" };
     }
     return s;
   }
@@ -498,7 +551,7 @@
     return '<div class="sc-sch" data-sch="' + esc(b.id) + '">' + schInner(b, s) + '</div>';
   }
   function schInner(b, s) {
-    var st = b.status, rangeOk = S.av && !S.av.stale && S.av.from <= s.wk && S.av.to >= addDays(s.wk, 6), h = "";
+    var st = b.status, rangeOk = S.av && !S.av.stale && S.av.from <= s.wk && S.av.to >= addDays(s.wk, 6), h = "", id = esc(b.id), i, k;
     if (["pending", "alternative_proposed", "alternative_accepted", "approved"].indexOf(st) < 0) return '<p class="note">This booking can no longer be rescheduled.</p>';
     if (!rangeOk && !S.avErr && s.fetch !== s.wk) {
       s.fetch = s.wk;
@@ -509,59 +562,70 @@
       (st === "approved" ? '<span>Current appointment: <b>' + esc(fFull(b.scheduled_at)) + '</b></span>' : "") +
       ((st === "alternative_proposed" || st === "alternative_accepted") && b.proposed_at ? '<span>Proposed to customer: <b>' + esc(fFull(b.proposed_at)) + '</b>' + (st === "alternative_accepted" ? " (accepted)" : " (awaiting reply)") + '</span>' : "") +
       (pending(b) ? '<span>Change awaiting customer: <b>' + esc(fFull(b.reschedule_proposed_at)) + '</b></span>' : "") + '</div>';
-    if (S.avErr) return h + '<div class="sc-banner bad" role="alert">' + esc(S.avErr) + '</div>';
+    if (S.avErr) return h + '<div class="sc-banner bad" role="alert">' + esc(S.avErr) + '</div>' + actionsRow(b, s);
     if (S.av && !S.av.enabled) return h + '<div class="sc-banner">Workshop opening hours are not set up, so free slots cannot be shown. Set them in Operations › Staff &amp; settings. Until then you can still enter a time below.</div>' + fallback(b, s);
     var mech = s.mech === "" ? (b.assigned_to || "") : (s.mech === "none" ? "" : s.mech);
-    h += '<div class="sc-sch-bar"><button class="alt sm" data-sc="sch-nav" data-id="' + esc(b.id) + '" data-d="-1" aria-label="Previous week">‹</button><span class="t">' + esc(fDay(s.wk, { day: "numeric", month: "short" })) + ' – ' + esc(fDay(addDays(s.wk, 6), { day: "numeric", month: "short", year: "numeric" })) + '</span><button class="alt sm" data-sc="sch-nav" data-id="' + esc(b.id) + '" data-d="1" aria-label="Next week">›</button>' +
-      '<button class="alt sm" data-sc="sch-go" data-id="' + esc(b.id) + '" data-w="now">This week</button><button class="alt sm" data-sc="sch-go" data-id="' + esc(b.id) + '" data-w="req">Requested time</button><label class="bk-sr" for="sc-jump-' + esc(b.id) + '">Jump to date</label><input type="date" id="sc-jump-' + esc(b.id) + '" data-scf="sch-jump" data-id="' + esc(b.id) + '"></div>';
-    h += '<div class="sc-sch-opts"><div><label for="sc-dur-' + esc(b.id) + '">Length</label><select id="sc-dur-' + esc(b.id) + '" data-scf="sch-dur" data-id="' + esc(b.id) + '">' + durOpts(s.dur) + '</select></div>' +
-      '<div><label for="sc-mv-' + esc(b.id) + '">Show availability for</label><select id="sc-mv-' + esc(b.id) + '" data-scf="sch-mech" data-id="' + esc(b.id) + '"><option value=""' + (s.mech === "" ? " selected" : "") + '>' + (b.assigned_to ? esc(mechName(b.assigned_to)) + " (assigned)" : "No mechanic assigned") + '</option><option value="none"' + (s.mech === "none" ? " selected" : "") + '>Workshop only</option>' +
+    h += '<div class="sc-sch-bar"><button type="button" class="alt sm" data-sc="sch-nav" data-id="' + id + '" data-d="-1" aria-label="Previous week">‹</button><span class="t">' + esc(fDay(s.wk, { day: "numeric", month: "short" })) + ' – ' + esc(fDay(addDays(s.wk, 6), { day: "numeric", month: "short", year: "numeric" })) + '</span><button type="button" class="alt sm" data-sc="sch-nav" data-id="' + id + '" data-d="1" aria-label="Next week">›</button>' +
+      '<button type="button" class="alt sm" data-sc="sch-go" data-id="' + id + '" data-w="now">This week</button><button type="button" class="alt sm" data-sc="sch-go" data-id="' + id + '" data-w="req">Requested</button><label class="bk-sr" for="sc-jump-' + id + '">Jump to date</label><input type="date" id="sc-jump-' + id + '" data-scf="sch-jump" data-id="' + id + '"></div>';
+    h += '<div class="sc-sch-opts"><div><label for="sc-dur-' + id + '">Length</label><select id="sc-dur-' + id + '" data-scf="sch-dur" data-id="' + id + '">' + durOpts(s.dur) + '</select></div>' +
+      '<div><label for="sc-mv-' + id + '">Availability for</label><select id="sc-mv-' + id + '" data-scf="sch-mech" data-id="' + id + '"><option value=""' + (s.mech === "" ? " selected" : "") + '>' + (b.assigned_to ? esc(mechName(b.assigned_to)) + " (assigned)" : "No mechanic assigned") + '</option><option value="none"' + (s.mech === "none" ? " selected" : "") + '>Workshop only</option>' +
       mechs().filter(function (m) { return m.user_id !== b.assigned_to; }).map(function (m) { return '<option value="' + esc(m.user_id) + '"' + (s.mech === m.user_id ? " selected" : "") + '>' + esc(m.display_name) + '</option>'; }).join("") + '</select></div></div>';
-    if (!rangeOk) return h + '<div class="sc-empty" role="status">Loading availability…</div>';
-    var lo = 1440, hi = 0, days = [], i, k;
-    for (i = 0; i < 7; i++) { k = addDays(s.wk, i); days.push(k); var di = dayInfo(k); if (di.open) { lo = Math.min(lo, di.from); hi = Math.max(hi, di.to); } }
-    if (lo >= hi) return h + '<div class="sc-empty"><b>The workshop is closed all week</b>Choose another week.</div>';
-    var td = today(), sl = slotMin(), pk = s.pick, req = +new Date(b.preferred_at), curT = b.scheduled_at && st === "approved" ? +new Date(b.scheduled_at) : 0,
+    if (!rangeOk) return h + '<div class="sc-empty" role="status">Loading availability…</div>' + actionsRow(b, s);
+    var days = [], td = today(), sl = slotMin(), req = +new Date(b.preferred_at), curT = b.scheduled_at && st === "approved" ? +new Date(b.scheduled_at) : 0,
       prop = (st === "alternative_proposed" || st === "alternative_accepted") && b.proposed_at ? +new Date(b.proposed_at) : (pending(b) ? +new Date(b.reschedule_proposed_at) : 0);
-    h += '<div class="sc-sl" role="grid" aria-label="Weekly availability in ' + tzl + '"><div class="sc-slg"><div class="sc-slh"></div>' + days.map(function (d) { return '<div class="sc-slh' + (d === td ? " today" : "") + '">' + esc(fDay(d, { weekday: "short" })) + '<b>' + Number(d.slice(8)) + '</b></div>'; }).join("");
-    for (var m = lo; m < hi; m += sl) {
-      h += '<div class="sc-slt">' + (m % 60 === 0 || m === lo ? hhmm(m) : "") + '</div>';
-      days.forEach(function (d) {
-        var c = cell(b, s, d, m, mech), ms = +new Date(atIso(d, m)), cl = "sc-c " + c.cls, tx = "";
-        if (pk && pk.key === d && m >= pk.min && m < pk.min + s.dur) { cl += " pick"; if (m === pk.min) tx = "✓"; }
-        if (ms === req && st !== "approved") { cl += " req"; tx = tx || "★"; }
-        if (ms === curT) { cl += " cur"; tx = tx || "●"; }
-        if (ms === prop) { cl += " prop"; tx = tx || "◆"; }
-        if (!tx && c.used) tx = c.used;
-        h += '<button type="button" class="' + cl + '"' + (c.sel ? ' data-sc="sch-cell" data-id="' + esc(b.id) + '" data-k="' + d + '" data-m="' + m + '"' : " disabled") + ' title="' + esc(fDay(d) + " " + hhmm(m) + " " + tz() + ": " + c.t) + '" aria-label="' + esc(fDay(d) + " " + hhmm(m) + ", " + c.t) + '">' + tx + '</button>';
-      });
+    for (i = 0; i < 7; i++) days.push(addDays(s.wk, i));
+    if (!s.day || s.day < s.wk || s.day > days[6]) {
+      var base = wall(st === "approved" ? b.scheduled_at : (prop ? new Date(prop).toISOString() : b.preferred_at)).d;
+      s.day = (base >= s.wk && base <= days[6]) ? base : (days.filter(function (d) { return d >= td && dayInfo(d).open; })[0] || s.wk);
     }
-    h += '</div></div><div class="sc-sk"><span><i style="background:rgba(91,224,122,.3)"></i>Free</span><span><i style="background:rgba(255,176,32,.5)"></i>Full (override)</span><span><i style="background:rgba(255,80,80,.5)"></i>Mechanic busy</span><span><i style="background:rgba(128,128,128,.3)"></i>Closed / past</span><span>★ requested · ● current · ◆ proposed · times in ' + tzl + '</span></div>';
-    h += '<p class="note">Availability reflects opening hours, blocked days and assigned appointments. Leave of absence is not connected yet.</p>' + pickHtml(b, s);
-    return h;
+    var marks = {}; [req, curT, prop].forEach(function (t) { if (t) marks[wall(new Date(t).toISOString()).d] = 1; });
+    h += '<div class="sc-days" role="group" aria-label="Day">' + days.map(function (d) {
+      var di = dayInfo(d), off = !di.open || d < td;
+      return '<button type="button" class="sc-dc' + (d === s.day ? " on" : "") + (d === td ? " today" : "") + (off ? " off" : "") + '" data-sc="sch-day" data-id="' + id + '" data-k="' + d + '" aria-pressed="' + (d === s.day) + '" aria-label="' + esc(fDay(d, { weekday: "long", day: "numeric", month: "long" }) + (di.open ? "" : ", " + di.why)) + '">' + esc(fDay(d, { weekday: "short" })) + '<b>' + Number(d.slice(8)) + '</b>' + (marks[d] ? '<i></i>' : "") + '</button>';
+    }).join("") + '</div>';
+    var di2 = dayInfo(s.day);
+    if (!di2.open) h += '<div class="sc-empty"><b>' + esc(di2.why) + '</b>Choose another day.</div>';
+    else {
+      h += '<h4 class="sc-th">Available times (' + tzl + ')</h4><div class="sc-times" role="group" aria-label="Times on ' + esc(fDay(s.day)) + '">';
+      var pk = s.pick, any = false;
+      for (var m = di2.from; m + sl <= di2.to; m += sl) {
+        var c = cell(b, s, s.day, m, mech), ms = +new Date(atIso(s.day, m)), cl = "sc-tb " + c.cls, mk = "";
+        if (pk && pk.key === s.day && m === pk.min) cl += " pick";
+        if (ms === req && st !== "approved") { cl += " req"; mk = "★"; }
+        if (ms === curT) { cl += " cur"; mk = "●"; }
+        if (ms === prop) { cl += " prop"; mk = "◆"; }
+        if (c.sel) any = true;
+        h += '<button type="button" class="' + cl + '"' + (c.sel ? ' data-sc="sch-cell" data-id="' + id + '" data-k="' + s.day + '" data-m="' + m + '"' : " disabled") + ' title="' + esc(hhmm(m) + " " + tz() + ": " + c.t) + '" aria-label="' + esc(hhmm(m) + ", " + c.t) + '">' + hhmm(m) + (mk ? '<sup>' + mk + '</sup>' : "") + '</button>';
+      }
+      h += '</div>' + (any ? "" : '<p class="note">No times are open on this day for the chosen length.</p>');
+      h += '<div class="sc-sk"><span><i style="background:rgba(91,224,122,.3)"></i>Free</span><span><i style="background:rgba(255,176,32,.5)"></i>Full (override)</span><span><i style="background:rgba(255,80,80,.5)"></i>Mechanic busy</span><span><i style="background:rgba(128,128,128,.3)"></i>Closed / past</span></div>';
+    }
+    h += '<p class="note">Duration: ' + s.dur + ' minutes' + (di2.open ? ' · Workshop hours: ' + hhmm(di2.from) + '–' + hhmm(di2.to) + ' (' + tzl + ')' : "") + '. ★ requested · ● current · ◆ proposed. Availability reflects opening hours, blocked days and assigned appointments; leave of absence is not connected yet.</p>';
+    return h + pickHtml(b, s) + actionsRow(b, s);
   }
   function fallback(b, s) {
-    return '<div class="sc-sch-opts"><div><label for="sc-fd-' + esc(b.id) + '">Date (' + esc(tz()) + ')</label><input type="date" id="sc-fd-' + esc(b.id) + '"></div><div><label for="sc-ft-' + esc(b.id) + '">Time</label><input type="time" id="sc-ft-' + esc(b.id) + '"></div></div><div class="sc-acts"><button class="alt" data-sc="sch-fb" data-id="' + esc(b.id) + '">Use this time</button></div>' + pickHtml(b, s);
+    return '<div class="sc-sch-opts"><div><label for="sc-fd-' + esc(b.id) + '">Date (' + esc(tz()) + ')</label><input type="date" id="sc-fd-' + esc(b.id) + '"></div><div><label for="sc-ft-' + esc(b.id) + '">Time</label><input type="time" id="sc-ft-' + esc(b.id) + '"></div></div><div class="sc-acts"><button class="alt" data-sc="sch-fb" data-id="' + esc(b.id) + '">Use this time</button></div>' + pickHtml(b, s) + actionsRow(b, s);
   }
   function pickHtml(b, s) {
-    var pk = s.pick, st = b.status, h = '<div class="sc-pick" aria-live="polite">';
-    if (!pk) {
-      h += 'Choose a time in the grid.' + (st === "pending" ? ' Or approve the customer’s requested time from the buttons above.' : "");
-      return h + '</div>';
-    }
-    var iso = pk.iso || atIso(pk.key, pk.min), same = +new Date(iso) === +new Date(b.preferred_at), c = s.chk, hard = c && c.hard, i;
-    h += '<b>' + esc(fFull(iso)) + '</b> · ' + s.dur + ' minutes';
+    var pk = s.pick, h = '<div class="sc-pick" aria-live="polite">', i;
+    if (!pk) return h + 'Choose a time above.</div>';
+    var iso = pk.iso || atIso(pk.key, pk.min), c = s.chk, hard = c && c.hard;
+    h += '<b>' + esc(fFull(iso)) + '</b> · ' + s.dur + ' minutes <button type="button" class="alt sm" data-sc="sch-clear" data-id="' + esc(b.id) + '">Clear</button>';
     if (!c) h += '<p class="note" role="status">Checking the schedule…</p>';
     else if (!c.conflicts.length) h += '<p class="note">No conflicts. This time is free.</p>';
     else { h += '<ul>'; for (i = 0; i < c.conflicts.length; i++) h += '<li class="' + (c.conflicts[i].overridable ? "soft" : "hard") + '">' + esc(c.conflicts[i].message) + '</li>'; h += '</ul>' + (hard ? '<p class="note">This time cannot be used.</p>' : '<p class="note">You can still continue: you will be asked for an override reason.</p>'); }
-    h += '<div class="sc-acts">';
-    var dis = !c || hard ? " disabled" : "";
-    if (st === "pending" && same) h += '<button data-sc="sch-act" data-sa="approve-pick" data-id="' + esc(b.id) + '"' + dis + '>Approve this time</button>';
-    if (st === "pending" && !same) h += '<button data-sc="sch-act" data-sa="propose" data-id="' + esc(b.id) + '"' + dis + '>Propose this time</button>';
-    if (st === "alternative_proposed") h += '<button data-sc="sch-act" data-sa="propose" data-id="' + esc(b.id) + '"' + dis + '>Replace the proposed time</button>';
-    if (st === "alternative_accepted") h += '<button data-sc="sch-act" data-sa="propose" data-id="' + esc(b.id) + '"' + dis + '>Propose this time instead</button>';
-    if (st === "approved") h += '<button data-sc="sch-act" data-sa="reschedule" data-id="' + esc(b.id) + '"' + dis + '>Send change to customer</button>';
-    return h + '<button class="alt" data-sc="sch-clear" data-id="' + esc(b.id) + '">Clear</button></div></div>';
+    return h + '</div>';
+  }
+  function actionsRow(b, s) {
+    var st = b.status, pk = s.pick, c = s.chk, iso = pk ? (pk.iso || atIso(pk.key, pk.min)) : null, id = ' data-id="' + esc(b.id) + '"',
+      ok = pk && c && !c.hard, dis = ok ? "" : " disabled", diff = iso && +new Date(iso) !== +new Date(b.preferred_at), h = '<div class="sc-acts sc-final">';
+    function btn(cls, sa, label, d) { return '<button type="button" class="' + cls + '" data-sc="sch-act" data-sa="' + sa + '"' + id + (d || "") + '>' + label + '</button>'; }
+    if (st === "pending") h += btn("sc-ok", "approve-req", "Approve requested time") + btn("sc-alt", "propose", "Propose alternative", diff && ok ? "" : " disabled");
+    else if (st === "alternative_accepted") h += btn("sc-ok", "approve-acc", "Approve accepted time") + btn("sc-alt", "propose", "Propose another", dis);
+    else if (st === "alternative_proposed") h += btn("sc-alt", "propose", "Replace proposed time", dis);
+    else if (st === "approved") h += btn("sc-alt", "reschedule", "Send change to customer", dis) + (pending(b) ? btn("alt", "withdraw", "Withdraw change") : "");
+    if (st !== "approved") h += btn("sc-no", "decline", "Decline");
+    return h + '</div>' + (st === "pending" && !pk ? '<p class="note">Approve the time the customer asked for, or pick another time above to propose it instead.</p>' : "");
   }
   function refreshSch(id) {
     var b = bById(id); if (!b) return;
@@ -584,6 +648,7 @@
     var s = schState(b), pk = s.pick, iso = pk ? (pk.iso || atIso(pk.key, pk.min)) : null, mins = s.dur;
     if (a === "approve-req") return confirmBooking({ b: b, action: "approve", startIso: b.preferred_at, mins: mins, sendTime: true });
     if (a === "approve-acc") return confirmBooking({ b: b, action: "approve", startIso: b.proposed_at, mins: b.duration_minutes || 20, sendTime: false });
+    if (a === "decline") return confirmBooking({ b: b, action: "decline", startIso: b.preferred_at });
     if (a === "withdraw") return confirmBooking({ b: b, action: "cancel_reschedule", startIso: b.reschedule_proposed_at });
     if (!iso) return;
     if (a === "approve-pick") return confirmBooking({ b: b, action: "approve", startIso: iso, mins: mins, sendTime: true });
@@ -647,8 +712,13 @@
     else if (a === "layer") { S.layer = b.dataset.l; renderCalendar(); }
     else if (a === "goday") { S.mode = "day"; S.anchor = b.dataset.k; S.sel = null; S.scrolled = false; renderCalendar(); }
     else if (a === "mday") { S.sel = S.sel === b.dataset.k ? null : b.dataset.k; renderCalendar(); }
-    else if (a === "open") { S.drawer = { k: b.dataset.k, id: b.dataset.id, sch: false, err: "" }; renderCalendar(); var dr = document.querySelector(".sc-drawer"); if (dr) dr.focus && dr.setAttribute("tabindex", "-1"); }
+    else if (a === "open") { S.drawer = { k: b.dataset.k, id: b.dataset.id, tab: null, err: "" }; if (S.mini === undefined) S.mini = null; renderCalendar(); var dr = document.querySelector(".sc-drawer"); if (dr) dr.focus && dr.setAttribute("tabindex", "-1"); }
     else if (a === "close") { S.drawer = null; renderCalendar(); }
+    else if (a === "tab" && S.drawer) { S.drawer.tab = b.dataset.t; renderCalendar(); }
+    else if (a === "mini-nav") { var mp = S.mini.split("-"), md = new Date(Date.UTC(+mp[0], +mp[1] - 1 + (+b.dataset.d), 1)); S.mini = md.getUTCFullYear() + "-" + pad(md.getUTCMonth() + 1) + "-01"; renderCalendar(); }
+    else if (a === "mini-go") { S.anchor = b.dataset.k; S.mini = b.dataset.k.slice(0, 8) + "01"; S.sel = null; S.scrolled = false; renderCalendar(); }
+    else if (a === "upall") { S.upAll = !S.upAll; renderCalendar(); }
+    else if (a === "sch-day" && bk) { s = schState(bk); s.day = b.dataset.k; s.pick = null; s.chk = null; refreshSch(bk.id); }
     else if (a === "dsch" && S.drawer) { S.drawer.sch = !S.drawer.sch; renderCalendar(); }
     else if (a === "assign" && bk) {
       var mid = (document.getElementById("sc-asg") || {}).value || null;
@@ -657,8 +727,8 @@
         if (S.drawer) S.drawer.err = ""; X.say("Assignment saved"); return afterSave(bk.id, "b");
       }).catch(function (er) { X.authErr(er); X.render(); renderCalendar(); });
     }
-    else if (a === "sch-nav" && bk) { s = schState(bk); s.wk = addDays(s.wk, 7 * +b.dataset.d); s.pick = null; s.chk = null; refreshSch(bk.id); }
-    else if (a === "sch-go" && bk) { s = schState(bk); s.wk = wkStart(b.dataset.w === "req" ? wall(bk.preferred_at).d : today()); s.pick = null; s.chk = null; refreshSch(bk.id); }
+    else if (a === "sch-nav" && bk) { s = schState(bk); s.wk = addDays(s.wk, 7 * +b.dataset.d); s.day = null; s.pick = null; s.chk = null; refreshSch(bk.id); }
+    else if (a === "sch-go" && bk) { s = schState(bk); s.wk = wkStart(b.dataset.w === "req" ? wall(bk.preferred_at).d : today()); s.day = null; s.pick = null; s.chk = null; refreshSch(bk.id); }
     else if (a === "sch-cell" && bk) { s = schState(bk); s.pick = { key: b.dataset.k, min: +b.dataset.m }; doCheck(bk, s); }
     else if (a === "sch-fb" && bk) {
       var d = (document.getElementById("sc-fd-" + bk.id) || {}).value, t = (document.getElementById("sc-ft-" + bk.id) || {}).value, iso = X.wallToIso(d, t, tz());
@@ -681,7 +751,7 @@
     else if (f === "closed") { S.closed = t.checked; renderCalendar(); }
     else if (f === "sch-dur" && s) { s.dur = +t.value; if (s.pick) doCheck(bk, s); else refreshSch(bk.id); }
     else if (f === "sch-mech" && s) { s.mech = t.value; refreshSch(bk.id); }
-    else if (f === "sch-jump" && s && t.value) { s.wk = wkStart(t.value); s.pick = null; s.chk = null; refreshSch(bk.id); }
+    else if (f === "sch-jump" && s && t.value) { s.wk = wkStart(t.value); s.day = t.value; s.pick = null; s.chk = null; refreshSch(bk.id); }
     return true;
   }
   document.addEventListener("input", function (e) { var f = e.target.dataset && e.target.dataset.scf; if (f === "m-msg" || f === "m-why") onField(e); });
@@ -701,6 +771,85 @@
     invalidate(); var jobs = [X.loadList()]; if (X.isRec()) jobs.push(X.ivLoad());
     Promise.all(jobs).then(function () { renderCalendar(); }).catch(function () { });
   }, 60000);
+
+
+  /* ---------------------------------------------------------------- top bar: notifications + profile menu
+     Notifications are worked out from the bookings and interviews this person can already see (nothing extra is
+     stored on the server). "Read" status is remembered on this device only. */
+  (function topbar() {
+    var bar = document.querySelector(".bar"), me = document.getElementById("me");
+    if (!bar || !me || bar.getAttribute("data-agtb")) return;
+    bar.setAttribute("data-agtb", "1"); bar.classList.add("ag-tb");
+    var bell = document.createElement("button");
+    bell.type = "button"; bell.className = "alt ag-bell"; bell.id = "ag-bell"; bell.hidden = true;
+    bell.setAttribute("aria-haspopup", "true"); bell.setAttribute("aria-expanded", "false"); bell.setAttribute("aria-label", "Notifications");
+    bell.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><b class="ag-n" hidden></b>';
+    var so = bar.querySelector(".ag-signout"); bar.insertBefore(bell, so || null);
+    var np = document.createElement("div"); np.className = "ag-pop"; np.id = "ag-notif"; np.hidden = true; np.setAttribute("role", "dialog"); np.setAttribute("aria-label", "Notifications");
+    var um = document.createElement("div"); um.className = "ag-pop ag-um"; um.id = "ag-um"; um.hidden = true; um.setAttribute("role", "menu");
+    bar.appendChild(np); bar.appendChild(um);
+    me.setAttribute("role", "button"); me.setAttribute("tabindex", "0"); me.setAttribute("aria-haspopup", "menu"); me.setAttribute("aria-expanded", "false"); me.classList.add("ag-meb");
+
+    function key() { return "ag_notif_read_" + ((ST.me && ST.me.user_id) || "x"); }
+    function lastRead() { try { return localStorage.getItem(key()) || ""; } catch (e) { return ""; } }
+    function markRead() { try { localStorage.setItem(key(), new Date().toISOString()); } catch (e) { } }
+    function items() {
+      var m = ST.me; if (!m || !m.active) return [];
+      var out = [], mgr = X.isMgr(), uid = m.user_id;
+      (ST.list || []).forEach(function (b) {
+        if (mgr) {
+          if (b.status === "pending") out.push({ t: b.created_at, title: "New booking request", text: b.character_name + " · " + b.reference, b: b.id });
+          else if (b.status === "alternative_accepted") out.push({ t: b.updated_at, title: "Customer accepted the proposed time", text: b.character_name + " · " + b.reference + ". Confirm it to approve.", b: b.id });
+          else if (b.status === "approved" && !b.assigned_to) out.push({ t: b.updated_at, title: "Approved booking needs a mechanic", text: b.character_name + " · " + b.reference, b: b.id });
+        } else if (b.assigned_to === uid && b.status === "approved") out.push({ t: b.updated_at, title: "Job assigned to you", text: b.character_name + " · " + b.reference + " · " + (b.scheduled_at ? fFull(b.scheduled_at) : ""), b: b.id });
+      });
+      if (X.isRec() && X.CI && X.CI.loaded) (X.CI.ivs || []).forEach(function (i) {
+        if (i.status === "reschedule_requested" && new Date(i.scheduled_at) > Date.now()) { var a = X.CI.apps[i.application_id] || {}; out.push({ t: i.requested_alt_at || i.scheduled_at, title: "Applicant asked for another interview time", text: (a.character_name || "Applicant") + " · " + fFull(i.scheduled_at), cal: true }); }
+      });
+      out.sort(function (a, b) { return String(b.t).localeCompare(String(a.t)); });
+      return out;
+    }
+    function ago(t) { var d = (Date.now() - new Date(t)) / 6e4; if (isNaN(d)) return ""; if (d < 1) return "just now"; if (d < 60) return Math.floor(d) + " min ago"; if (d < 1440) return Math.floor(d / 60) + " h ago"; return Math.floor(d / 1440) + " d ago"; }
+    var lastSig = "";
+    function draw(force) {
+      var m = ST.me, on = !!(m && m.active), lr = lastRead(), it = items(), unread = it.filter(function (x) { return String(x.t) > lr; }).length, n = bell.querySelector(".ag-n");
+      bell.hidden = !on; me.classList.toggle("ag-on", on);
+      n.hidden = !unread; n.textContent = unread > 9 ? "9+" : String(unread);
+      bell.setAttribute("aria-label", "Notifications" + (unread ? ", " + unread + " unread" : ""));
+      var sig = (np.hidden ? "0" : "1") + (um.hidden ? "0" : "1") + lr + "|" + it.map(function (x) { return x.title + x.text + x.t; }).join("|") + (m ? m.display_name : "");
+      if (!force && sig === lastSig) return; lastSig = sig;
+      if (!np.hidden) {
+        np.innerHTML = '<div class="ag-ph"><b>Notifications</b>' + (unread ? '<button type="button" class="alt sm" data-agtb="read">Mark all as read</button>' : "") + '</div>' +
+          (it.length ? '<div class="ag-pl">' + it.slice(0, 12).map(function (x) {
+            var inner = '<i class="' + (String(x.t) > lr ? "dot" : "dot off") + '"></i><span><b>' + esc(x.title) + '</b><small>' + esc(x.text) + '</small><em>' + esc(ago(x.t)) + '</em></span>';
+            return x.cal ? '<a class="ag-pi" href="#calendar">' + inner + '</a>' : '<button type="button" class="ag-pi" data-bk="cal-open" data-id="' + esc(x.b) + '">' + inner + '</button>';
+          }).join("") + '</div>' : '<p class="note" style="padding:14px">You are all caught up.</p>') +
+          '<p class="ag-pf">Built from your current bookings and interviews. Read status is saved on this device.</p>';
+      }
+      if (!um.hidden && m) {
+        um.innerHTML = '<div class="ag-ph"><span><b>' + esc(m.display_name || "") + '</b><small>' + esc(({ manager: "Manager", mechanic: "Mechanic", hr: "HR" })[m.role] || m.role || "") + '</small></span></div>' +
+          '<a role="menuitem" href="#profile">My Profile</a><a role="menuitem" href="#id">Staff ID</a><a role="menuitem" href="#loa">Leave of absence</a><button type="button" role="menuitem" data-bk="signout">Sign out</button>';
+      }
+    }
+    function close() { np.hidden = true; um.hidden = true; bell.setAttribute("aria-expanded", "false"); me.setAttribute("aria-expanded", "false"); }
+    function toggle(which) {
+      var open = which === "n" ? np.hidden : um.hidden; close();
+      if (open) { (which === "n" ? np : um).hidden = false; (which === "n" ? bell : me).setAttribute("aria-expanded", "true"); draw(true); }
+    }
+    document.addEventListener("click", function (e) {
+      var t = e.target;
+      if (t.closest && t.closest("#ag-bell")) { toggle("n"); return; }
+      if (t.closest && t.closest("#me")) { if (ST.me && ST.me.active) toggle("u"); return; }
+      var r = t.closest && t.closest("[data-agtb=read]"); if (r) { markRead(); draw(true); return; }
+      if (t.closest && t.closest(".ag-pop a, .ag-pop button:not([data-agtb])")) { setTimeout(close, 0); return; }
+      if (!(t.closest && t.closest(".ag-pop"))) close();
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && (!np.hidden || !um.hidden)) { close(); return; }
+      if ((e.key === "Enter" || e.key === " ") && e.target === me && ST.me && ST.me.active) { e.preventDefault(); toggle("u"); }
+    });
+    draw(true); setInterval(draw, 1500); window.AGSCHED_TB = { draw: draw };
+  })();
 
   window.AGSCHED = { renderCalendar: renderCalendar, kick: kick, schedulerHtml: schedHtml, refresh: refreshSch, invalidate: invalidate, afterSave: afterSave, state: S, fFull: fFull };
   if (document.getElementById("cl")) kick();
