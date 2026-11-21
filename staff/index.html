@@ -578,7 +578,7 @@ $("#v").innerHTML=V[v]();me();idc();grid();if($("#pt"))upc();if($("#lo"))loa()}
 function clk(){$("#ck").textContent=utc(Date.now())+" UTC";document.querySelectorAll(".dur").forEach(function(d){d.textContent=fmt(Date.now()-d.dataset.s)});var r=$("#rt");if(r&&S.start)r.textContent=fmt(Date.now()-S.start)}
 var nt;function nav(){clearTimeout(nt);window.scrollTo(0,0);$("#v").innerHTML='<div class="sk" style="height:240px"></div><div class="sk sp" style="height:160px"></div>';nt=setTimeout(route,200)}window.addEventListener("storage",function(e){if(e.key!="ag2"||!e.newValue)return;try{S=Object.assign({},D,JSON.parse(e.newValue));route()}catch(_){}});window.addEventListener("hashchange",nav);route();clk();setInterval(clk,1000);
 </script>
-<link rel="stylesheet" href="scheduling.css">
+<link rel="stylesheet" href="scheduling.css?v=20261121">
 <script src="../config.js"></script>
 <script src="handbook-data.js"></script>
 <script>
@@ -772,10 +772,6 @@ function actionsHtml(b){var mgr=isMgr(),s=b.status,closed=CLOSED.indexOf(s)>=0,h
     h+='<section class="bk-sec bk-next"><h3 class="hd bk-h3">Scheduling</h3>'+
       (b.reschedule_proposed_at&&s==="approved"?'<div class="bk-note" role="status"><b>Change awaiting customer confirmation.</b> Stays at '+esc(ftz(b.scheduled_at))+' until they confirm '+esc(ftz(b.reschedule_proposed_at))+'. Both times are held.</div>':"")+
       (s==="alternative_proposed"?'<div class="bk-note" role="status">A time is already waiting for the customer\u2019s reply.</div>':"")+
-      '<div class="bk-btns sp">'+(s==="pending"?'<button data-sc="sch-act" data-sa="approve-req" data-id="'+esc(b.id)+'">Approve requested time</button>':"")+(s==="alternative_accepted"?'<button data-sc="sch-act" data-sa="approve-acc" data-id="'+esc(b.id)+'">Approve the time they accepted</button>':"")+
-      (b.reschedule_proposed_at&&s==="approved"?'<button class="alt" data-sc="sch-act" data-sa="withdraw" data-id="'+esc(b.id)+'">Withdraw the change</button>':"")+
-      (s!=="approved"?arm("decline","Decline request"):"")+'</div>'+
-      (s!=="approved"?'<label for="bk-msg">Message to customer when declining (optional)</label><textarea id="bk-msg" maxlength="500"></textarea>':"")+
       '<h4 class="bk-h4">'+(s==="approved"?"Reschedule":"Pick a time")+'</h4>'+(window.AGSCHED?window.AGSCHED.schedulerHtml(b):"")+
       '<p class="note">Nothing is confirmed to the customer until you approve. Changes to an approved appointment are sent to the customer to confirm.</p></section>'}
   if(mgr)h+='<section class="bk-sec"><h3 class="hd bk-h3">Assigned mechanic</h3><div class="bk-inline"><select id="bk-mech" aria-label="Mechanic"><option value="">Unassigned</option>'+
@@ -1171,8 +1167,9 @@ function ivNewForm(){var v=CI.fv.n;
     '<div class="sp"><button data-ci="create"'+(CI.busy?" disabled":"")+'>Send invitation</button></div></div>';
   return h}
 /* ----- calendar ----- */
-function calRender(){if(window.AGSCHED)window.AGSCHED.renderCalendar(document.getElementById("cl"))}
-function calKick(){if(window.AGSCHED)window.AGSCHED.kick()}
+function calMissing(){var d=document.getElementById("cl");if(d&&!window.AGSCHED)d.innerHTML='<div class="card"><h3 class="hd bk-h3">Calendar could not load</h3><p class="note">The files <b>staff/scheduling.js</b> and <b>staff/scheduling.css</b> were not found next to this page. Upload both to the same folder as staff/index.html, then reload (hard refresh if it still looks the same).</p></div>'}
+function calRender(){if(window.AGSCHED)window.AGSCHED.renderCalendar(document.getElementById("cl"));else calMissing()}
+function calKick(){if(window.AGSCHED)window.AGSCHED.kick();else calMissing()}
 function loadTz(){if(ST.tzLoaded)return Promise.resolve();return rpc("available_slots",{}).then(function(r){if(r&&r.tz){ST.tz=r.tz;ST.tzLoaded=true}}).catch(function(e){if(e&&e.message==="auth")throw e})}
 V.calendar=function(){setTimeout(function(){if(sess&&ST.me===undefined)boot();calKick()},0);return'<div id="cl"></div>'};
 /* ----- interview actions ----- */
@@ -1222,7 +1219,7 @@ render();if(sess)boot();
 if(location.hash&&location.hash!=="#home")route();
 })();
 </script>
-<script src="scheduling.js"></script>
+<script src="scheduling.js?v=20261121" onerror="window.AGSCHED_FAIL=1"></script>
 <script>
 /* ===== Atomic Garage: Handbook UI (Employee Handbook + Mechanical Training Library) =====
    Content lives in handbook-data.js (window.AG_HB). This file only renders it.
