@@ -124,6 +124,7 @@ var STATUS = {
 var STATUS_TEXT = {
   pending:"Your request has been received. It is NOT confirmed until the garage management approves it.",
   approved:"Management has approved this appointment.",
+  reschedule:"Management would like to move your appointment. Your current appointment stays in place until you confirm the new time below.",
   declined:"Unfortunately this request was declined.",
   alternative_proposed:"Management has suggested a different time. Please accept or decline it below. Nothing is confirmed yet.",
   alternative_accepted:"You accepted the proposed time. It is NOT confirmed until management gives final approval.",
@@ -135,12 +136,14 @@ var EVENT = {
   submitted:"Request submitted", approved:"Approved by management", declined:"Declined",
   alternative_proposed:"New time proposed", alternative_accepted:"You accepted the proposed time",
   alternative_declined:"You declined the proposed time", cancelled:"Cancelled",
+  reschedule_proposed:"Management proposed moving your appointment", reschedule_accepted:"You confirmed the new appointment time", reschedule_declined:"You kept your original appointment time", reschedule_withdrawn:"The proposed change was withdrawn",
   status_changed:"Status updated", in_progress:"Work started", completed:"Work completed"
 };
+var WTZ="UTC";   /* workshop time zone: every appointment time is shown in it, and labelled */
 function fmt(d){
   if(!d) return "—";
   var x=new Date(d); if(isNaN(x)) return "—";
-  return x.toLocaleString(undefined,{dateStyle:"medium",timeStyle:"short"});
+  return x.toLocaleString("en-GB",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:false,timeZone:WTZ})+" "+WTZ;
 }
 
 /* ---------- Supabase REST (publishable key; only 3 RPCs + settings read) ---------- */
@@ -388,7 +391,7 @@ function pageBook(q){
     when:el("input",{id:"f-when",name:"preferred_at",type:"datetime-local",required:true,min:localInputMin()}),
     desc:el("textarea",{id:"f-desc",name:"description",maxlength:"2000",required:true})
   };
-  var whenBox=el("div",null,[I.when]);
+  var whenBox=el("div",null,[I.when]), pickHost=el("div");   /* pickHost holds the calendar so it can be rebuilt for each service */
   var hp=el("div",{class:"hp","aria-hidden":"true"},[el("label",{for:"f-web",text:"Leave this empty"}),el("input",{id:"f-web",name:"website",tabindex:"-1",autocomplete:"off"})]);
   var msg=el("div",{id:"formMsg",role:"alert"});
   var btn=el("button",{class:"btn",type:"submit",text:"Send request"});
@@ -402,7 +405,7 @@ function pageBook(q){
   var cg=el("div",{class:"wz-svcs",role:"group","aria-label":"Type of service"});
   SERVICES.forEach(function(sv){var b=el("button",{type:"button",class:"wz-svc","aria-pressed":"false"},[
       el("span",{class:"wz-ic","aria-hidden":"true",text:SI[sv[0]]||"\u2022"}),el("strong",{text:sv[1]}),el("span",{class:"muted",text:sv[2]}),el("em",{class:"wz-price"})]);
-    b.onclick=function(){sel.value=sv[0];setErr("service","");Object.keys(cards).forEach(function(k){cards[k].setAttribute("aria-pressed",String(k===sv[0]))})};
+    b.onclick=function(){sel.value=sv[0];setErr("service","");if(calOn)loadSlots();Object.keys(cards).forEach(function(k){cards[k].setAttribute("aria-pressed",String(k===sv[0]))})};
     cards[sv[0]]=b;cg.appendChild(b)});
   if(sel.value&&cards[sel.value])cards[sel.value].setAttribute("aria-pressed","true");
   loadSettings().then(function(st){prices=(st&&st.service_prices)||{};Object.keys(cards).forEach(function(k){var t=prices[k];
@@ -427,7 +430,7 @@ function pageBook(q){
   function summary(){sum.textContent="";var pr=prices[sel.value];
     [["Character",clean(I.name.value)],["Contact",clean(I.contact.value)],["Vehicle",clean(I.vehicle.value)+(clean(I.reg.value)?" ("+clean(I.reg.value)+")":"")],
      ["Service",(SVC[sel.value]||"\u2013")+(typeof pr==="string"&&pr.trim()?" \u2013 "+pr.trim():"")],["Work required",I.desc.value.trim()],
-     [calOn?"Appointment slot":"Preferred time (request only)",fmtD(I.when.value?new Date(I.when.value):null)],["Alternative time",alt.value?fmtD(new Date(alt.value)):"None"]
+     [calOn?"Appointment slot ("+WTZ+")":"Preferred time (request only)",calOn?fmt(I.when.value||null):fmtD(I.when.value?new Date(I.when.value):null)],["Alternative time",alt.value?fmtD(new Date(alt.value)):"None"]
     ].forEach(function(r){sum.appendChild(el("dt",{text:r[0]}));sum.appendChild(el("dd",{text:r[1]}))})}
   function show(i,quiet){cur=i;P.forEach(function(x,j){x.hidden=j!==i});
     [].forEach.call(prog.children,function(li,j){li.className=j===i?"on":j<i?"done":""});
@@ -438,12 +441,21 @@ function pageBook(q){
   form.appendChild(prog);P.forEach(function(x){form.appendChild(x)});
   form.appendChild(el("div",{class:"wz-nav"},[back,next,btn]));show(0,true);
   card.appendChild(form); f.appendChild(card);
-  rpc("available_slots",{p_from:null,p_to:null}).then(function(r){
-    if(!r||!r.ok||!r.enabled)return;   /* calendar not set up: keep the plain date box */
-    I.when.type="hidden";I.when.value="";I.when.removeAttribute("min");
-    slotPicker(whenBox,r,function(iso){I.when.value=iso});calOn=true;var lb=document.querySelector('label[for="f-when"]');if(lb)lb.firstChild.textContent="Choose an available time";
-    var h=$("#f-when-h");if(h)h.textContent="Pick a day, then a free time. Times are shown in "+r.tz+".";
-  }).catch(function(){});
+  var slotSeq=0;
+  function loadSlots(){
+    var my=++slotSeq,svc=SVC[sel.value]?sel.value:null;
+    rpc("available_slots",{p_from:null,p_to:null,p_service:svc}).then(function(r){
+      if(my!==slotSeq||!r||!r.ok||!r.enabled)return;   /* calendar not set up: keep the plain date box */
+      if(r.tz)WTZ=r.tz;
+      if(!calOn){I.when.type="hidden";I.when.removeAttribute("min");whenBox.appendChild(pickHost);calOn=true}
+      I.when.value="";pickHost.textContent="";
+      slotPicker(pickHost,r,function(iso){I.when.value=iso});
+      var lb=document.querySelector('label[for="f-when"]');if(lb)lb.firstChild.textContent="Choose an available time";
+      var h=$("#f-when-h");if(h)h.textContent="Pick a day, then a free time. Times are shown in "+r.tz+(svc&&r.minutes?". This service needs "+r.minutes+" minutes, so only times with enough room are offered.":".");
+    }).catch(function(){});
+  }
+  sel.addEventListener("change",function(){if(calOn)loadSlots()});
+  loadSlots();
 
   var map={name:["f-name","Enter your character name (2 to 60 characters)."],contact:["f-contact","Enter in-character contact details (3 to 120 characters)."],
     vehicle:["f-vehicle","Enter the vehicle make and model (2 to 80 characters)."],service:["f-service","Choose a type of service."],
@@ -561,14 +573,18 @@ function pageTrack(q){
     var c=el("div",{class:"card"});
     c.appendChild(el("div",{class:"ref",text:b.reference}));
     c.appendChild(el("p",null,[el("span",{class:"badge "+b.status,text:STATUS[b.status]||b.status})]));
-    c.appendChild(el("p",{class:"notice",text:STATUS_TEXT[b.status]||""}));
+    c.appendChild(el("p",{class:"notice",text:STATUS_TEXT[b.status==="approved"&&b.reschedule_proposed_at?"reschedule":b.status]||""}));
     if(b.customer_message) c.appendChild(el("p",{class:"notice good"},[el("strong",{text:"Message from the garage: "}),b.customer_message]));
     var dl=el("dl");
     function add(k,v){ if(v==null||v==="") return; dl.appendChild(el("dt",{text:k})); dl.appendChild(el("dd",{text:v})); }
     add("Name",b.character_name); add("Service",SVC[b.service_type]||b.service_type); add("Vehicle",b.vehicle);
     add("Registration",b.vehicle_reg); add("Requested time",fmt(b.preferred_at));
+    if(b.timezone) WTZ=b.timezone;
     if(b.proposed_at) add("Proposed time",fmt(b.proposed_at));
     if(b.scheduled_at) add("Approved appointment",fmt(b.scheduled_at));
+    if(b.status==="approved"&&b.reschedule_proposed_at) add("Proposed new time",fmt(b.reschedule_proposed_at));
+    if(b.duration_minutes) add("Appointment length",b.duration_minutes+" minutes");
+    add("Time zone",WTZ);
     add("Work requested",b.description); add("Last update",fmt(b.updated_at));
     c.appendChild(dl);
 
@@ -585,6 +601,11 @@ function pageTrack(q){
       act.appendChild(el("div",{class:"btns"},[
         el("button",{class:"btn",type:"button",text:"Accept "+fmt(b.proposed_at),onclick:function(){call("accept_alternative")}}),
         el("button",{class:"btn alt",type:"button",text:"Decline this time",onclick:function(){call("decline_alternative")}})]));
+    }
+    if(b.status==="approved"&&b.reschedule_proposed_at){
+      act.appendChild(el("div",{class:"btns"},[
+        el("button",{class:"btn",type:"button",text:"Confirm "+fmt(b.reschedule_proposed_at),onclick:function(){call("accept_reschedule")}}),
+        el("button",{class:"btn alt",type:"button",text:"Keep "+fmt(b.scheduled_at),onclick:function(){call("decline_reschedule")}})]));
     }
     if(["pending","alternative_proposed","alternative_accepted","approved"].indexOf(b.status)>=0){
       act.appendChild(el("p",null,[el("button",{class:"btn sm alt",type:"button",text:"Cancel booking",onclick:function(){call("cancel","Cancel this booking?")}})]));
