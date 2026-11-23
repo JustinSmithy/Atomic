@@ -1286,7 +1286,7 @@ render();if(sess)boot();
 if(location.hash&&location.hash!=="#home")route();
 })();
 </script>
-<script src="scheduling.js?v=20261121" onerror="window.AGSCHED_FAIL=1"></script>
+<script src="scheduling.js?v=20261123" onerror="window.AGSCHED_FAIL=1"></script>
 <script>
 /* ===== Atomic Garage: Handbook UI (Employee Handbook + Mechanical Training Library) =====
    Content lives in handbook-data.js (window.AG_HB). This file only renders it.
@@ -1600,7 +1600,7 @@ function detailView(){
   (JB.submitOpen&&(s==="working"||s==="paused"||s==="changes")?submitForm(b):'')+
   (mgr&&s==="review"?reviewPanel(D):'')+
   (D.job&&D.job.work_summary&&(s==="review"&&!mgr||s==="closed")?box("Work summary",'<p style="white-space:pre-wrap;overflow-wrap:anywhere">'+esc(D.job.work_summary)+'</p>'+(D.job.review_note?'<p class="note">Management note: '+esc(D.job.review_note)+'</p>':'')):'')+
-  (D.job?logBox(D,ed)+partsBox(D,ed)+labourBox(D,ed)+histBox(D):'<div class="card sp"><p class="note">Nothing has been recorded yet. The work log, parts and labour open when the job starts.</p></div>')+
+  (D.job?logBox(D,ed)+partsBox(D,ed)+labourBox(D,ed)+(window.AGINVC&&window.AGINVC.jobHtml?window.AGINVC.jobHtml(b,D):'')+histBox(D):'<div class="card sp"><p class="note">Nothing has been recorded yet. The work log, parts and labour open when the job starts.</p></div>')+
   (mgr&&(s==="ready"||s==="working"||s==="paused"||s==="changes")?directClose(b):'')}
 
 /* ---------- render / lifecycle ---------- */
@@ -2268,7 +2268,10 @@ var EVL={created:"Draft created from job records",regenerated:"Regenerated from 
 function num(v){var n=parseFloat(v);return isNaN(n)?0:n}
 function r2(n){return Math.round(n*100)/100}
 function has(v){return v!==""&&v!=null}
-function call(n,a){return X.rpc(n,a).catch(function(e){try{X.authErr(e)}catch(x){}return{ok:false,message:"Could not reach the server. Try again."}})}
+function call(n,a){return X.rpc(n,a).catch(function(e){var m=(e&&e.message)||"";if(m==="auth"){try{X.authErr(e)}catch(x){}return{ok:false,error:"auth",message:"Your session has ended. Please sign in again."}}
+ var net=!m||/failed to fetch|networkerror|load failed|network request|timeout/i.test(m)||(e&&e.name==="TypeError");
+ try{console.error("[AG] "+n+" failed:",e)}catch(x){}
+ return{ok:false,error:net?"network":"api",message:net?"Could not reach the server. Check your connection and try again.":m}})}
 function msg(r,d){return(r&&r.message)||d||"That was not allowed."}
 function pill(s){return'<span class="pill ivc-'+s+'">'+esc(STL[s]||s)+'</span>'}
 function ppill(s){return s?'<span class="pill ivc-p-'+s+'">'+esc(PSL[s]||s)+'</span>':""}
@@ -2305,7 +2308,7 @@ function loadCur(id){return call("invoice_get",{p_id:id}).then(function(r){
   IV.cur=r;IV.ed=r.invoice.status==="draft"?mkEd(r):null;IV.pf={amount:String(r.invoice.balance||"")};IV.rev=null;IV.voidOpen=false;IV.arm="";IV.prev=false;IV.f={}})}
 function loadBk(id){if(IV.bkL[id])return;IV.bkL[id]=1;call("invoice_for_booking",{p_booking:id}).then(function(r){delete IV.bkL[id];IV.bk[id]=r&&r.ok?r:{ok:false,message:msg(r)};refresh()})}
 function loadList(){var f={q:IV.q,status:IV.status,from:IV.from||null,to:IV.to||null,limit:300};
- return Promise.all([call("invoice_list",f),call("invoice_list",{limit:500}),call("invoice_settings_get",{}),X.loadList?X.loadList().catch(function(){}):0]).then(function(a){
+ return Promise.all([call("invoice_list",{p:f}),call("invoice_list",{p:{limit:500}}),call("invoice_settings_get",{}),X.loadList?X.loadList().catch(function(){}):0]).then(function(a){
   IV.lerr=a[0]&&a[0].ok?"":msg(a[0],"Could not load invoices.");IV.list=a[0]&&a[0].ok?a[0].rows:[];IV.sum=a[1]&&a[1].ok?a[1].summary:null;
   IV.ids={};if(a[1]&&a[1].ok)a[1].rows.forEach(function(x){if(x.status!=="voided")IV.ids[x.booking_id]=1});IV.set=a[2]&&a[2].ok?a[2].settings:null;IV.loaded=true})}
 function after(id,okText,bk){IV.ok=okText||"";IV.err="";var p=id?loadCur(id):Promise.resolve();
@@ -2474,7 +2477,54 @@ function mark(notesOnly){var E=IV.ed;if(!E)return;E.dirty=true;IV.arm="";var c=c
  if(b&&!notesOnly){b.outerHTML=totBox(c);E.lines.forEach(function(l,i){var a=document.getElementById("ivc-a"+i),v=lineAmt(l,c.base);if(a)a.innerHTML=v==null?'<span class="pill ivc-issued">No price</span>':esc(money(v))})}
  var d=document.getElementById("ivc-dirty");if(d)d.hidden=false;var is=document.querySelector('[data-invc="issue"]');if(is){is.disabled=true;is.classList.remove("bk-danger");is.textContent="Issue invoice"}}
 
-window.AGINVC={tabsHtml:tabsHtml,bookingHtml:bookingHtml,state:IV};
+
+/* ---------- invoice section inside the job worksheet (assigned mechanic, or a manager) ----------
+   Everything here is a view over invoice_job_view; the actions call invoice_mech_prepare / invoice_mech_send,
+   which the database only allows for the assigned mechanic (or a manager), after management has approved the job. */
+var JV={by:{},key:{},busy:false,arm:"",err:"",ok:""};
+function jvKey(b,D){var j=D&&D.job;return[b.status,j&&j.status,j&&j.updated_at,D&&D.parts?D.parts.length:0,D&&D.labour?D.labour.length:0].join("|")}
+function jvLoad(id,key){if(key)JV.key[id]=key;return call("invoice_job_view",{p_booking:id}).then(function(r){JV.by[id]=r;jvDraw(id)})}
+function jvDraw(id){var el=document.getElementById("ivjb");if(el&&el.getAttribute("data-id")===id)el.innerHTML=jvBody(id)}
+function jobHtml(b,D){inject();if(!document.getElementById('ivj-css')){var st=document.createElement('style');st.id='ivj-css';st.textContent='.ivj-row{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:8px 0;border-bottom:1px solid rgba(128,128,128,.25)}.ivj-d{grid-column:1/-1;overflow-wrap:anywhere}.ivj-q{opacity:.8;font-size:.92em}.ivj-a{font-weight:700;text-align:right}';document.head.appendChild(st)}var id=b.id,k=jvKey(b,D);if(JV.key[id]!==k)jvLoad(id,k);return'<div id="ivjb" data-id="'+esc(id)+'">'+jvBody(id)+'</div>'}
+function jvRows(lines){return'<div class="ivj-rows">'+lines.map(function(l){
+ var pr=l.percent!=null?esc(String(parseFloat(l.percent)))+"%":l.unit_price==null?'<span class="pill ivc-issued">No price</span>':esc(money(l.unit_price));
+ return'<div class="ivj-row"><div class="ivj-d">'+esc(l.description)+'</div><div class="ivj-q">'+esc(String(parseFloat(l.quantity)))+(l.kind==="labour"?" h":"")+' \u00D7 '+pr+'</div><div class="ivj-a">'+(l.line_total==null?"":esc(money(l.line_total)))+'</div></div>'}).join("")+'</div>'}
+function jvBody(id){var r=JV.by[id],h='<div class="card sp"><h3 class="hd bk-h3" style="margin-top:0">Invoice</h3>';
+ if(!r)return h+'<div class="sk" style="height:80px"></div></div>';
+ if(r.ok===false)return h+'<p class="note" role="alert">'+esc(r.message||"The invoice could not be loaded.")+'</p></div>';
+ var inv=r.invoice,P=r.preview,mgr=r.role==="manager",sent=!!(inv&&inv.published_at),ps=inv?payStatus(inv):"";
+ function st(done,t){return'<li>'+(done?'✓ ':'○ ')+esc(t)+'</li>'}
+ h+='<ul class="note" style="list-style:none;padding:0;margin:0 0 10px">'+st(r.job_status==="submitted"||r.job_status==="closed","Job submitted for management approval")+st(r.approved,"Approved by management")+st(sent,"Invoice sent to the customer (Track Booking)")+st(ps==="paid","Payment recorded in full")+'</ul>';
+ if(JV.err)h+='<div class="jb-err" role="alert">'+esc(JV.err)+'</div>';
+ if(JV.ok)h+='<div class="bk-note good" role="status">'+esc(JV.ok)+'</div>';
+ var lines=inv?inv.lines:P.lines,tot=inv?inv:{parts_total:P.parts_total,labour_total:P.labour_total,charges_total:0,discount_total:0,total:P.total};
+ h+='<p class="note">'+(inv?(inv.number?'<b>'+esc(inv.number)+'</b> ':'<b>Draft invoice</b> ')+pill(inv.status)+' '+ppill(inv.status==="issued"?ps:inv.status==="paid"?"paid":""):'Draft preview, built from the parts and labour recorded on this job.')+'</p>';
+ h+=lines.length?jvRows(lines):'<p class="note">No parts or labour have been recorded yet.</p>';
+ h+='<div class="ivc-tot"><div><span>Parts</span><b>'+esc(money(tot.parts_total))+'</b></div><div><span>Labour</span><b>'+esc(money(tot.labour_total))+'</b></div>'+(num(tot.charges_total)?'<div><span>Additional charges</span><b>'+esc(money(tot.charges_total))+'</b></div>':'')+(num(tot.discount_total)?'<div><span>Discounts</span><b>-'+esc(money(tot.discount_total))+'</b></div>':'')+'<div class="g"><span>Total</span><b>'+esc(money(tot.total))+'</b></div></div>';
+ if(!r.rate_set&&!inv)h+='<p class="note">Labour has no price until management sets the hourly labour rate. Prices and discounts are controlled by management.</p>';
+ var miss=inv?lines.filter(function(l){return l.kind!=="discount"&&l.unit_price==null}).length:P.missing_prices;
+ if(inv&&sent){
+  h+='<p class="note">Sent to the customer on '+esc(X.ft(inv.published_at))+'. They can view it and download the PDF on their Track Booking page. No email or message was sent.</p>';
+  h+='<p class="ivc-bal">'+(ps==="paid"?'Paid in full':'Balance '+esc(money(inv.balance)))+'</p><p class="note">'+(inv.payments&&inv.payments.length?'Payment recorded: '+inv.payments.map(function(p){return esc(money(p.amount))+' ('+esc(D.METHOD&&D.METHOD[p.method]||p.method)+', '+esc(X.ft(p.recorded_at))+')'}).join('; '):'No payment has been recorded yet. Payments are recorded by management.')+'</p>'}
+ else if(!r.approved)h+='<p class="note">'+esc(r.reason||"")+(r.job_status==="submitted"||r.job_status==="closed"?"":" Use the submit button above when the work is finished.")+'</p>';
+ else if(r.reason&&!r.can_send)h+='<p class="note" role="alert">'+esc(r.reason)+'</p>';
+ if(r.can_send||r.can_prepare){
+  if(miss>0)h+='<p class="note" role="alert">'+miss+' line(s) have no price yet. A manager must set the labour rate or prices before the invoice can be sent.</p>';
+  h+='<div class="ivc-btns">'+(r.can_prepare?'<button class="alt" data-ivj="prep" data-id="'+esc(id)+'"'+(JV.busy?" disabled":"")+'>Generate draft invoice</button>':"")+
+   '<button data-ivj="send" data-id="'+esc(id)+'" class="'+(JV.arm===id?"bk-danger":"")+'"'+(JV.busy||miss>0?" disabled":"")+'>'+(JV.arm===id?"Click again to send to the customer":"Send Invoice")+'</button></div>'+
+   '<p class="note">Send Invoice issues the invoice and makes it available on the customer’s Track Booking page with a PDF download. It cannot be edited afterwards. No email or message is sent.</p>'}
+ if(inv&&inv.history&&inv.history.length)h+='<details style="margin-top:10px"><summary>Invoice history</summary><ul class="ivc-ev">'+inv.history.map(function(e){return'<li>'+esc(EVL[e.action]||e.action)+'<small>'+esc(e.actor_name)+(e.by_role?' ('+esc(e.by_role)+')':'')+' · '+esc(X.ft(e.at))+'</small></li>'}).join("")+'</ul></details>';
+ if(mgr&&inv)h+='<p class="note"><a href="#invoices">Open Invoices</a> to correct the draft, record payments or void.</p>';
+ return h+'</div>'}
+document.addEventListener("click",function(e){var t=e.target.closest&&e.target.closest("[data-ivj]");if(!t||t.disabled)return;var a=t.getAttribute("data-ivj"),id=t.getAttribute("data-id");if(JV.busy)return;
+ if(a==="send"&&JV.arm!==id){JV.arm=id;JV.err="";JV.ok="";jvDraw(id);return}
+ var fn=a==="send"?"invoice_mech_send":"invoice_mech_prepare";JV.arm="";JV.busy=true;JV.err="";JV.ok="";jvDraw(id);
+ call(fn,{p_booking:id}).then(function(r){JV.busy=false;
+  if(r&&r.ok){JV.ok=a==="send"?"Invoice "+(r.number||"")+" sent. The customer can now view and download it on their Track Booking page. No email or message was sent.":"Draft invoice generated from the job records. Review it, then use Send Invoice."}
+  else if(r&&(r.error==="exists"||r.error==="already_sent")){JV.ok=r.message||""}
+  else JV.err=(r&&r.message)||"That could not be done.";
+  return jvLoad(id)})}) ;
+window.AGINVC={tabsHtml:tabsHtml,bookingHtml:bookingHtml,jobHtml:jobHtml,state:IV};
 })();
 
 /*AGINVC-END*/</script>
@@ -2493,7 +2543,10 @@ function pad(n){return(n<10?"0":"")+n}
 function dstr(k){if(!k)return"";var d=new Date(String(k).slice(0,10)+"T12:00:00Z");return isNaN(d)?"":d.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric",timeZone:"UTC"})}
 function range(r){return r.from_date===r.to_date?dstr(r.from_date):dstr(r.from_date)+" to "+dstr(r.to_date)}
 function days(r){var n=Math.round((Date.parse(r.to_date+"T00:00:00Z")-Date.parse(r.from_date+"T00:00:00Z"))/864e5)+1;return n+(n===1?" day":" days")}
-function call(n,a){return X.rpc(n,a).catch(function(e){try{X.authErr(e)}catch(x){}return{ok:false,message:"Could not reach the server. Try again."}})}
+function call(n,a){return X.rpc(n,a).catch(function(e){var m=(e&&e.message)||"";if(m==="auth"){try{X.authErr(e)}catch(x){}return{ok:false,error:"auth",message:"Your session has ended. Please sign in again."}}
+ var net=!m||/failed to fetch|networkerror|load failed|network request|timeout/i.test(m)||(e&&e.name==="TypeError");
+ try{console.error("[AG] "+n+" failed:",e)}catch(x){}
+ return{ok:false,error:net?"network":"api",message:net?"Could not reach the server. Check your connection and try again.":m}})}
 function msg(r,d){return(r&&r.message)||d||"That was not allowed."}
 function stPill(r){var s=r.status,t=SL[s]||s,c=s;if(s==="approved"&&r.cancel_requested_at){t="Approved, cancellation requested";c="pending"}return'<span class="pill lv-'+c+'">'+esc(t)+'</span>'}
 function fv(k,d){return L.f[k]!=null?L.f[k]:(d==null?"":d)}
@@ -2508,8 +2561,8 @@ function inject(){if(document.getElementById("lv-css"))return;var s=document.cre
 /* ---------- data ---------- */
 function loadAll(){
  if(!active())return Promise.resolve();var mgr=X.isMgr();
- var jobs=[call("leave_list",mgr?{mine:true,status:"all"}:{status:"all"})];
- if(mgr)jobs.push(call("leave_list",{status:L.flt,q:L.q||null}));
+ var jobs=[call("leave_list",{p:mgr?{mine:true,status:"all"}:{status:"all"}})];
+ if(mgr)jobs.push(call("leave_list",{p:{status:L.flt,q:L.q||null}}));
  return Promise.all(jobs).then(function(a){
   L.mine=a[0]&&a[0].ok?a[0].rows:[];L.today=a[0]&&a[0].ok?a[0].today:L.today;
   if(mgr){L.all=a[1]&&a[1].ok?a[1].rows:[];L.sum=a[1]&&a[1].ok?a[1].summary:null;if(a[1]&&!a[1].ok)L.err=msg(a[1])}
@@ -2536,7 +2589,7 @@ function buildNf(){var out=[],mgr=X.isMgr(),uid=ST.me&&ST.me.user_id,cut=Date.no
   }});
  L.nf=out}
 function pollNf(force){if(!active())return;if(!force&&Date.now()-L.lastNf<60000)return;L.lastNf=Date.now();
- call("leave_list",{status:X.isMgr()?"all":"all"}).then(function(r){if(!r||!r.ok)return;L.nfRows=r.rows;buildNf();try{window.AGTB&&window.AGTB.draw(true)}catch(e){}})}
+ call("leave_list",{p:{status:"all"}}).then(function(r){if(!r||!r.ok)return;L.nfRows=r.rows;buildNf();try{window.AGTB&&window.AGTB.draw(true)}catch(e){}})}
 setInterval(function(){pollNf(false)},5000);
 
 /* ---------- calendar and mechanic availability (approved leave only) ---------- */
@@ -2544,8 +2597,12 @@ function need(from,to){var c=L.cache;if(!active()||c.busy)return;
  for(var i=0;i<c.cov.length;i++)if(c.cov[i][0]<=from&&c.cov[i][1]>=to)return;
  var f=new Date(Date.parse(from+"T12:00:00Z")-30*864e5).toISOString().slice(0,10),t=new Date(Date.parse(to+"T12:00:00Z")+30*864e5).toISOString().slice(0,10);
  if(Date.parse(t)-Date.parse(f)>118*864e5)t=new Date(Date.parse(f)+118*864e5).toISOString().slice(0,10);
- c.busy=true;call("leave_calendar",{p_from:f,p_to:t}).then(function(r){c.busy=false;if(!r||!r.ok){c.cov.push([from,to]);return}
+ c.busy=true;call("leave_calendar",{p_from:f,p_to:t}).then(function(r){c.busy=false;
+  /* always record what was asked for so a failure or a clamped range can never trigger the same request again (it caused a redraw loop) */
+  c.cov.push([from,to]);if(!r||!r.ok)return;
+  var before=JSON.stringify(c.rows);
   c.rows=c.rows.filter(function(x){return!(x.to_date>=f&&x.from_date<=t)}).concat(r.leave);c.cov.push([f,t]);
+  if(JSON.stringify(c.rows)===before)return;
   try{if(window.AGSCHED&&document.getElementById("cl"))X.calRender();else X.render()}catch(e){}})}
 function invalidate(){L.cache.cov=[]}
 function on(k,uid){return L.cache.rows.filter(function(r){return r.from_date<=k&&r.to_date>=k&&(!uid||r.user_id===uid)})}
