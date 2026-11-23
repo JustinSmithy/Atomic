@@ -76,6 +76,127 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="config.js"></script>
+<script>/*INVDOC-START*/
+/* ===== Atomic Garage invoice document: real PDF (no libraries), HTML view and print =====
+   Input (same for staff and customers):
+   {business:{name,payment_terms,footer_note},number,status,issued_at,booking_reference,customer_name,vehicle,vehicle_reg,service_type,notes,
+    lines:[{kind,description,quantity,unit_price,percent,line_total}],parts_total,labour_total,charges_total,discount_total,total,paid_total,balance,
+    payments:[{amount,method,reference,at}]} */
+(function(){
+"use strict";
+var W1=[278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,278,278,584,584,584,556,1015,667,667,722,722,667,611,778,722,278,500,667,556,833,722,778,667,778,722,667,611,722,667,944,667,667,611,278,278,278,469,556,333,556,556,500,556,556,278,556,556,222,222,500,222,833,556,556,556,556,333,500,278,556,500,722,500,500,500,334,260,334,584];
+var W2=[278,333,474,556,556,889,722,238,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,333,333,584,584,584,611,975,722,722,722,722,667,611,778,722,278,556,722,611,833,722,778,667,778,722,667,611,722,667,944,667,667,611,333,278,333,584,556,333,556,611,556,611,556,333,611,611,278,278,556,278,889,611,611,611,611,389,556,333,611,556,778,556,556,500,389,280,389,584];
+var METHOD={cash:"Cash",bank_transfer:"Bank transfer",card:"Card",other:"Other"};
+function clean(s){return String(s==null?"":s).replace(/[\r\n\t]+/g," ").replace(/[^\x20-\x7e\xa0-\xff]/g,"?")}
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function money(n){n=Number(n||0);var neg=n<0;n=Math.abs(n);return(neg?"-":"")+"$"+n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,",")}
+function qty(l){var q=parseFloat(Number(l.quantity).toFixed(2));return l.kind==="labour"?q+" h":String(q)}
+function dt(x){if(!x)return"";var d=new Date(x);return isNaN(d)?"":d.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})}
+function unit(l){return l.percent!=null?parseFloat(Number(l.percent))+"%":(l.unit_price==null?"":money(l.unit_price))}
+function sw(s,bold,size){var t=bold?W2:W1,n=0;for(var i=0;i<s.length;i++){var c=s.charCodeAt(i);n+=(c>=32&&c<127)?t[c-32]:556}return n*size/1000}
+function wrap(s,bold,size,max){s=clean(s);var out=[],cur="";s.split(" ").forEach(function(w){
+  while(sw(w,bold,size)>max&&w.length>1){var k=w.length-1;while(k>1&&sw(w.slice(0,k),bold,size)>max)k--;if(cur){out.push(cur);cur=""}out.push(w.slice(0,k));w=w.slice(k)}
+  var t=cur?cur+" "+w:w;if(sw(t,bold,size)<=max)cur=t;else{if(cur)out.push(cur);cur=w}});if(cur)out.push(cur);return out.length?out:[""]}
+function pesc(s){return s.replace(/\\/g,"\\\\").replace(/\(/g,"\\(").replace(/\)/g,"\\)")}
+function f2(n){return(Math.round(n*100)/100).toString()}
+
+function statusText(d){return d.status==="voided"?"VOID":d.status==="paid"?"PAID IN FULL":""}
+
+function buildPdf(d){
+  var H=842,M=48,R=547,pages=[],ops=[],y=0;
+  function newPage(){ops=[];pages.push(ops);y=52}
+  function text(x,yy,s,size,bold,align,gray){s=pesc(clean(s));if(align==="r")x-=sw(clean(arguments[2]),bold,size);
+    ops.push("BT /"+(bold?"F2":"F1")+" "+size+" Tf "+(gray?gray+" g ":"0 g ")+f2(x)+" "+f2(H-yy)+" Td ("+s+") Tj ET")}
+  function rect(x,yy,w,h,g){ops.push(g+" g "+f2(x)+" "+f2(H-yy-h)+" "+f2(w)+" "+f2(h)+" re f 0 g")}
+  function rule(yy,g){ops.push((g||"0.75")+" G 0.6 w "+M+" "+f2(H-yy)+" m "+R+" "+f2(H-yy)+" l S")}
+  function need(h){if(y+h>H-70){newPage()}}
+  newPage();
+  var biz=d.business||{};
+  text(M,y+10,biz.name||"Atomic Garage",20,true);
+  text(R,y+10,"INVOICE",20,true,"r");
+  y+=30;
+  text(R,y,"No. "+(d.number||"DRAFT"),11,true,"r");y+=14;
+  if(d.issued_at){text(R,y,"Issued "+dt(d.issued_at),10,false,"r","0.35");y+=13}
+  var st=statusText(d);if(st){text(R,y+4,st,13,true,"r",d.status==="voided"?"0.45":"0.1");y+=16}
+  y=Math.max(y,104);rule(y);y+=22;
+  text(M,y,"BILLED TO",8,true,null,"0.45");text(310,y,"JOB",8,true,null,"0.45");y+=14;
+  var y0=y;
+  text(M,y,d.customer_name||"",12,true);y+=15;
+  var left=[];if(d.vehicle)left.push(d.vehicle+(d.vehicle_reg?" ("+d.vehicle_reg+")":""));
+  left.forEach(function(s){wrap(s,false,10,230).forEach(function(l){text(M,y,l,10,false);y+=13})});
+  var yy=y0;
+  text(310,yy,"Booking "+(d.booking_reference||""),10,false);yy+=13;
+  if(d.service_type)text(310,yy,d.service_type,10,false);yy+=13;
+  y=Math.max(y,yy)+14;
+  /* table */
+  var cx={q:395,u:470,a:R};
+  function head(){rect(M,y-11,R-M,19,"0.93");text(M+6,y+2,"Description",9,true);text(cx.q,y+2,"Qty",9,true,"r");text(cx.u,y+2,"Unit price",9,true,"r");text(cx.a-6,y+2,"Amount",9,true,"r");y+=22}
+  head();
+  (d.lines||[]).forEach(function(l){
+    var ls=wrap(l.description,false,10,cx.q-M-70),h=ls.length*13+6;need(h);if(y<60)head();
+    ls.forEach(function(s,i){text(M+6,y+i*13,s,10,false)});
+    text(cx.q,y,qty(l),10,false,"r");text(cx.u,y,unit(l),10,false,"r");text(cx.a-6,y,money(l.line_total),10,false,"r");
+    y+=h-6+6;rule(y-9,"0.88")});
+  y+=8;
+  function tot(label,val,bold,big){need(20);text(R-150,y,label,big?12:10,bold,null,bold?null:"0.3");text(R-6,y,val,big?12:10,bold,"r");y+=big?19:15}
+  tot("Parts",money(d.parts_total));tot("Labour",money(d.labour_total));
+  if(Number(d.charges_total)>0)tot("Additional charges",money(d.charges_total));
+  if(Number(d.discount_total)>0)tot("Discounts","-"+money(d.discount_total));
+  rule(y-9);y+=4;tot("Total",money(d.total),true,true);
+  if(Number(d.paid_total)>0)tot("Paid",money(d.paid_total));
+  tot(d.status==="voided"?"Balance (void)":"Balance due",money(d.status==="voided"?0:d.balance),true,true);
+  var pays=(d.payments||[]);
+  if(pays.length&&d.status!=="voided"){y+=8;need(30+pays.length*14);text(M,y,"PAYMENTS RECEIVED",8,true,null,"0.45");y+=14;
+    pays.forEach(function(p){text(M,y,dt(p.at)+"  -  "+(METHOD[p.method]||p.method)+(p.reference?"  ("+p.reference+")":""),10,false);text(R-6,y,money(p.amount),10,false,"r");y+=14})}
+  function block(title,s){if(!s)return;y+=10;wrap(s,false,10,R-M).forEach(function(l,i){need(30);if(i===0&&title){text(M,y,title,8,true,null,"0.45");y+=13}text(M,y,l,10,false);y+=13})}
+  block("NOTES",d.notes);block("PAYMENT TERMS",biz.payment_terms);
+  y+=14;need(40);
+  wrap("Payments for this invoice are made in character on GTA World. No real money is involved.",false,9,R-M).forEach(function(l){text(M,y,l,9,false,null,"0.4");y+=12});
+  if(biz.footer_note)wrap(biz.footer_note,false,9,R-M).forEach(function(l){need(14);text(M,y,l,9,false,null,"0.4");y+=12});
+  /* assemble */
+  var n=pages.length,objs=[];
+  objs[1]="<< /Type /Catalog /Pages 2 0 R >>";
+  var kids=[];for(var i=0;i<n;i++)kids.push((5+i*2)+" 0 R");
+  objs[2]="<< /Type /Pages /Kids ["+kids.join(" ")+"] /Count "+n+" >>";
+  objs[3]="<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>";
+  objs[4]="<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>";
+  pages.forEach(function(p,i){
+    var foot="BT /F1 8 Tf 0.5 g "+f2(R-60)+" 30 Td (Page "+(i+1)+" of "+n+") Tj ET";
+    var body=p.join("\n")+"\n"+foot;
+    objs[5+i*2]="<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents "+(6+i*2)+" 0 R >>";
+    objs[6+i*2]="<< /Length "+body.length+" >>\nstream\n"+body+"\nendstream"});
+  var out="%PDF-1.4\n",off=[];
+  for(var k=1;k<objs.length;k++){off[k]=out.length;out+=k+" 0 obj\n"+objs[k]+"\nendobj\n"}
+  var xr=out.length;out+="xref\n0 "+objs.length+"\n0000000000 65535 f \n";
+  for(k=1;k<objs.length;k++)out+=("0000000000"+off[k]).slice(-10)+" 00000 n \n";
+  out+="trailer\n<< /Size "+objs.length+" /Root 1 0 R >>\nstartxref\n"+xr+"\n%%EOF";
+  var u=new Uint8Array(out.length);for(k=0;k<out.length;k++)u[k]=out.charCodeAt(k)&255;
+  return new Blob([u],{type:"application/pdf"})}
+
+function html(d){var biz=d.business||{},st=statusText(d);
+  var rows=(d.lines||[]).map(function(l){return'<tr><td>'+esc(l.description)+'</td><td class="r">'+esc(qty(l))+'</td><td class="r">'+esc(unit(l))+'</td><td class="r">'+esc(money(l.line_total))+'</td></tr>'}).join("");
+  var pays=(d.payments||[]).length&&d.status!=="voided"?'<h4>Payments received</h4><table class="agd-t">'+(d.payments||[]).map(function(p){return'<tr><td>'+esc(dt(p.at))+' - '+esc(METHOD[p.method]||p.method)+(p.reference?' ('+esc(p.reference)+')':"")+'</td><td class="r">'+esc(money(p.amount))+'</td></tr>'}).join("")+'</table>':"";
+  return'<div class="agd"><div class="agd-h"><div><b class="agd-biz">'+esc(biz.name||"Atomic Garage")+'</b></div><div class="r"><b class="agd-title">INVOICE</b><br>No. '+esc(d.number||"DRAFT")+(d.issued_at?'<br>Issued '+esc(dt(d.issued_at)):"")+(st?'<br><b class="agd-st">'+esc(st)+'</b>':"")+'</div></div>'+
+   '<div class="agd-meta"><div><small>BILLED TO</small><br><b>'+esc(d.customer_name||"")+'</b>'+(d.vehicle?'<br>'+esc(d.vehicle)+(d.vehicle_reg?' ('+esc(d.vehicle_reg)+')':""):"")+'</div><div><small>JOB</small><br>Booking '+esc(d.booking_reference||"")+(d.service_type?'<br>'+esc(d.service_type):"")+'</div></div>'+
+   '<table class="agd-t"><thead><tr><th>Description</th><th class="r">Qty</th><th class="r">Unit price</th><th class="r">Amount</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+   '<table class="agd-tot"><tr><td>Parts</td><td class="r">'+esc(money(d.parts_total))+'</td></tr><tr><td>Labour</td><td class="r">'+esc(money(d.labour_total))+'</td></tr>'+
+   (Number(d.charges_total)>0?'<tr><td>Additional charges</td><td class="r">'+esc(money(d.charges_total))+'</td></tr>':"")+(Number(d.discount_total)>0?'<tr><td>Discounts</td><td class="r">-'+esc(money(d.discount_total))+'</td></tr>':"")+
+   '<tr class="g"><td>Total</td><td class="r">'+esc(money(d.total))+'</td></tr>'+(Number(d.paid_total)>0?'<tr><td>Paid</td><td class="r">'+esc(money(d.paid_total))+'</td></tr>':"")+
+   '<tr class="g"><td>'+(d.status==="voided"?"Balance (void)":"Balance due")+'</td><td class="r">'+esc(money(d.status==="voided"?0:d.balance))+'</td></tr></table>'+pays+
+   (d.notes?'<h4>Notes</h4><p>'+esc(d.notes).replace(/\n/g,"<br>")+'</p>':"")+(biz.payment_terms?'<h4>Payment terms</h4><p>'+esc(biz.payment_terms).replace(/\n/g,"<br>")+'</p>':"")+
+   '<p class="agd-fine">Payments for this invoice are made in character on GTA World. No real money is involved.'+(biz.footer_note?'<br>'+esc(biz.footer_note):"")+'</p></div>'}
+
+var CSS='.agd{background:#fff;color:#111;font:14px/1.45 Helvetica,Arial,sans-serif;padding:28px;border-radius:10px;max-width:760px;margin:0 auto}.agd .r{text-align:right}.agd-h{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid #bbb;padding-bottom:12px}.agd-biz,.agd-title{font-size:22px}.agd-st{color:#a00}.agd-meta{display:flex;justify-content:space-between;gap:16px;margin:16px 0;flex-wrap:wrap}.agd small{color:#666;letter-spacing:.08em}.agd-t,.agd-tot{width:100%;border-collapse:collapse;margin-top:8px}.agd-t th{background:#eee;text-align:left;padding:6px;font-size:12px}.agd-t th.r{text-align:right}.agd-t td{padding:6px;border-bottom:1px solid #e3e3e3;vertical-align:top}.agd-tot{width:55%;margin-left:45%}.agd-tot td{padding:3px 6px}.agd-tot .g td{font-weight:700;font-size:16px}.agd h4{margin:16px 0 4px;font-size:11px;letter-spacing:.08em;color:#666;text-transform:uppercase}.agd p{margin:0}.agd-fine{margin-top:18px!important;font-size:12px;color:#555}@media(max-width:560px){.agd{padding:16px}.agd-tot{width:100%;margin-left:0}}#agdoc-print{display:none}@media print{body>*:not(#agdoc-print){display:none!important}#agdoc-print{display:block!important}#agdoc-print .agd{box-shadow:none;border-radius:0;padding:0;max-width:none}}';
+function css(){if(document.getElementById("agdoc-css"))return;var s=document.createElement("style");s.id="agdoc-css";s.textContent=CSS;document.head.appendChild(s)}
+function print(d){css();var o=document.getElementById("agdoc-print");if(o)o.remove();o=document.createElement("div");o.id="agdoc-print";o.innerHTML=html(d);document.body.appendChild(o);
+  var done=function(){var e=document.getElementById("agdoc-print");if(e)e.remove();window.removeEventListener("afterprint",done)};
+  window.addEventListener("afterprint",done);setTimeout(function(){try{window.print()}catch(e){done()}},50)}
+function download(d){var b=buildPdf(d),a=document.createElement("a"),u=URL.createObjectURL(b);a.href=u;a.download=(d.number||"invoice")+".pdf";document.body.appendChild(a);a.click();
+  setTimeout(function(){URL.revokeObjectURL(u);a.remove()},1500)}
+window.AGDOC={pdf:buildPdf,html:html,print:print,download:download,css:css,money:money,dt:dt,METHOD:METHOD};
+})();
+
+/*INVDOC-END*/</script>
 <script>
 (function(){
 "use strict";
@@ -137,7 +258,7 @@ var EVENT = {
   alternative_proposed:"New time proposed", alternative_accepted:"You accepted the proposed time",
   alternative_declined:"You declined the proposed time", cancelled:"Cancelled",
   reschedule_proposed:"Management proposed moving your appointment", reschedule_accepted:"You confirmed the new appointment time", reschedule_declined:"You kept your original appointment time", reschedule_withdrawn:"The proposed change was withdrawn",
-  status_changed:"Status updated", in_progress:"Work started", completed:"Work completed"
+  status_changed:"Status updated", in_progress:"Work started", completed:"Work completed", invoice_available:"Your invoice is available"
 };
 var WTZ="UTC";   /* workshop time zone: every appointment time is shown in it, and labelled */
 function fmt(d){
@@ -618,8 +739,40 @@ function pageTrack(q){
       b.timeline.forEach(function(e){
         tl.appendChild(el("li",null,[el("strong",{text:EVENT[e.action]||e.action}),el("small",{text:fmt(e.at)}),e.message?el("span",{text:e.message}):null]));
       });
-      out.appendChild(el("div",{class:"card sp"},[el("h3",{text:"History",style:"font-size:26px;margin-bottom:14px"}),tl]));
+      out.appendChild(el("div",{class:"card sp",id:"trk-hist"},[el("h3",{text:"History",style:"font-size:26px;margin-bottom:14px"}),tl]));
     }
+    invoices(b);
+  }
+  /* Invoices published by the garage for this booking (read with the same reference and access code) */
+  function invoices(b){
+    rpc("track_invoices",{p_ref:b.reference,p_token:code.value.trim()}).then(function(r){
+      if(!r||!r.ok||!r.invoices||!r.invoices.length) return;
+      if(window.AGDOC) AGDOC.css();
+      var box=el("div",{class:"card sp",id:"trk-inv"});
+      box.appendChild(el("h3",{text:r.invoices.length>1?"Invoices":"Invoice",style:"font-size:26px;margin-bottom:6px"}));
+      box.appendChild(el("p",{class:"muted",text:"Payments are made in character on GTA World. Contact the garage in the city to arrange payment."}));
+      r.invoices.forEach(function(i){
+        var money=window.AGDOC?AGDOC.money:function(n){return"$"+Number(n).toFixed(2)};
+        var voided=i.status==="voided",doc=Object.assign({},i,{business:r.business,service_type:SVC[i.service_type]||i.service_type});
+        var view=el("div",{class:"sp",hidden:true,style:"overflow:auto"});
+        var st=voided?"Void":i.status==="paid"?"Paid":(Number(i.paid_total)>0?"Partially paid":"Payment due");
+        var head=el("p",null,[el("strong",{text:i.number+"  "}),el("span",{class:"badge "+(i.status==="paid"?"approved":voided?"declined":"pending"),text:st})]);
+        var dl=el("dl");
+        function add(k,v){dl.appendChild(el("dt",{text:k}));dl.appendChild(el("dd",{text:v}))}
+        add("Issued",fmt(i.issued_at)); add("Total",money(i.total));
+        if(!voided){ if(Number(i.paid_total)>0) add("Paid",money(i.paid_total)); add("Balance due",money(i.balance)); }
+        var bar=el("div",{class:"btns sp"});
+        if(voided){ bar.appendChild(el("p",{class:"notice",text:"This invoice was cancelled by the garage and is no longer payable."})); }
+        else if(window.AGDOC){
+          bar.appendChild(el("button",{class:"btn",type:"button",text:"Download PDF",onclick:function(){AGDOC.download(doc)}}));
+          bar.appendChild(el("button",{class:"btn alt",type:"button",text:"View",onclick:function(){view.hidden=!view.hidden;if(!view.hidden&&!view.firstChild)view.innerHTML=AGDOC.html(doc)}}));
+          bar.appendChild(el("button",{class:"btn alt",type:"button",text:"Print",onclick:function(){AGDOC.print(doc)}}));
+        }
+        box.appendChild(el("div",{class:"sp"},[head,dl,bar,view]));
+      });
+      var hist=out.querySelector("#trk-hist");
+      if(hist) out.insertBefore(box,hist); else out.appendChild(box);
+    }).catch(function(){});
   }
   function load(){
     var r=ref.value.trim(), t=code.value.trim();
@@ -1078,10 +1231,13 @@ function pageParts(){
       if(p.image_url)c.appendChild(el("img",{src:p.image_url,alt:p.name,loading:"lazy",style:"width:100%;height:170px;object-fit:cover;border-radius:8px;margin-bottom:10px"}));
       c.appendChild(el("h3",{text:p.name}));if(p.description)c.appendChild(el("p",{text:p.description}));
       c.appendChild(el("p",{style:"font-weight:700",text:money(p.price)}));
+      var mx=typeof p.max_qty==="number"?p.max_qty:50;
+      if(p.stock_status==="out_of_stock"){c.appendChild(el("p",{class:"notice bad",text:"Out of stock"}));g.appendChild(c);return}
+      if(p.stock_status==="low_stock")c.appendChild(el("p",{class:"notice",text:"Low stock \u2013 only a few left"}));
       var row=el("div",{class:"btns"}),m=el("button",{type:"button",class:"btn sm alt",text:"\u2212"}),a=el("button",{type:"button",class:"btn sm",text:"+"});
       m.setAttribute("aria-label","Remove one "+p.name);a.setAttribute("aria-label","Add one "+p.name);
       m.onclick=function(){basket[p.id]=Math.max((basket[p.id]||0)-1,0);q.textContent=basket[p.id];upd()};
-      a.onclick=function(){basket[p.id]=Math.min((basket[p.id]||0)+1,50);q.textContent=basket[p.id];upd()};
+      a.onclick=function(){basket[p.id]=Math.min((basket[p.id]||0)+1,Math.min(50,mx));q.textContent=basket[p.id];upd()};
       row.appendChild(m);row.appendChild(q);row.appendChild(a);c.appendChild(row);g.appendChild(c)});
     wrap.appendChild(g)}).catch(function(){wrap.innerHTML="";wrap.appendChild(el("p",{class:"notice",text:"Parts could not be loaded. Please try again later."}))});
   return f;
