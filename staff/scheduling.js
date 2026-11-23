@@ -611,7 +611,7 @@
       h += '</div>' + (any ? "" : '<p class="note">No times are open on this day for the chosen length.</p>');
       h += '<div class="sc-sk"><span><i style="background:rgba(91,224,122,.3)"></i>Free</span><span><i style="background:rgba(255,176,32,.5)"></i>Full (override)</span><span><i style="background:rgba(255,80,80,.5)"></i>Mechanic busy</span><span><i style="background:rgba(128,128,128,.3)"></i>Closed / past</span></div>';
     }
-    h += '<p class="note">Duration: ' + s.dur + ' minutes' + (di2.open ? ' · Workshop hours: ' + hhmm(di2.from) + '–' + hhmm(di2.to) + ' (' + tzl + ')' : "") + '. ★ requested · ● current · ◆ proposed. Availability reflects opening hours, blocked days and assigned appointments; approved leave of absence (shown as a shaded day).</p>';
+    h += '<p class="note">Duration: ' + s.dur + ' minutes' + (di2.open ? ' · Workshop hours: ' + hhmm(di2.from) + '–' + hhmm(di2.to) + ' (' + tzl + ')' : "") + '. ★ requested · ● current · ◆ proposed. Availability reflects opening hours, blocked days, assigned appointments and approved leave of absence.</p>';
     return h + pickHtml(b, s) + actionsRow(b, s);
   }
   function fallback(b, s) {
