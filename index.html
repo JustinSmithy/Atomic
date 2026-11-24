@@ -13,6 +13,7 @@
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
+<div id="annc" class="annc" role="region" aria-label="Announcement" hidden></div>
 
 <header class="top">
   <div class="in">
@@ -32,6 +33,7 @@
         <li><a class="nl" href="#services" data-r="services">Services</a></li>
         <li><a class="nl" href="#gallery" data-r="gallery">Gallery</a></li>
         <li><a class="nl" href="#careers" data-r="careers">Careers</a></li>
+        <li id="navTeam" hidden><a class="nl" href="#team" data-r="team">Team</a></li>
         <li><a class="nl" href="#contact" data-r="contact">Contact</a></li>
       </ul>
       <ul class="nav-side">
@@ -55,23 +57,21 @@
 <main id="main" tabindex="-1"></main>
 
 <footer>
-  <div class="in">
+  <div class="in ft">
     <div class="f-brand">
-      <b class="disp">Atomic Garage</b>
-      <span>GTA World roleplay business</span>
+      <div class="f-logo"><svg viewBox="0 0 48 48" fill="none" stroke="#ffc400" stroke-width="2.6" aria-hidden="true"><ellipse cx="24" cy="24" rx="20" ry="8"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(60 24 24)"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(120 24 24)"/><circle cx="24" cy="24" r="3.4" fill="#ffc400" stroke="none"/></svg><b class="disp" id="ftName">Atomic Garage</b></div>
+      <span>Repairs, tuning, custom builds and towing. A GTA World roleplay business.</span>
+      <a class="btn sm" href="#book">Book a service</a>
     </div>
-    <nav class="f-links" aria-label="Footer">
-      <a href="#services">Services</a>
-      <a href="#parts">Parts</a>
-      <a href="#gallery">Gallery</a>
-      <a href="#careers">Careers</a>
-      <a href="#contact">Contact</a>
-      <a href="#book">Book a service</a>
-      <a href="#track">Track booking</a>
-      <a href="#application">Track application</a>
-      <a href="staff/" data-staff>Staff login</a>
+    <nav class="f-col" aria-label="Footer: explore"><h4>Explore</h4>
+      <a href="#services">Services</a><a href="#parts">Parts</a><a href="#gallery">Gallery</a><a href="#careers">Careers</a><a href="#contact">Contact</a>
     </nav>
+    <nav class="f-col" aria-label="Footer: my requests"><h4>My requests</h4>
+      <a href="#book">Book a service</a><a href="#track">Track booking</a><a href="#application">Track application</a><a href="staff/" data-staff>Staff login</a>
+    </nav>
+    <div class="f-col f-info" id="ftInfo" aria-label="Garage details"></div>
   </div>
+  <div class="in f-base"><span>&copy; Atomic Garage. In-character business for GTA World roleplay.</span></div>
 </footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -323,118 +323,316 @@ var SERVICES=[
   ["towing","Towing","Recovery of broken-down or stranded vehicles.",["Vehicle recovery","Transport to the garage","Arrange by booking request"]]
 ];
 
-/* live garage status: only real Supabase data is shown; anything unavailable is simply left out */
-function statusPanel(){
-  var box=el("section",{class:"status","aria-labelledby":"st-h",hidden:true});
-  if(!configured()) return box;
-  function slotText(r){
-    var tz=r.tz||undefined,keys=Object.keys(r.days||{}).sort(),now=Date.now(),first=null;
-    for(var i=0;i<keys.length&&!first;i++){
-      (r.days[keys[i]]||[]).slice().sort().forEach(function(t){ if(!first&&new Date(t).getTime()>now) first=t; });
-    }
-    if(!first) return null;
-    try{ return {v:new Date(first).toLocaleString([],{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit",timeZone:tz}),tz:r.tz}; }
-    catch(e){ return {v:new Date(first).toLocaleString([],{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}),tz:null}; }
+/* ---------- website content: everything below comes from Supabase (public_site), nothing hardcoded ---------- */
+var siteP=null;
+function loadSite(){
+  if(siteP) return siteP;
+  if(!configured()) return (siteP=Promise.resolve(null));
+  siteP=rpc("public_site",{}).then(function(r){return r&&typeof r==="object"?r:null}).catch(function(){siteP=null;return null});
+  return siteP;
+}
+function mediaUrl(p){
+  if(!p||!/^(gallery|services)\/[A-Za-z0-9_.\/-]+$/.test(p)||!configured()) return null;
+  return CFG.SUPABASE_URL.replace(/\/$/,"")+"/storage/v1/object/public/site-media/"+p.split("/").map(encodeURIComponent).join("/");
+}
+var GCATS=[["repairs","Vehicle repairs"],["upgrades","Performance upgrades"],["modifications","Custom modifications"],["workshop","Workshop"],["before_after","Before & after"]];
+function gcat(k){ for(var i=0;i<GCATS.length;i++) if(GCATS[i][0]===k) return GCATS[i][1]; return k; }
+var ATOM='<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><ellipse cx="24" cy="24" rx="20" ry="8"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(60 24 24)"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(120 24 24)"/><circle cx="24" cy="24" r="3.4" fill="currentColor" stroke="none"/></svg>';
+function atom(cls){ return el("div",{class:cls||"atom-bg",html:ATOM,"aria-hidden":"true"}); }
+function money(v){ var n=parseFloat(v); if(!isFinite(n)) return String(v||""); return "$"+n.toLocaleString("en-US",{maximumFractionDigits:2}); }
+function fallbackSite(){
+  return {business:{name:"Atomic Garage"},services:SERVICES.map(function(s){return {key:s[0],title:s[1],description:s[2],bullets:s[3],featured:true}}),gallery:[],team:[],team_public:false,_fallback:true};
+}
+function withSite(fn){ return loadSite().then(function(s){ return fn(s||fallbackSite()); }); }
+
+/* announcement bar, nav team link and footer follow the managed content */
+function applySite(s){
+  s=s||fallbackSite();
+  var a=$("#annc");
+  if(a){ a.textContent=""; if(s.announcement){ a.hidden=false; a.appendChild(el("div",{class:"in"},[el("span",{class:"annc-dot","aria-hidden":"true"}),el("p",{text:s.announcement})])); } else a.hidden=true; }
+  var tl=$("#navTeam"); if(tl) tl.hidden=!(s.team_public&&s.team&&s.team.length);
+  var ft=$("#ftInfo"); if(ft){
+    ft.textContent=""; var b=s.business||{};
+    function line(k,v){ if(v) ft.appendChild(el("p",null,[el("b",{text:k}),el("span",{text:v,style:"white-space:pre-line"})])); }
+    line("Visit",b.location); line("Hours",b.hours); line("Call",b.phone); line("Contact",b.contact);
+    if(b.email&&/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(b.email)) ft.appendChild(el("p",null,[el("b",{text:"Email"}),el("a",{href:"mailto:"+b.email,text:b.email})]));
+    var d=safeUrl(b.discord); if(d) ft.appendChild(el("p",null,[el("b",{text:"Discord"}),el("a",{href:d,target:"_blank",rel:"noopener noreferrer",text:"Join the server"})]));
   }
-  function cell(label,value,sub,href,linkText){
-    return el("div",{class:"st-cell"},[
-      el("p",{class:"st-l",text:label}), el("p",{class:"st-v",text:value}),
-      sub?el("p",{class:"st-s",text:sub}):null,
-      href?el("a",{class:"st-a",href:href,text:linkText}):null]);
+  var bn=$("#ftName"); if(bn&&s.business&&s.business.name) bn.textContent=s.business.name;
+}
+
+/* ---------- service catalogue card ---------- */
+function svcCard(s,learn){
+  var img=mediaUrl(s.image_path);
+  var media=el("div",{class:"svc-media"+(img?"":" noimg")});
+  if(img) media.appendChild(el("img",{src:img,alt:s.title+" at Atomic Garage",loading:"lazy",decoding:"async"}));
+  else { media.appendChild(atom("svc-atom")); if(ICON[s.key]) media.appendChild(el("div",{class:"svc-ico",html:ICON[s.key]})); }
+  if(s.category) media.appendChild(el("span",{class:"pill a svc-cat",text:s.category}));
+  var meta=el("dl",{class:"svc-meta"});
+  if(s.price) meta.appendChild(el("div",null,[el("dt",{text:"Starting from"}),el("dd",{text:money(s.price)})]));
+  if(s.duration) meta.appendChild(el("div",null,[el("dt",{text:"Typical time"}),el("dd",{text:s.duration})]));
+  return el("article",{class:"card svc svc2",id:"svc-"+s.key,tabindex:"-1"},[
+    media,
+    el("div",{class:"svc-body"},[
+      el("h3",{text:s.title}),
+      s.description?el("p",{text:s.description}):null,
+      (s.bullets&&s.bullets.length)?el("ul",null,s.bullets.map(function(i){return el("li",{text:i})})):null,
+      meta.childNodes.length?meta:null,
+      el("div",{class:"svc-act"},[
+        el("a",{class:"btn sm",href:"#book?service="+encodeURIComponent(s.key),text:"Book "+s.title.toLowerCase()}),
+        learn?el("a",{class:"learn",href:"#services?service="+encodeURIComponent(s.key),"aria-label":"Details for "+s.title.toLowerCase(),html:"<span>Details</span>"+CHEV}):null])
+    ])]);
+}
+
+/* ---------- gallery tile, lightbox, before/after ---------- */
+function galTile(g,i,open){
+  var src=mediaUrl(g.image_path); if(!src) return null;
+  var ba=g.category==="before_after"&&mediaUrl(g.after_image_path);
+  var b=el("button",{type:"button",class:"tile gtile"+(ba?" ba":""),"aria-label":"View "+g.title+(ba?" (before and after)":"")},[
+    el("img",{src:src,alt:g.alt||g.title,loading:"lazy",decoding:"async"}),
+    ba?el("span",{class:"ba-badge",text:"Before / After"}):null,
+    el("span",{class:"gcap"},[el("em",{text:gcat(g.category)}),document.createTextNode(g.title)])]);
+  b.onclick=function(){open(i)};
+  return b;
+}
+var LB=null;
+function lightbox(list,start){
+  closeLb();
+  var idx=start,opener=document.activeElement;
+  var ov=el("div",{class:"lb",role:"dialog","aria-modal":"true","aria-label":"Photo viewer"});
+  var stage=el("div",{class:"lb-stage"}),cap=el("div",{class:"lb-cap"});
+  var x=el("button",{type:"button",class:"lb-x","aria-label":"Close",html:"&times;"}),
+      pv=el("button",{type:"button",class:"lb-nav lb-prev","aria-label":"Previous photo",html:"&#8249;"}),
+      nx=el("button",{type:"button",class:"lb-nav lb-next","aria-label":"Next photo",html:"&#8250;"});
+  ov.appendChild(x); if(list.length>1){ ov.appendChild(pv); ov.appendChild(nx); }
+  ov.appendChild(stage); ov.appendChild(cap);
+  function show(){
+    var g=list[idx]; stage.textContent=""; cap.textContent="";
+    var before=mediaUrl(g.image_path),after=g.category==="before_after"?mediaUrl(g.after_image_path):null;
+    if(after){
+      var wrap=el("div",{class:"cmp"}),r=el("input",{type:"range",min:"0",max:"100",value:"50","aria-label":"Drag to compare before and after"});
+      var top=el("div",{class:"cmp-after"},[el("img",{src:after,alt:(g.alt||g.title)+" after"})]);
+      var bar=el("div",{class:"cmp-bar","aria-hidden":"true"});
+      function set(v){ top.style.clipPath="inset(0 0 0 "+v+"%)"; bar.style.left=v+"%"; }
+      r.addEventListener("input",function(){set(r.value)}); set(50);
+      wrap.appendChild(el("img",{src:before,alt:(g.alt||g.title)+" before"})); wrap.appendChild(top); wrap.appendChild(bar);
+      wrap.appendChild(el("span",{class:"cmp-l",text:"Before"})); wrap.appendChild(el("span",{class:"cmp-r",text:"After"})); wrap.appendChild(r);
+      stage.appendChild(wrap);
+    } else stage.appendChild(el("img",{src:before,alt:g.alt||g.title}));
+    cap.appendChild(el("p",{class:"lb-k",text:gcat(g.category)+(list.length>1?"  ·  "+(idx+1)+" / "+list.length:"")}));
+    cap.appendChild(el("h3",{text:g.title}));
+    if(g.description) cap.appendChild(el("p",{text:g.description}));
   }
-  Promise.all([
-    loadSettings().catch(function(){return null}),
-    rpc("available_slots",{p_from:null,p_to:null}).catch(function(){return null}),
-    rpc("list_recruitment",{}).catch(function(){return null})
-  ]).then(function(res){
-    var st=res[0],sl=res[1],rc=res[2],cells=[];
-    if(st&&st.hours_text) cells.push(cell("Opening hours",st.hours_text));
-    if(sl&&sl.ok&&sl.enabled){
-      var n=slotText(sl);
-      cells.push(n?cell("Next free appointment",n.v,n.tz?"Times shown in "+n.tz:null,"#book","Book a service")
-                  :cell("Next free appointment","No free slots right now","Check back soon, or send a request.","#book","Book a service"));
+  function step(d){ idx=(idx+d+list.length)%list.length; show(); }
+  function key(e){
+    if(e.key==="Escape"){ e.preventDefault(); closeLb(); }
+    else if(e.key==="ArrowRight"&&list.length>1&&!(e.target&&e.target.type==="range")) step(1);
+    else if(e.key==="ArrowLeft"&&list.length>1&&!(e.target&&e.target.type==="range")) step(-1);
+    else if(e.key==="Tab"){
+      var f=[].slice.call(ov.querySelectorAll("button,input")); if(!f.length) return;
+      var i=f.indexOf(document.activeElement);
+      if(e.shiftKey&&i<=0){ e.preventDefault(); f[f.length-1].focus(); } else if(!e.shiftKey&&i===f.length-1){ e.preventDefault(); f[0].focus(); }
     }
-    if(rc&&typeof rc==="object"){
-      var open=ROLES.filter(function(r){return rc[r.key]!==false}).length;
-      cells.push(cell("Careers",open?open+(open>1?" positions open":" position open"):"Recruitment closed",null,"#careers",open?"View roles":"Learn about the crew"));
-    }
-    if(!cells.length) return;
-    box.appendChild(el("div",{class:"status-h"},[
-      el("h3",{id:"st-h"},[el("span",{class:"live","aria-hidden":"true"}),"Garage status"]),
-      el("small",{text:"Checked "+new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})})]));
-    box.appendChild(el("div",{class:"status-grid"},cells));
-    box.hidden=false;
-  });
+  }
+  x.onclick=closeLb; pv.onclick=function(){step(-1)}; nx.onclick=function(){step(1)};
+  ov.addEventListener("click",function(e){ if(e.target===ov||e.target===stage) closeLb(); });
+  var ts=null; ov.addEventListener("touchstart",function(e){ts=e.touches[0].clientX},{passive:true});
+  ov.addEventListener("touchend",function(e){ if(ts==null||list.length<2||(e.target&&e.target.type==="range")) return; var dx=e.changedTouches[0].clientX-ts; ts=null; if(Math.abs(dx)>60) step(dx<0?1:-1); });
+  document.addEventListener("keydown",key,true);
+  document.body.appendChild(ov); document.body.classList.add("lb-open"); show(); x.focus();
+  LB={ov:ov,key:key,opener:opener};
+}
+function closeLb(){
+  if(!LB) return; document.removeEventListener("keydown",LB.key,true); LB.ov.remove(); document.body.classList.remove("lb-open");
+  try{ LB.opener&&LB.opener.focus&&LB.opener.focus(); }catch(e){} LB=null;
+}
+
+/* ---------- availability + hours (live data only) ---------- */
+function slotText(r){
+  var tz=r.tz||undefined,keys=Object.keys(r.days||{}).sort(),now=Date.now(),first=null;
+  for(var i=0;i<keys.length&&!first;i++) (r.days[keys[i]]||[]).slice().sort().forEach(function(t){ if(!first&&new Date(t).getTime()>now) first=t; });
+  if(!first) return null;
+  try{ return {v:new Date(first).toLocaleString([],{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit",timeZone:tz}),tz:r.tz}; }
+  catch(e){ return {v:new Date(first).toLocaleString([],{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}),tz:null}; }
+}
+function jobCard(s){
+  var b=s.business||{},box=el("aside",{class:"jobcard","aria-labelledby":"jc-h"});
+  box.appendChild(el("div",{class:"jc-top"},[el("span",{class:"live","aria-hidden":"true"}),el("h2",{id:"jc-h",text:"Book your slot"})]));
+  var next=el("p",{class:"jc-v",text:"Checking availability…"}),sub=el("p",{class:"jc-s"});
+  box.appendChild(el("div",{class:"jc-row"},[el("p",{class:"jc-l",text:"Next free appointment"}),next,sub]));
+  if(b.hours) box.appendChild(el("div",{class:"jc-row"},[el("p",{class:"jc-l",text:"Opening hours"}),el("p",{class:"jc-v sm",text:b.hours,style:"white-space:pre-line"})]));
+  if(b.booking_note) box.appendChild(el("p",{class:"jc-note",text:b.booking_note}));
+  box.appendChild(el("a",{class:"btn jc-btn",href:"#book",text:"Book a service"}));
+  box.appendChild(el("a",{class:"jc-track",href:"#track",text:"Already booked? Track your booking"}));
+  if(!configured()){ next.textContent="Online booking is being set up"; return box; }
+  rpc("available_slots",{p_from:null,p_to:null}).then(function(r){
+    if(r&&r.ok&&r.enabled){ var n=slotText(r); if(n){ next.textContent=n.v; if(n.tz) sub.textContent="Times shown in "+n.tz; } else { next.textContent="No free slots right now"; sub.textContent="Send a request and we will come back to you."; } }
+    else { next.textContent="Send a request any time"; sub.textContent="Management confirms every booking."; }
+  }).catch(function(){ next.textContent="Send a request any time"; sub.textContent="Management confirms every booking."; });
   return box;
 }
+
+/* ---------- team card ---------- */
+function teamCard(m){
+  var ini=(m.name||"?").split(/\s+/).map(function(w){return w.charAt(0)}).join("").slice(0,2).toUpperCase();
+  return el("article",{class:"card tm"},[el("div",{class:"tm-ini","aria-hidden":"true",text:ini}),el("h3",{text:m.name}),
+    m.title?el("p",{class:"tm-t",text:m.title}):null, m.bio?el("p",{class:"tm-b",text:m.bio}):null]);
+}
+
+/* ---------- pages ---------- */
 function pageHome(){
-  var f=document.createDocumentFragment();
-  f.appendChild(el("section",{class:"hero"},[
-    el("div",{class:"chips"},[el("span",{class:"pill a",text:"GTA World"}),el("span",{class:"pill",text:"Repairs · Tuning · Builds · Towing"})]),
-    el("h1",{html:"Atomic<br><span>Garage</span>"}),
-    el("p",{text:"Your vehicle in expert hands. Send us a private service request and we'll come back to you with a decision."}),
-    el("div",{class:"btns"},[el("a",{class:"btn",href:"#book",text:"Book a service"}),el("a",{class:"btn alt",href:"#track",text:"Track my booking"})])
-  ]));
-  f.appendChild(statusPanel());
-  f.appendChild(el("div",{class:"hazard","aria-hidden":"true"}));
-  f.appendChild(head("What we do"));
-  f.appendChild(el("div",{class:"grid g4"},SERVICES.map(function(s){return serviceCard.apply(null,s.concat([true]))})));
-  f.appendChild(el("div",{class:"hazard","aria-hidden":"true"}));
-  f.appendChild(head("How booking works"));
-  var steps=[["1","Send a request","Tell us about you, your vehicle and the work. You receive a booking reference and a private access code."],
-             ["2","Management reviews","Every request starts as Pending. It is only confirmed once management approves it."],
-             ["3","Track privately","Use your reference and access code to see approvals, or a new time we propose."]];
-  f.appendChild(el("div",{class:"grid g3"},steps.map(function(s){
-    return el("div",{class:"card step"},[el("div",{class:"n",text:s[0]}),el("div",null,[el("h3",{text:s[1]}),el("p",{text:s[2]})])]);
-  })));
+  var f=document.createDocumentFragment(),host=el("div",{class:"home"});
+  f.appendChild(host);
+  host.appendChild(el("div",{class:"skel",style:"height:420px"}));
+  withSite(function(s){
+    var b=s.business||{},name=b.name||"Atomic Garage";
+    host.textContent="";
+    var hero=el("section",{class:"hero2"});
+    hero.appendChild(atom("hero-atom"));
+    hero.appendChild(el("div",{class:"hero-copy"},[
+      el("div",{class:"chips"},[el("span",{class:"pill a",text:"GTA World"}),el("span",{class:"pill",text:"Repairs · Tuning · Builds · Towing"})]),
+      el("h1",null,[document.createTextNode(name.split(" ")[0]||"Atomic"),el("br"),el("span",{text:name.split(" ").slice(1).join(" ")||"Garage"})]),
+      el("p",{class:"hero-tag",text:b.tagline||"Your vehicle in expert hands. Send us a private service request and we'll come back to you with a decision."}),
+      el("div",{class:"btns"},[el("a",{class:"btn lg",href:"#book",text:"Book a service"}),el("a",{class:"btn alt lg",href:"#services",text:"Explore services"})]),
+      el("ul",{class:"hero-pts"},["Every booking reviewed by management","Private tracking with your access code","Invoices available online"].map(function(t){return el("li",{text:t})}))
+    ]));
+    hero.appendChild(jobCard(s));
+    host.appendChild(hero);
+    if(s.banner){
+      var bn=s.banner,u=bn.cta_url&&(/^#/.test(bn.cta_url)?bn.cta_url:safeUrl(bn.cta_url));
+      host.appendChild(el("aside",{class:"promo","aria-label":"Promotion"},[
+        el("div",null,[bn.title?el("h2",{text:bn.title}):null,bn.text?el("p",{text:bn.text}):null]),
+        (u&&bn.cta_label)?el("a",{class:"btn",href:u,text:bn.cta_label,target:/^#/.test(u)?null:"_blank",rel:/^#/.test(u)?null:"noopener noreferrer"}):null]));
+    }
+    host.appendChild(el("div",{class:"hazard","aria-hidden":"true"}));
+    var feat=(s.services||[]).filter(function(x){return x.featured}); if(!feat.length) feat=s.services||[];
+    if(feat.length){
+      host.appendChild(el("div",{class:"head row-h"},[el("div",null,[el("h2",{text:"Featured services"}),el("p",{text:"What we do best. Prices are starting points; management confirms the final quote."})]),el("a",{class:"btn alt sm",href:"#services",text:"All services"})]));
+      host.appendChild(el("div",{class:"grid g"+Math.min(Math.max(feat.length,1),3)+" svc-grid"},feat.slice(0,6).map(function(x){return svcCard(x,true)})));
+    }
+    var fg=(s.gallery||[]).filter(function(g){return g.featured&&mediaUrl(g.image_path)}).slice(0,6);
+    if(fg.length){
+      host.appendChild(el("div",{class:"hazard","aria-hidden":"true"}));
+      host.appendChild(el("div",{class:"head row-h"},[el("div",null,[el("h2",{text:"From the workshop"}),el("p",{text:"Recent work, straight from the bays."})]),el("a",{class:"btn alt sm",href:"#gallery",text:"Full gallery"})]));
+      host.appendChild(el("div",{class:"mosaic"},fg.map(function(g,i){return galTile(g,i,function(n){lightbox(fg,n)})})));
+    }
+    host.appendChild(el("div",{class:"hazard","aria-hidden":"true"}));
+    host.appendChild(el("div",{class:"head"},[el("h2",{text:"How booking works"})]));
+    var steps=[["1","Send a request","Tell us about you, your vehicle and the work. You receive a booking reference and a private access code."],
+               ["2","Management reviews","Every request starts as Pending. It is only confirmed once management approves it."],
+               ["3","Track privately","Use your reference and access code to see approvals, or a new time we propose."]];
+    host.appendChild(el("div",{class:"grid g3"},steps.map(function(x){
+      return el("div",{class:"card step"},[el("div",{class:"n",text:x[0]}),el("div",null,[el("h3",{text:x[1]}),el("p",{text:x[2]})])]);})));
+    if(s.team_public&&s.team&&s.team.length){
+      host.appendChild(el("div",{class:"hazard","aria-hidden":"true"}));
+      host.appendChild(el("div",{class:"head row-h"},[el("div",null,[el("h2",{text:"Meet the team"})]),el("a",{class:"btn alt sm",href:"#team",text:"Full team"})]));
+      host.appendChild(el("div",{class:"grid g3"},s.team.slice(0,3).map(teamCard)));
+    }
+    var vis=el("section",{class:"visit card"},[
+      el("div",null,[el("h2",{text:"Visit the garage"}),
+        b.location?el("p",{text:b.location,style:"white-space:pre-line"}):el("p",{class:"muted",text:"Location details are coming soon."}),
+        b.hours?el("p",{class:"muted",text:b.hours,style:"white-space:pre-line"}):null]),
+      el("div",{class:"btns"},[ safeUrl(b.map_url)?el("a",{class:"btn alt",href:safeUrl(b.map_url),target:"_blank",rel:"noopener noreferrer",text:"Open map"}):null,
+        el("a",{class:"btn alt",href:"#contact",text:"Contact us"}),el("a",{class:"btn",href:"#book",text:"Book a service"})])]);
+    host.appendChild(vis);
+  });
   return f;
 }
-function pageServices(){
-  var f=document.createDocumentFragment();
-  f.appendChild(head("Our services","Four ways we can help. Pricing and availability are agreed with management when your request is reviewed."));
-  f.appendChild(el("div",{class:"grid g2"},SERVICES.map(function(s){return serviceCard.apply(null,s)})));
-  f.appendChild(el("div",{class:"card cta-strip sp2"},[
-    el("div",null,[el("h3",{text:"Need parts?"}),el("p",{class:"muted",text:"Order parts online and collect them from the garage. We confirm using the contact details you give."})]),
-    el("a",{class:"btn",href:"#parts",text:"Browse parts"})]));
+
+function pageServices(q){
+  var f=document.createDocumentFragment(),host=el("div");
+  f.appendChild(head("Our services","Presented with starting prices and typical timings. Final pricing and availability are agreed with management when your request is reviewed."));
+  f.appendChild(host); host.appendChild(el("div",{class:"skel"}));
+  withSite(function(s){
+    host.textContent="";
+    var list=s.services||[],cats=[];
+    list.forEach(function(x){ if(x.category&&cats.indexOf(x.category)<0) cats.push(x.category); });
+    var grid=el("div",{class:"grid g2 svc-grid"});
+    function draw(c){ grid.textContent=""; list.filter(function(x){return !c||x.category===c}).forEach(function(x){grid.appendChild(svcCard(x))}); }
+    if(cats.length>1){
+      var bar=el("div",{class:"filters",role:"group","aria-label":"Filter services"});
+      [""].concat(cats).forEach(function(c){
+        var b=el("button",{type:"button",class:"chip","aria-pressed":c===""?"true":"false",text:c||"All"});
+        b.onclick=function(){ [].forEach.call(bar.children,function(k){k.setAttribute("aria-pressed","false")}); b.setAttribute("aria-pressed","true"); draw(c); };
+        bar.appendChild(b);
+      });
+      host.appendChild(bar);
+    }
+    draw(""); host.appendChild(grid);
+    if(!list.length) host.appendChild(el("p",{class:"notice",text:"Our service list is being updated. You can still send a booking request."}));
+    host.appendChild(el("div",{class:"card cta-strip sp2"},[
+      el("div",null,[el("h3",{text:"Need parts?"}),el("p",{class:"muted",text:"Order parts online and collect them from the garage. We confirm using the contact details you give."})]),
+      el("a",{class:"btn",href:"#parts",text:"Browse parts"})]));
+    if(q&&q.service){ var t=document.getElementById("svc-"+q.service); if(t){ t.scrollIntoView({block:"start"}); t.classList.add("flash"); try{t.focus({preventScroll:true})}catch(e){} } }
+  });
   return f;
 }
+
 function pageGallery(){
-  var f=document.createDocumentFragment();
-  f.appendChild(head("Gallery","The workshop and our recent work."));
-  var items=Array.isArray(CFG.GALLERY)?CFG.GALLERY:[];
-  if(items.length){
-    f.appendChild(el("div",{class:"grid gf"},items.map(function(g){
-      var src=String(g.src||"");
-      if(!/^(assets\/|https:\/\/)/.test(src)) return null;
-      return el("figure",{class:"tile"},[el("img",{src:src,alt:g.alt||"",loading:"lazy"}), g.caption?el("figcaption",{text:g.caption}):null]);
-    })));
-  } else {
-    f.appendChild(el("p",{class:"notice",text:"Photos of our work will appear here. For now, here's a look around the garage."}));
-    f.appendChild(el("div",{class:"grid gf sp"},["t1","t2","t3","t4","t5","t6"].map(function(c){
-      return el("div",{class:"tile "+c,role:"img","aria-label":"Atomic Garage workshop"});
-    })));
-  }
+  var f=document.createDocumentFragment(),host=el("div");
+  f.appendChild(head("Gallery","Repairs, upgrades, custom builds and life in the workshop."));
+  f.appendChild(host); host.appendChild(el("div",{class:"skel"}));
+  withSite(function(s){
+    host.textContent="";
+    var all=(s.gallery||[]).filter(function(g){return mediaUrl(g.image_path)});
+    if(!all.length){
+      host.appendChild(el("div",{class:"card empty"},[atom("empty-atom"),el("h3",{text:s._fallback?"Gallery unavailable":"Photos coming soon"}),
+        el("p",{class:"muted",text:s._fallback?"The gallery could not be loaded right now. Please try again shortly.":"We are putting our best work together. Check back soon."}),
+        el("a",{class:"btn",href:"#book",text:"Book a service"})]));
+      return;
+    }
+    var shown=all;
+    var bar=el("div",{class:"filters",role:"group","aria-label":"Filter photos"}),grid=el("div",{class:"mosaic gal"}),count=el("p",{class:"muted gcount","aria-live":"polite"});
+    function draw(c){
+      shown=all.filter(function(g){return !c||g.category===c}); grid.textContent="";
+      shown.forEach(function(g,i){ var t=galTile(g,i,function(n){lightbox(shown,n)}); if(t) grid.appendChild(t); });
+      count.textContent=shown.length+(shown.length===1?" photo":" photos");
+    }
+    var present=GCATS.filter(function(c){return all.some(function(g){return g.category===c[0]})});
+    [["","All"]].concat(present).forEach(function(c){
+      var b=el("button",{type:"button",class:"chip","aria-pressed":c[0]===""?"true":"false",text:c[1]});
+      b.onclick=function(){ [].forEach.call(bar.children,function(k){k.setAttribute("aria-pressed","false")}); b.setAttribute("aria-pressed","true"); draw(c[0]); };
+      bar.appendChild(b);
+    });
+    host.appendChild(bar); host.appendChild(count); host.appendChild(grid); draw("");
+  });
   return f;
 }
+
+function pageTeam(){
+  var f=document.createDocumentFragment(),host=el("div");
+  f.appendChild(head("Meet the team","The people behind Atomic Garage."));
+  f.appendChild(host); host.appendChild(el("div",{class:"skel"}));
+  withSite(function(s){
+    host.textContent="";
+    if(!(s.team_public&&s.team&&s.team.length)){ host.appendChild(el("div",{class:"card empty"},[atom("empty-atom"),el("h3",{text:"Team details coming soon"}),el("a",{class:"btn",href:"#home",text:"Back to home"})])); return; }
+    host.appendChild(el("div",{class:"grid g3"},s.team.map(teamCard)));
+    host.appendChild(el("div",{class:"card cta-strip sp2"},[el("div",null,[el("h3",{text:"Want to join us?"}),el("p",{class:"muted",text:"See which roles are open at the garage."})]),el("a",{class:"btn",href:"#careers",text:"View careers"})]));
+  });
+  return f;
+}
+
 function pageContact(){
   var f=document.createDocumentFragment();
   f.appendChild(head("Contact","Find us and get in touch."));
-  var box=el("div",{class:"grid g2"});
-  var loading=el("div",{class:"skel"});
+  var box=el("div",{class:"grid g2"}),loading=el("div",{class:"skel"});
   f.appendChild(loading); f.appendChild(box);
-  loadSettings().then(function(s){
+  loadSite().then(function(s){ return s?s.business:loadSettings().then(function(o){ return o?{location:o.location_text,map_url:o.map_url,hours:o.hours_text,contact:o.contact_text,discord:o.discord_url}:null }); }).then(function(b){
     loading.remove();
-    if(s===null){ box.appendChild(el("div",{class:"card"},[el("p",{class:"notice bad",text:"Garage details couldn't be loaded right now. Please try again shortly."})])); return; }
+    if(b===null){ box.appendChild(el("div",{class:"card"},[el("p",{class:"notice bad",text:"Garage details couldn't be loaded right now. Please try again shortly."})])); return; }
     function row(title,val,link){
       var body=link?el("a",{href:link,rel:"noopener noreferrer",target:"_blank",text:val}):el("p",{text:val,style:"white-space:pre-line;margin:0"});
       return el("div",{class:"card"},[el("h3",{text:title,style:"font-size:26px;margin-bottom:10px"}),body]);
     }
     var any=false;
-    if(s.location_text){any=true;var m=safeUrl(s.map_url);box.appendChild(row("Location",s.location_text)); if(m) box.lastChild.appendChild(el("p",{class:"sp"},[el("a",{class:"btn sm",href:m,target:"_blank",rel:"noopener noreferrer",text:"Open map"})]));}
-    if(s.hours_text){any=true;box.appendChild(row("Opening hours",s.hours_text));}
-    if(s.contact_text){any=true;box.appendChild(row("Contact",s.contact_text));}
-    var d=safeUrl(s.discord_url); if(d){any=true;box.appendChild(row("Discord",d,d));}
-    if(!any) box.appendChild(el("div",{class:"card"},[el("h3",{text:"Details coming soon",style:"font-size:26px;margin-bottom:10px"}),el("p",{class:"muted",text:"The garage hasn't published its location or opening hours yet. In the meantime, send a booking request and we'll respond to you directly."}),el("a",{class:"btn sm",href:"#book",text:"Book a service"})]));
+    if(b.location){any=true;var m=safeUrl(b.map_url);box.appendChild(row("Location",b.location)); if(m) box.lastChild.appendChild(el("p",{class:"sp"},[el("a",{class:"btn sm",href:m,target:"_blank",rel:"noopener noreferrer",text:"Open map"})]));}
+    if(b.hours){any=true;box.appendChild(row("Opening hours",b.hours));}
+    if(b.phone){any=true;box.appendChild(row("Phone",b.phone));}
+    if(b.email&&/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(b.email)){any=true;box.appendChild(row("Email",b.email,"mailto:"+b.email));}
+    if(b.contact){any=true;box.appendChild(row("Contact",b.contact));}
+    var d=safeUrl(b.discord); if(d){any=true;box.appendChild(row("Discord",d,d));}
+    if(!any) box.appendChild(el("div",{class:"card"},[el("h3",{text:"Details coming soon",style:"font-size:26px;margin-bottom:10px"}),el("p",{class:"muted",text:"The garage hasn't published its location or opening hours yet."})]));
+    box.appendChild(el("div",{class:"card"},[el("h3",{text:"Ready to book?",style:"font-size:26px;margin-bottom:10px"}),el("p",{class:"muted",text:"Send a request online and track it privately."}),el("p",{class:"sp"},[el("a",{class:"btn sm",href:"#book",text:"Book a service"})])]));
   });
   return f;
 }
@@ -1242,14 +1440,14 @@ function pageParts(){
     wrap.appendChild(g)}).catch(function(){wrap.innerHTML="";wrap.appendChild(el("p",{class:"notice",text:"Parts could not be loaded. Please try again later."}))});
   return f;
 }
-var PAGES={home:pageHome,services:pageServices,parts:pageParts,careers:pageCareers,application:pageAppTrack,gallery:pageGallery,book:pageBook,contact:pageContact,track:pageTrack};
-var TITLES={home:"Atomic Garage",services:"Our Services",parts:"Parts",careers:"Careers",application:"Application Status",gallery:"Gallery",book:"Book a Service",contact:"Contact",track:"Track Booking"};
+var PAGES={home:pageHome,team:pageTeam,services:pageServices,parts:pageParts,careers:pageCareers,application:pageAppTrack,gallery:pageGallery,book:pageBook,contact:pageContact,track:pageTrack};
+var TITLES={home:"Atomic Garage",team:"Meet the Team",services:"Our Services",parts:"Parts",careers:"Careers",application:"Application Status",gallery:"Gallery",book:"Book a Service",contact:"Contact",track:"Track Booking"};
 function route(){
   var h=location.hash.replace(/^#/,"")||"home";
   var parts=h.split("?"), r=parts[0], q={};
   (parts[1]||"").split("&").forEach(function(kv){ if(!kv) return; var i=kv.indexOf("="); try{ q[decodeURIComponent(kv.slice(0,i<0?kv.length:i))]=i<0?"":decodeURIComponent(kv.slice(i+1)); }catch(e){} });
   if(!PAGES[r]) r="home";
-  main.textContent=""; main.className="pg-"+r+((r==="book"||r==="track"||r==="application")?" narrow":""); main.appendChild(PAGES[r](q));
+  closeLb(); main.textContent=""; main.className="pg-"+r+((r==="book"||r==="track"||r==="application")?" narrow":""); main.appendChild(PAGES[r](q));
   document.title=(r==="home"?"Atomic Garage — Repairs, Tuning, Custom Builds & Towing":TITLES[r]+" — Atomic Garage");
   var navR=(r==="parts")?"services":r;   /* Parts has no top-level link: it lives under Services */
   document.querySelectorAll("#nav [data-r]").forEach(function(a){ if(a.dataset.r===navR) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); });
@@ -1299,6 +1497,7 @@ if(window.matchMedia){ var mq=window.matchMedia("(min-width:1240px)"); if(mq.add
 $("#reqDd").addEventListener("focusout",function(e){ var dd=this; if(e.relatedTarget&&!dd.contains(e.relatedTarget)) setDd(false); });
 /* a leave from the dropdown by hover is not needed: it is click / keyboard driven so touch and keyboard behave the same */
 if(CFG.STAFF_PORTAL_URL) document.querySelectorAll("[data-staff]").forEach(function(a){a.setAttribute("href",CFG.STAFF_PORTAL_URL)});
+loadSite().then(applySite);
 route();
 })();
 </script>
