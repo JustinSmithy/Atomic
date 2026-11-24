@@ -1741,7 +1741,7 @@ window.V.operations=function(){setTimeout(function(){opsRender(null);wait(functi
     onShift:A.filter(function(s){return s.on_shift_since}).length,pendingImports:A.reduce(function(n,s){return n+s.pending_imports},0)})})})},0);return'<div id="op"></div>'};
 
 /* ================= Manager Access ================= */
-var MGT=[["","Overview"],["staff","Staff & settings"],["attendance","Attendance & profiles"],["parts","Parts"]];
+var MGT=[["","Overview"],["staff","Staff & settings"],["attendance","Attendance & profiles"],["parts","Parts"],["website","Website"],["gallery","Gallery"],["services","Services"],["team","Team"]];
 window.AGMGTABS=function(){var s=parts()[1]||"";return'<div class="bk-tabs mg-tabs">'+MGT.map(function(t){return'<a class="btn'+(t[0]===s?"":" alt")+'" href="#manager'+(t[0]?"/"+t[0]:"")+'">'+t[1]+'</a>'}).join("")+'<a class="btn alt" href="#recruitment">Applications</a></div>'};
 function mgGate(){var el=q("#mg");if(!el)return false;
  if(!X.hasSession()){el.innerHTML='<div class="card">'+sec("\u2692","Manager Access","Managers only")+'<p class="note">Sign in on the Bookings page with a manager account.</p><a class="btn" href="#bookings">Go to sign in</a></div>';return false}
@@ -1755,10 +1755,11 @@ function mgOverview(){var el=q("#mg");
    card("\u263A","Staff & settings","Roles, active status, invitations, schedule and site settings.",'<b>'+S.filter(function(s){return s.active}).length+'</b> active staff',"#manager/staff","Open")+
    card("\u23F1","Attendance & profiles","Review shifts, correct mistakes, approve imported history, set rank and department.",'<b>'+on.length+'</b> on shift \u00b7 <b>'+pend+'</b> imports \u00b7 <b>'+fl+'</b> flagged',"#manager/attendance","Open")+
    card("\u25A6","Parts","Manage the parts catalogue used by the store and by jobs.","","#manager/parts","Open")+
+   card("\u25A3","Website","Announcements, banners, business and contact details, featured content.","","#manager/website","Open")+card("\u25A8","Gallery","Upload, categorise, reorder, publish and delete workshop photographs.","","#manager/gallery","Open")+card("\u2699","Services catalogue","Descriptions, starting prices, durations and photographs.","","#manager/services","Open")+card("\u263A","Meet the team","Choose who appears publicly and their biographies.","","#manager/team","Open")+
    card("\u2605","Applications","Recruitment applications and interviews.","","#recruitment","Open")+'</div></div>'}).catch(function(e){X.authErr(e);el.innerHTML='<div class="card"><p class="note">Could not load Manager Access ('+esc(e.message||"error")+').</p></div>'})}
 window.V.manager=function(){var sub=parts()[1]||"";
  if(sub==="staff"||sub==="parts"){ST.tab=sub==="staff"?"team":"parts";return window.V.bookings()}
- setTimeout(function(){wait(function(){if(!mgGate())return;if(sub==="attendance")mgStaff();else mgOverview()})},0);return'<div id="mg"></div>'};
+ setTimeout(function(){wait(function(){if(!mgGate())return;if(sub==="attendance")mgStaff();else if(window.AGSITE&&window.AGSITE.tabs.indexOf(sub)>-1)window.AGSITE.mount(sub);else mgOverview()})},0);return'<div id="mg"></div>'};
 
 /* ---- staff records: attendance review + profile fields ---- */
 function mgStaff(){var M=OP.mg=OP.mg||{days:30,sel:null,d:null};var el=q("#mg");
@@ -2685,4 +2686,204 @@ window.AGLEAVE={need:need,on:on,tag:tag,notifs:function(){return L.nf},invalidat
 })();
 
 /*AGLEAVE-END*/</script>
+<script>/*AGSITE-START*/
+/* ===== Atomic Garage: Website Management (gallery, services catalogue, team, website content) =====
+   Every permission is enforced by the database (manager-only RLS, SECURITY DEFINER functions, Storage policies).
+   This file only presents what the server allows. */
+(function(){
+"use strict";
+var X=window.AGX;if(!X)return;
+var esc=X.esc,ST=X.ST;
+var S={tab:"website",D:null,busy:false,msg:"",err:"",open:null};
+var CATS=[["repairs","Vehicle repairs"],["upgrades","Performance upgrades"],["modifications","Custom modifications"],["workshop","Workshop photography"],["before_after","Before & after"]];
+function cname(k){for(var i=0;i<CATS.length;i++)if(CATS[i][0]===k)return CATS[i][1];return k}
+function q(s){return document.querySelector(s)}
+function call(n,a){return X.rpc(n,a).catch(function(e){var m=(e&&e.message)||"";if(m==="auth"){try{X.authErr(e)}catch(x){}return{ok:false,message:"Your session has ended. Please sign in again."}}
+ var net=!m||/failed to fetch|networkerror|load failed|network request|timeout/i.test(m)||(e&&e.name==="TypeError");
+ if(net)try{console.warn("[AG] "+n+" failed:",e)}catch(x){}
+ return{ok:false,message:net?"Could not reach the server. Check your connection and try again.":m}})}
+function pub(p){return p?X.base+"/storage/v1/object/public/site-media/"+p.split("/").map(encodeURIComponent).join("/"):""}
+function uid(){return window.crypto&&crypto.randomUUID?crypto.randomUUID():(Date.now().toString(16)+Math.random().toString(16).slice(2,10))}
+function v(id){var e=document.getElementById(id);return e?e.value:""}
+function ck(id){var e=document.getElementById(id);return !!(e&&e.checked)}
+function inject(){if(document.getElementById("sw-css"))return;var s=document.createElement("style");s.id="sw-css";
+ s.textContent='.sw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}.sw-box{border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:16px;background:var(--panel2)}.sw-box h3{margin:0 0 4px;font-size:26px}'+
+ '.sw-box>p.note{margin:0 0 6px}.sw-item{display:grid;grid-template-columns:120px 1fr;gap:16px;border:1px solid var(--line);border-radius:16px;padding:12px;margin-top:12px;background:var(--panel2)}.sw-ths{display:flex;flex-direction:column;gap:6px}'+
+ '.sw-th{width:120px;height:90px;object-fit:cover;border-radius:10px;background:#000;border:1px solid var(--line)}.sw-th.ph{display:grid;place-items:center;color:var(--mute);font-size:12px}.sw-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}'+
+ '.sw-btns button,.sw-btn{padding:8px 14px;font-size:14px;border-radius:10px}.sw-btns .alt,.sw-btn.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}.sw-btns .danger{background:transparent;color:#ff7a6b;border:1px solid #ff7a6b}'+
+ '.sw-ck{display:flex;gap:10px;align-items:center;margin:14px 0 0}.sw-ck input{width:auto}.sw-ck label{margin:0;color:var(--ink)}.sw-ok{margin-top:14px;padding:12px 14px;border:1px solid var(--ok);border-left-width:4px;border-radius:8px}'+
+ '.sw-fl{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:12px}.sw-fi{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:8px;background:var(--panel)}.sw-fi img{width:48px;height:36px;object-fit:cover;border-radius:6px}.sw-fi label{margin:0;font-size:13px;color:var(--ink);flex:1}.sw-fi input{width:auto}'+
+ '@media(max-width:600px){.sw-item{grid-template-columns:1fr}.sw-th{width:100%;height:160px}}';
+ document.head.appendChild(s)}
+
+/* ---------- images: resize in the browser, upload to the site-media bucket ---------- */
+function prep(file){return new Promise(function(res,rej){
+ if(!file)return rej(new Error("Choose a photograph first."));
+ if(!/^image\/(jpeg|png|webp)$/.test(file.type))return rej(new Error("Choose a JPG, PNG or WebP image."));
+ if(file.size>25e6)return rej(new Error("That image is larger than 25 MB."));
+ var u=URL.createObjectURL(file),im=new Image();
+ im.onload=function(){var m=1920,r=Math.min(1,m/Math.max(im.width,im.height)),w=Math.max(1,Math.round(im.width*r)),h=Math.max(1,Math.round(im.height*r)),c=document.createElement("canvas");c.width=w;c.height=h;
+  var x=c.getContext("2d");x.fillStyle="#111";x.fillRect(0,0,w,h);x.drawImage(im,0,0,w,h);URL.revokeObjectURL(u);
+  c.toBlob(function(b){b?res(b):rej(new Error("Could not process that image."))},"image/jpeg",.86)};
+ im.onerror=function(){URL.revokeObjectURL(u);rej(new Error("That file could not be read as an image."))};im.src=u})}
+function enc(p){return p.split("/").map(encodeURIComponent).join("/")}
+function put(path,blob){return X.token().then(function(t){return fetch(X.base+"/storage/v1/object/site-media/"+enc(path),{method:"POST",headers:{apikey:X.key,Authorization:"Bearer "+t,"Content-Type":"image/jpeg","x-upsert":"false","cache-control":"31536000"},body:blob})})
+ .then(function(r){if(r.ok)return;return r.text().then(function(t){var m="";try{m=JSON.parse(t).message}catch(e){}
+  throw new Error(r.status===401||r.status===403?"You do not have permission to upload photographs.":"The photograph could not be uploaded"+(m?" ("+m+")":"")+".")})})}
+function rm(paths){return X.token().then(function(t){return Promise.all(paths.filter(Boolean).map(function(p){return fetch(X.base+"/storage/v1/object/site-media/"+enc(p),{method:"DELETE",headers:{apikey:X.key,Authorization:"Bearer "+t}}).catch(function(){})}))}).catch(function(){})}
+function upFile(inputId,folder){var f=document.getElementById(inputId);f=f&&f.files&&f.files[0];if(!f)return Promise.resolve(null);
+ var path=folder+"/"+uid()+".jpg";return prep(f).then(function(b){return put(path,b)}).then(function(){return path})}
+
+/* ---------- data ---------- */
+function load(){return call("site_manage_get",{}).then(function(r){
+ if(r&&r.ok===false){S.err=r.message||"Could not load the website content.";S.D=S.D||null;return}
+ S.D=r;S.err=""})}
+function mgr(){return X.hasSession()&&ST.me&&ST.me.active&&ST.me.role==="manager"}
+function done(ok,m){S.busy=false;if(ok){S.msg=m;S.err=""}else{S.err=m;S.msg=""}}
+function act(fn,okMsg){if(S.busy)return;S.busy=true;S.msg="";S.err="";stDraw();
+ Promise.resolve().then(fn).then(function(r){
+  if(r&&r.ok===false){done(false,r.message||"That was not allowed.");stDraw();return}
+  return load().then(function(){done(true,okMsg);S.open=S.keepOpen||null;S.keepOpen=null;draw()})
+ }).catch(function(e){done(false,(e&&e.message)||"Something went wrong.");stDraw()})}
+function pill(t,c){return'<span class="pill'+(c?" "+c:"")+'">'+esc(t)+'</span>'}
+function ck2(id,label,on){return'<div class="sw-ck"><input type="checkbox" id="'+id+'"'+(on?" checked":"")+'><label for="'+id+'">'+esc(label)+'</label></div>'}
+function fld(id,label,val,extra){return'<label for="'+id+'">'+esc(label)+'</label><input id="'+id+'" value="'+esc(val==null?"":val)+'" '+(extra||"")+'>'}
+function area(id,label,val,rows,max){return'<label for="'+id+'">'+esc(label)+'</label><textarea id="'+id+'" rows="'+(rows||3)+'"'+(max?' maxlength="'+max+'"':"")+'>'+esc(val==null?"":val)+'</textarea>'}
+function catSel(id,val){return'<label for="'+id+'">Category</label><select id="'+id+'">'+CATS.map(function(c){return'<option value="'+c[0]+'"'+(c[0]===val?" selected":"")+'>'+esc(c[1])+'</option>'}).join("")+'</select>'}
+var TABS=[["website","Website"],["gallery","Gallery"],["services","Services"],["team","Team"]];
+function stInner(){return(S.msg?'<div class="sw-ok" role="status">'+esc(S.msg)+'</div>':"")+(S.err?'<div class="jb-err" role="alert">'+esc(S.err)+'</div>':"")+(S.busy?'<p class="note" role="status">Working…</p>':"")}
+function status(){return'<div id="sw-st">'+stInner()+'</div>'}
+function stDraw(){var e=q("#sw-st");if(e){e.innerHTML=stInner();try{e.scrollIntoView({block:"nearest"})}catch(x){}}}
+function subnav(){return'<p class="sp"><a class="btn alt sw-btn" href="../#home" target="_blank" rel="noopener">View public site</a></p>'}
+
+/* ---------- Gallery ---------- */
+function gAdd(){return'<div class="sw-box"><h3>Upload a photograph</h3><p class="note">Images are resized for the web and stored in Supabase Storage. New photographs start as drafts unless you publish them.</p>'+
+ fld("ga-title","Title","","maxlength=\"120\"")+catSel("ga-cat","repairs")+area("ga-desc","Description (optional)","",2,500)+fld("ga-alt","Alt text for accessibility (optional)","","maxlength=\"200\"")+
+ '<label for="ga-file" id="ga-fl">Photograph</label><input type="file" id="ga-file" accept="image/jpeg,image/png,image/webp">'+
+ '<div id="ga-afw" hidden><label for="ga-after">After photograph (before &amp; after only)</label><input type="file" id="ga-after" accept="image/jpeg,image/png,image/webp"></div>'+
+ ck2("ga-pub","Publish immediately",false)+ck2("ga-feat","Feature on the homepage",false)+
+ '<div class="sw-btns"><button type="button" data-sw="g-add">Upload photograph</button></div></div>'}
+function gItem(g,i,n){var ba=g.category==="before_after",o=S.open===g.id;
+ var th='<div class="sw-ths"><img class="sw-th" src="'+esc(pub(g.image_path))+'" alt="'+esc(g.alt_text||g.title)+'" loading="lazy">'+(ba&&g.after_image_path?'<img class="sw-th" src="'+esc(pub(g.after_image_path))+'" alt="After: '+esc(g.title)+'" loading="lazy">':"")+'</div>';
+ var h='<div class="sw-item" data-gid="'+esc(g.id)+'">'+th+'<div><b>'+esc(g.title)+'</b> '+pill(cname(g.category))+' '+(g.published?pill("Published","ok"):pill("Draft"))+' '+(g.featured?pill("Featured","a"):"")+
+ (g.description?'<br><small>'+esc(g.description)+'</small>':"")+
+ '<div class="sw-btns"><button type="button" class="alt" data-sw="g-up" data-id="'+esc(g.id)+'"'+(i===0?" disabled":"")+' aria-label="Move '+esc(g.title)+' earlier">↑ Earlier</button>'+
+ '<button type="button" class="alt" data-sw="g-down" data-id="'+esc(g.id)+'"'+(i===n-1?" disabled":"")+' aria-label="Move '+esc(g.title)+' later">↓ Later</button>'+
+ '<button type="button" class="alt" data-sw="g-pub" data-id="'+esc(g.id)+'">'+(g.published?"Unpublish":"Publish")+'</button>'+
+ '<button type="button" class="alt" data-sw="g-feat" data-id="'+esc(g.id)+'">'+(g.featured?"Remove from homepage":"Feature on homepage")+'</button>'+
+ '<button type="button" class="alt" data-sw="g-edit" data-id="'+esc(g.id)+'">'+(o?"Close":"Edit")+'</button>'+
+ '<button type="button" class="danger" data-sw="g-del" data-id="'+esc(g.id)+'">Delete</button></div>';
+ if(o)h+='<div class="sw-box">'+fld("ge-title","Title",g.title,'maxlength="120"')+catSel("ge-cat",g.category)+area("ge-desc","Description",g.description,2,500)+fld("ge-alt","Alt text",g.alt_text,'maxlength="200"')+
+  '<label for="ge-file">Replace '+(ba?"before ":"")+'photograph (optional)</label><input type="file" id="ge-file" accept="image/jpeg,image/png,image/webp">'+
+  '<label for="ge-after">Replace after photograph (before &amp; after only, optional)</label><input type="file" id="ge-after" accept="image/jpeg,image/png,image/webp">'+
+  '<div class="sw-btns"><button type="button" data-sw="g-save" data-id="'+esc(g.id)+'">Save changes</button><button type="button" class="alt" data-sw="g-edit" data-id="'+esc(g.id)+'">Cancel</button></div></div>';
+ return h+'</div></div>'}
+function gTab(){var G=S.D.gallery||[];
+ return gAdd()+'<div class="sw-box"><h3>Photographs ('+G.length+')</h3><p class="note">Order here is the order on the public gallery. Only published photographs appear on the website.</p>'+
+  (G.length?G.map(function(g,i){return gItem(g,i,G.length)}).join(""):'<p class="note">No photographs yet. Upload your first one above.</p>')+'</div>'}
+
+/* ---------- Services ---------- */
+function sItem(s,i,n){
+ return'<div class="sw-box" data-key="'+esc(s.key)+'"><h3>'+esc(s.title)+' '+(s.published?pill("Published","ok"):pill("Hidden"))+' '+(s.featured?pill("Featured","a"):"")+'</h3>'+
+ '<p class="note">Booking type: <b>'+esc(s.key)+'</b>. The price is also used by the booking form.</p>'+
+ '<div class="sw-item"><div class="sw-ths">'+(s.image_path?'<img class="sw-th" src="'+esc(pub(s.image_path))+'" alt="'+esc(s.title)+'" loading="lazy">':'<div class="sw-th ph">No photo</div>')+'</div><div>'+
+ '<label for="sv-'+s.key+'-img">'+(s.image_path?"Replace photograph":"Add photograph")+'</label><input type="file" id="sv-'+s.key+'-img" accept="image/jpeg,image/png,image/webp">'+
+ (s.image_path?'<div class="sw-btns"><button type="button" class="danger" data-sw="s-rmimg" data-k="'+esc(s.key)+'">Remove photograph</button></div>':"")+'</div></div>'+
+ fld("sv-"+s.key+"-title","Service name",s.title,'maxlength="80"')+area("sv-"+s.key+"-desc","Description",s.description,3,600)+
+ '<div class="sw-grid">'+'<div>'+fld("sv-"+s.key+"-cat","Category",s.category,'maxlength="40"')+'</div><div>'+
+ fld("sv-"+s.key+"-price","Starting price ($)",(S.D.settings.service_prices||{})[s.key]||"",'inputmode="decimal" placeholder="e.g. 500"')+'</div><div>'+
+ fld("sv-"+s.key+"-dur","Estimated duration",s.duration_text,'maxlength="60" placeholder="e.g. 1 to 3 days"')+'</div></div>'+
+ area("sv-"+s.key+"-bul","What is included (one per line)",(s.bullets||[]).join("\n"),4)+
+ ck2("sv-"+s.key+"-pub","Show on the public website",s.published)+ck2("sv-"+s.key+"-feat","Feature on the homepage",s.featured)+
+ '<div class="sw-btns"><button type="button" data-sw="s-save" data-k="'+esc(s.key)+'">Save service</button>'+
+ '<button type="button" class="alt" data-sw="s-up" data-k="'+esc(s.key)+'"'+(i===0?" disabled":"")+'>↑ Earlier</button><button type="button" class="alt" data-sw="s-down" data-k="'+esc(s.key)+'"'+(i===n-1?" disabled":"")+'>↓ Later</button></div></div>'}
+function svTab(){var L=S.D.services||[];return L.map(function(s,i){return sItem(s,i,L.length)}).join("")}
+
+/* ---------- Team ---------- */
+function tTab(){var T=S.D.team||[],on=!!S.D.settings.team_public;
+ return'<div class="sw-box"><h3>Public team section</h3><p class="note">Staff are never listed automatically. Only the name, job title and biography you enter below are published. Roles, contact details, attendance and profile photos are never exposed.</p>'+
+ ck2("tm-on","Show the “Meet the team” section on the public website",on)+'<div class="sw-btns"><button type="button" data-sw="t-vis">Save</button></div></div>'+
+ T.map(function(t,i){var k="tm-"+t.user_id;
+  return'<div class="sw-box" data-uid="'+esc(t.user_id)+'"><h3>'+esc(t.display_name)+' '+(t.public_visible?pill("Shown publicly","ok"):pill("Private"))+'</h3>'+
+  ck2(k+"-vis","Show this person publicly",t.public_visible)+fld(k+"-name","Public name (defaults to their staff display name)",t.public_name,'maxlength="80" placeholder="'+esc(t.display_name)+'"')+
+  fld(k+"-title","Public job title",t.public_title,'maxlength="80" placeholder="e.g. Lead mechanic"')+area(k+"-bio","Public biography",t.public_bio,3,600)+
+  '<div class="sw-btns"><button type="button" data-sw="t-save" data-id="'+esc(t.user_id)+'">Save</button><button type="button" class="alt" data-sw="t-up" data-id="'+esc(t.user_id)+'"'+(i===0?" disabled":"")+'>↑ Earlier</button><button type="button" class="alt" data-sw="t-down" data-id="'+esc(t.user_id)+'"'+(i===T.length-1?" disabled":"")+'>↓ Later</button></div></div>'}).join("")}
+
+/* ---------- Website content ---------- */
+function wTab(){var s=S.D.settings||{},SV=S.D.services||[],G=S.D.gallery||[];
+ return'<div class="sw-box"><h3>Homepage announcement</h3><p class="note">A slim bar across the top of every public page.</p>'+area("w-ann","Announcement text",s.announcement_text,2,300)+ck2("w-ann-on","Show the announcement",s.announcement_active)+
+  '<div class="sw-btns"><button type="button" data-sw="w-ann">Save announcement</button></div></div>'+
+ '<div class="sw-box"><h3>Promotional banner</h3><p class="note">A highlighted offer on the homepage. The link may be a site link such as #book or an https:// address.</p>'+fld("w-bt","Banner title",s.banner_title,'maxlength="100"')+area("w-bx","Banner text",s.banner_text,2,300)+
+  '<div class="sw-grid"><div>'+fld("w-bl","Button label",s.banner_cta_label,'maxlength="40"')+'</div><div>'+fld("w-bu","Button link",s.banner_cta_url,'placeholder="#book"')+'</div></div>'+ck2("w-b-on","Show the banner",s.banner_active)+
+  '<div class="sw-btns"><button type="button" data-sw="w-ban">Save banner</button></div></div>'+
+ '<div class="sw-box"><h3>Business information</h3>'+fld("w-name","Business name",s.business_name,'maxlength="60" placeholder="Atomic Garage"')+fld("w-tag","Homepage tagline",s.tagline,'maxlength="200"')+
+  area("w-loc","Location",s.location_text,2,300)+fld("w-map","Map link (https://)",s.map_url)+area("w-hrs","Opening hours",s.hours_text,4,500)+area("w-bn","Booking note (shown beside availability)",s.booking_note,2,300)+
+  '<div class="sw-btns"><button type="button" data-sw="w-biz">Save business information</button></div></div>'+
+ '<div class="sw-box"><h3>Contact details</h3><div class="sw-grid"><div>'+fld("w-ph","Phone",s.phone,'maxlength="40"')+'</div><div>'+fld("w-em","Email",s.email,'maxlength="120"')+'</div><div>'+fld("w-dc","Discord link (https://)",s.discord_url)+'</div></div>'+
+  area("w-ct","Other contact information",s.contact_text,3,500)+'<div class="sw-btns"><button type="button" data-sw="w-con">Save contact details</button></div></div>'+
+ '<div class="sw-box"><h3>Featured services</h3><p class="note">Tick the services shown in the homepage “Featured services” section.</p><div class="sw-fl">'+
+  SV.map(function(x){return'<div class="sw-fi"><input type="checkbox" id="fs-'+esc(x.key)+'" data-sw="f-svc" data-k="'+esc(x.key)+'"'+(x.featured?" checked":"")+'><label for="fs-'+esc(x.key)+'">'+esc(x.title)+'</label></div>'}).join("")+'</div></div>'+
+ '<div class="sw-box"><h3>Featured gallery photographs</h3><p class="note">Up to six featured, published photographs appear on the homepage.</p>'+(G.length?'<div class="sw-fl">'+
+  G.map(function(g){return'<div class="sw-fi"><input type="checkbox" id="fg-'+esc(g.id)+'" data-sw="f-gal" data-id="'+esc(g.id)+'"'+(g.featured?" checked":"")+'><img src="'+esc(pub(g.image_path))+'" alt="" loading="lazy"><label for="fg-'+esc(g.id)+'">'+esc(g.title)+(g.published?"":" (draft)")+'</label></div>'}).join("")+'</div>':'<p class="note">Upload photographs in the Gallery tab first.</p>')+'</div>'+
+ '<div class="sw-box"><h3>Public team visibility</h3><p class="note">Choose who appears, their order and their biographies in the Team tab.</p>'+ck2("w-team-on","Show the “Meet the team” section",s.team_public)+'<div class="sw-btns"><button type="button" data-sw="w-team">Save</button><a class="btn alt sw-btn" href="#manager/team">Manage team</a></div></div>'}
+
+function draw(){var el=q("#mg");if(!el)return;inject();
+ var title={website:"Website management",gallery:"Gallery management",services:"Services catalogue",team:"Meet the team"}[S.tab],
+  sub={website:"Announcements, banners, business and contact details, and what is featured. Changes appear on the public website straight away.",gallery:"Upload, categorise, reorder, publish and delete photographs.",services:"Descriptions, starting prices, durations and photographs for the services customers can book.",team:"Choose who appears publicly and what is said about them."}[S.tab];
+ var h='<div class="card">'+X.sec("⚒",title,sub)+window.AGMGTABS()+subnav()+status();
+ if(!S.D)h+=S.err?'':'<div class="sk sp" style="height:160px"></div>';
+ else h+=({website:wTab,gallery:gTab,services:svTab,team:tTab})[S.tab]();
+ el.innerHTML=h+'</div>'}
+
+/* ---------- actions ---------- */
+function gById(id){return(S.D.gallery||[]).filter(function(g){return g.id===id})[0]}
+function move(list,key,id,d){var ids=list.map(function(x){return x[key]}),i=ids.indexOf(id),j=i+d;if(i<0||j<0||j>=ids.length)return null;var t=ids[i];ids[i]=ids[j];ids[j]=t;return ids}
+function settings(p,m){act(function(){return call("site_settings_save",{p:p})},m||"Saved. The public website now shows this.")}
+function click(e){var b=e.target.closest&&e.target.closest("[data-sw]");if(!b||!q("#mg")||b.tagName==="INPUT")return;var a=b.getAttribute("data-sw"),id=b.getAttribute("data-id"),k=b.getAttribute("data-k"),g;
+ if(a==="g-add"){var t=v("ga-title").trim(),c=v("ga-cat");
+  if(!t){S.err="Enter a title for the photograph.";S.msg="";return stDraw()}
+  act(function(){var np;return upFile("ga-file","gallery").then(function(p){if(!p)throw new Error("Choose a photograph to upload.");np=[p];
+   return c==="before_after"?upFile("ga-after","gallery").then(function(a2){if(!a2){return rm(np).then(function(){throw new Error("Choose the after photograph for a before & after entry.")})}np.push(a2);return a2}):null})
+   .then(function(a2){return call("gallery_save",{p:{title:t,category:c,description:v("ga-desc"),alt_text:v("ga-alt"),image_path:np[0],after_image_path:a2||null,published:ck("ga-pub"),featured:ck("ga-feat")}}).then(function(r){if(r&&r.ok===false)return rm(np).then(function(){return r});return r})})},"Photograph uploaded.")}
+ else if(a==="g-up"||a==="g-down"){var ids=move(S.D.gallery,"id",id,a==="g-up"?-1:1);if(ids)act(function(){return call("gallery_reorder",{p_ids:ids})},"Order updated.")}
+ else if(a==="g-pub"){g=gById(id);act(function(){return call("gallery_save",{p:{id:id,published:!g.published}})},g.published?"Photograph unpublished. It is no longer on the website.":"Photograph published.")}
+ else if(a==="g-feat"){g=gById(id);act(function(){return call("gallery_save",{p:{id:id,featured:!g.featured}})},g.featured?"Removed from the homepage.":"Featured on the homepage.")}
+ else if(a==="g-edit"){S.open=S.open===id?null:id;S.msg=S.err="";draw()}
+ else if(a==="g-save"){g=gById(id);S.keepOpen=null;
+  act(function(){var olds=[],nb=null,na=null;
+   return upFile("ge-file","gallery").then(function(p){nb=p;return upFile("ge-after","gallery")}).then(function(p){na=p;
+    var pl={id:id,title:v("ge-title").trim()||g.title,category:v("ge-cat"),description:v("ge-desc"),alt_text:v("ge-alt")};
+    if(nb){pl.image_path=nb;olds.push(g.image_path)} if(na){pl.after_image_path=na;olds.push(g.after_image_path)}
+    return call("gallery_save",{p:pl}).then(function(r){if(r&&r.ok===false){return rm([nb,na]).then(function(){return r})}return rm(olds).then(function(){return r})})})},"Changes saved.")}
+ else if(a==="g-del"){g=gById(id);if(!window.confirm("Delete “"+g.title+"”? It is removed from the website and its image files are deleted. This cannot be undone."))return;
+  act(function(){return call("gallery_delete",{p_id:id}).then(function(r){if(r&&r.ok===false)return r;return rm(r.paths||[]).then(function(){return r})})},"Photograph deleted.")}
+ else if(a==="s-save"){var s0=(S.D.services||[]).filter(function(x){return x.key===k})[0],p="sv-"+k+"-";
+  act(function(){return upFile(p+"img","services").then(function(np){
+   var pl={key:k,title:v(p+"title").trim()||s0.title,description:v(p+"desc"),category:v(p+"cat"),price:v(p+"price"),duration_text:v(p+"dur"),bullets:v(p+"bul").split("\n"),published:ck(p+"pub"),featured:ck(p+"feat")};
+   if(np)pl.image_path=np;
+   return call("site_service_save",{p:pl}).then(function(r){if(r&&r.ok===false){return rm([np]).then(function(){return r})}return(np&&s0.image_path?rm([s0.image_path]):Promise.resolve()).then(function(){return r})})})},"Service saved. It is updated on the website and in the booking form.")}
+ else if(a==="s-rmimg"){var s1=(S.D.services||[]).filter(function(x){return x.key===k})[0];if(!window.confirm("Remove the photograph for "+s1.title+"?"))return;
+  act(function(){return call("site_service_save",{p:{key:k,image_path:null}}).then(function(r){if(r&&r.ok===false)return r;return rm([s1.image_path]).then(function(){return r})})},"Photograph removed.")}
+ else if(a==="s-up"||a==="s-down"){var ks=move(S.D.services,"key",k,a==="s-up"?-1:1);if(ks)act(function(){return call("site_service_reorder",{p_keys:ks})},"Order updated.")}
+ else if(a==="t-save"){var pp="tm-"+id+"-";act(function(){return call("team_save",{p:{user_id:id,public_visible:ck(pp+"vis"),public_name:v(pp+"name"),public_title:v(pp+"title"),public_bio:v(pp+"bio")}})},"Saved.")}
+ else if(a==="t-up"||a==="t-down"){var us=move(S.D.team,"user_id",id,a==="t-up"?-1:1);if(us)act(function(){return call("team_reorder",{p_ids:us})},"Order updated.")}
+ else if(a==="t-vis"||a==="w-team"){settings({team_public:ck(a==="t-vis"?"tm-on":"w-team-on")},"Saved.")}
+ else if(a==="w-ann")settings({announcement_text:v("w-ann"),announcement_active:ck("w-ann-on")},"Announcement saved.");
+ else if(a==="w-ban")settings({banner_title:v("w-bt"),banner_text:v("w-bx"),banner_cta_label:v("w-bl"),banner_cta_url:v("w-bu"),banner_active:ck("w-b-on")},"Banner saved.");
+ else if(a==="w-biz")settings({business_name:v("w-name"),tagline:v("w-tag"),location_text:v("w-loc"),map_url:v("w-map"),hours_text:v("w-hrs"),booking_note:v("w-bn")},"Business information saved.");
+ else if(a==="w-con")settings({phone:v("w-ph"),email:v("w-em"),discord_url:v("w-dc"),contact_text:v("w-ct")},"Contact details saved.")}
+function change(e){var t=e.target;if(!t)return;
+ if(t.id==="ga-cat"){var ba=t.value==="before_after",w=q("#ga-afw");if(w)w.hidden=!ba;var l=q("#ga-fl");if(l)l.textContent=ba?"Before photograph":"Photograph"}
+ else if(t.getAttribute&&t.getAttribute("data-sw")==="f-svc"){var k=t.getAttribute("data-k"),on=t.checked;act(function(){return call("site_service_save",{p:{key:k,featured:on}})},"Featured services updated.")}
+ else if(t.getAttribute&&t.getAttribute("data-sw")==="f-gal"){var id=t.getAttribute("data-id"),on2=t.checked;act(function(){return call("gallery_save",{p:{id:id,featured:on2}})},"Featured photographs updated.")}}
+if(!window.__swBound){window.__swBound=1;document.addEventListener("click",click);document.addEventListener("change",change)}
+
+function mount(tab){S.tab=tab||"website";S.msg=S.err="";S.open=null;S.busy=false;draw();
+ if(!mgr()){var el=q("#mg");if(el)el.innerHTML='<div class="card">'+X.sec("⚒","Website management","Managers only")+'<p class="note">Only managers can manage the public website.</p></div>';return}
+ load().then(function(){draw()})}
+window.AGSITE={mount:mount,tabs:["website","gallery","services","team"]};
+(function(){var h=(location.hash||"").slice(1).split("/");if(h[0]==="manager"&&window.AGSITE.tabs.indexOf(h[1])>-1)setTimeout(function(){try{window.dispatchEvent(new Event("hashchange"))}catch(e){}},0)})();
+})();
+
+/*AGSITE-END*/</script>
 </body></html>
