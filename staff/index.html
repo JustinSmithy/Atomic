@@ -674,7 +674,60 @@ a.p5-link:hover{border-color:var(--acc)}
 .p5-back a{color:var(--acc);text-decoration:none;font-weight:600}
 #p5-id a:not(.btn),#p5-dash .note a,#p5-em .note a,#p5-home a:not(.btn):not(.p5-cut){color:var(--acc)}
 /*AGP5-CSS-END*/
-</style></head><body>
+</style><style id="ag-p6-css">/*AGP6-CSS-START*/
+#vh .g{display:grid;gap:16px}#vh .g2{grid-template-columns:1fr 1fr}#vh .g3{grid-template-columns:repeat(3,1fr)}#vh .g4{grid-template-columns:repeat(4,1fr)}
+.vh-ws .g,.vh-link .g{display:grid;gap:12px}.vh-ws .g2{grid-template-columns:1fr 1fr}.vh-ws .g3,.vh-link .g3{grid-template-columns:repeat(3,1fr)}
+.vh-plate{display:inline-block;font:700 15px "Archivo",sans-serif;letter-spacing:.14em;background:#f2c94c;color:#111;border:2px solid #111;border-radius:6px;padding:3px 10px;text-transform:uppercase}
+.vh-filters{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;align-items:end}
+.vh-fq{grid-column:1/-1}.vh-chk{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.vh-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.vh-card{display:block;text-decoration:none;color:inherit;background:var(--panel2);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.vh-card:hover,.vh-card:focus-visible{border-color:var(--acc);outline:none}.vh-card.arch{opacity:.6}
+.vh-photo{position:relative;aspect-ratio:16/10;background:#0c0c0b;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.vh-photo img{width:100%;height:100%;object-fit:cover}
+.vh-ph{color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:6px;width:55%}.vh-ph svg{width:100%;opacity:.5}.vh-ph.big{width:40%}
+.vh-ph span{font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.vh-ref{position:absolute;left:10px;top:10px;background:rgba(0,0,0,.7);color:#fff;font:700 11px Archivo,sans-serif;letter-spacing:.1em;padding:3px 8px;border-radius:6px}
+.vh-flag{position:absolute;right:10px;top:10px;background:var(--acc);color:#111;font:700 11px Archivo,sans-serif;padding:3px 8px;border-radius:6px;text-transform:uppercase}
+.vh-info{padding:14px 16px}.vh-info h3{margin:8px 0 2px;font-size:22px}
+.vh-sub{color:var(--mute);margin:0}.vh-owner{margin:6px 0 10px}
+.vh-meta{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;color:var(--mute);font-size:12px}
+.vh-hero{display:grid;grid-template-columns:minmax(260px,1.2fr) 1fr;gap:0;padding:0;overflow:hidden;border-left:6px solid var(--acc)}
+.vh-hphoto{background:#0c0c0b;min-height:260px;display:flex;align-items:center;justify-content:center}.vh-hphoto img{width:100%;height:100%;object-fit:cover;max-height:380px}
+.vh-hinfo{padding:24px 26px}.vh-hinfo h1{margin:2px 0 10px;font-size:44px;line-height:1.05}
+.vh-dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px 18px;margin:14px 0}.vh-dl.big{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.vh-dl dt{color:var(--mute);font-size:11px;letter-spacing:.1em;text-transform:uppercase}.vh-dl dd{margin:2px 0 0}
+.vh-bigtxt{font-size:26px!important}
+.vh-tabs{display:flex;gap:6px;overflow-x:auto;margin:20px 0 14px;padding-bottom:4px;border-bottom:1px solid var(--line)}
+.vh-tab{background:none;border:0;border-bottom:3px solid transparent;color:var(--mute);padding:10px 14px;white-space:nowrap;border-radius:0;cursor:pointer;font:600 14px Archivo,sans-serif}
+.vh-tab.on{color:var(--ink);border-bottom-color:var(--acc)}
+.vh-svc{border:1px solid var(--line);border-radius:12px;margin-bottom:10px;background:var(--panel2)}
+.vh-svc summary{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;padding:12px 16px;cursor:pointer}
+.vh-d{color:var(--acc);font-weight:700;min-width:100px}.vh-m{color:var(--mute);font-size:13px;flex:1}.vh-c{font-weight:700}
+.vh-sb{padding:4px 16px 16px;border-top:1px solid var(--line)}.vh-sb h4,.vh-ws h4,.vh-link h4,.vh-review h4,.vh-hero h4,#vh h4{margin:16px 0 6px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.vh-pre{white-space:pre-wrap;margin:4px 0}.vh-ul{padding-left:18px;margin:4px 0}.vh-ul li{margin:4px 0}
+.vh-mini{width:100%;border-collapse:collapse}.vh-mini th,.vh-mini td{text-align:left;padding:4px 8px;border-bottom:1px solid var(--line)}
+.vh-note.done{opacity:.6}.vh-act{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.vh-pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.vh-fig{margin:0;background:var(--panel2);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.vh-pbtn{display:block;width:100%;padding:0;border:0;background:#0c0c0b;aspect-ratio:4/3;cursor:zoom-in;border-radius:0}.vh-pbtn img{width:100%;height:100%;object-fit:cover}
+.vh-pbtn.sm{width:96px;height:72px;aspect-ratio:auto;border-radius:8px;overflow:hidden;flex:none}
+.vh-fig figcaption{padding:10px 12px}.vh-fig figcaption p{margin:6px 0 2px}
+.vh-pstrip{display:flex;gap:8px;flex-wrap:wrap}
+.vh-tl{list-style:none;margin:0;padding:0 0 0 18px;border-left:2px solid var(--line)}.vh-tl li{margin:0 0 14px;position:relative}.vh-tl li:before{content:"";position:absolute;left:-24px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--acc)}
+.vh-tl small{display:block;color:var(--mute)}.vh-tl span{display:block;font-size:13px}
+.vh-review{border-left:6px solid var(--acc)}
+.vh-mv{display:flex;gap:12px;align-items:center;margin:6px 0}.vh-mv small{display:block;color:var(--mute)}
+.vh-mphoto{width:84px;height:60px;border-radius:8px;overflow:hidden;background:#0c0c0b;display:flex;align-items:center;justify-content:center;color:var(--mute);flex:none}.vh-mphoto img{width:100%;height:100%;object-fit:cover}.vh-mphoto svg{width:70%;opacity:.5}
+.vh-cand,.vh-create{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0;background:var(--panel2)}
+.vh-wshead{display:flex;gap:14px;align-items:center;flex-wrap:wrap}.vh-wshead small{display:block;color:var(--mute)}
+.vh-lb{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px}
+.vh-lb img{max-width:100%;max-height:78vh;object-fit:contain}.vh-lb p{color:#fff;margin:0}
+.vh-review{border-left:6px solid var(--acc)}
+@media(max-width:820px){#vh .g2,#vh .g3,#vh .g4,.vh-ws .g2,.vh-ws .g3,.vh-link .g3{grid-template-columns:1fr}.vh-filters{grid-template-columns:1fr 1fr}.vh-hero{grid-template-columns:1fr}.vh-hinfo h1{font-size:32px}.vh-hphoto{min-height:200px}}
+/*AGP6-CSS-END*/
+</style>
+</head><body>
 <div class="app"><nav aria-label="Main" id="ag-nav"><a class="brand" id="ag-logo" href="../" aria-label="Atomic Garage: go to the public website" title="Atomic Garage public website"><svg viewBox="0 0 48 48" fill="none" stroke="#ff7a1a" stroke-width="2.4"><ellipse cx="24" cy="24" rx="20" ry="8"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(60 24 24)"/><ellipse cx="24" cy="24" rx="20" ry="8" transform="rotate(120 24 24)"/><circle cx="24" cy="24" r="3.5" fill="#ff7a1a"/></svg><b>Atomic<br>Garage</b></a><div class="ag-links" id="ag-links"><a href="#home" data-v="home"><i aria-hidden="true">⌂</i>Home</a><a href="#dashboard" data-v="dashboard"><i aria-hidden="true">◫</i>Dashboard</a><a href="#calendar" data-v="calendar"><i aria-hidden="true">▦</i>Calendar</a><a href="#operations" data-v="operations" id="ag-ops" aria-haspopup="menu" aria-expanded="false"><i aria-hidden="true">▤</i>Operations<i class="ag-caret" aria-hidden="true">▾</i></a><a href="#jobs" data-v="jobs" class="ag-navhid" hidden><i aria-hidden="true">⚙</i>Jobs</a><a href="#recruitment" data-v="recruitment" class="ag-navhid" hidden><i aria-hidden="true">★</i>Recruitment</a><a href="#handbook" data-v="handbook"><i aria-hidden="true">☰</i>Handbook</a><a href="#parts" data-v="parts"><i aria-hidden="true">▦</i>Parts store</a><a href="#loa" data-v="loa"><i aria-hidden="true">✈</i>Leave of absence</a><a href="#id" data-v="id"><i aria-hidden="true">▣</i>Staff ID</a></div><div class="ag-actions" id="ag-actions"><button type="button" class="ag-burger" id="ag-burger" aria-label="Menu" aria-expanded="false" aria-controls="ag-links"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><button type="button" class="ag-bell" id="ag-bell" hidden aria-haspopup="true" aria-expanded="false" aria-label="Notifications"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><b class="ag-n" hidden></b></button><button type="button" class="ag-profile" id="ag-profile" hidden aria-haspopup="menu" aria-expanded="false" aria-label="Account menu"></button><div class="ag-pop" id="ag-notif" hidden role="dialog" aria-label="Notifications"></div><div class="ag-pop ag-um" id="ag-um" hidden role="menu" aria-label="Account"></div></div></nav>
 <main><div class="bar"><span class="clock" id="ck"></span></div><div id="v"></div></main></div>
 <script>
@@ -785,7 +838,7 @@ var EVT={submitted:"Request submitted",approved:"Approved",declined:"Declined",a
 var MGR_FILTERS=[["pending","Pending",["pending"]],["review","Needs final approval",["alternative_accepted"]],["proposed","Awaiting customer",["alternative_proposed"]],["approved","Approved",["approved"]],["progress","In progress",["in_progress"]],["history","History",["completed","declined","cancelled"]],["all","All",null]];
 var MECH_FILTERS=[["active","My active jobs",["approved","in_progress"]],["history","History",["completed","declined","cancelled"]],["all","All",null]];
 var CLOSED=["declined","cancelled","completed"];
-var COLS="id,reference,character_name,contact,vehicle,vehicle_reg,service_type,preferred_at,description,status,proposed_at,scheduled_at,assigned_to,customer_message,created_at,updated_at,duration_minutes,reschedule_proposed_at";
+var COLS="id,reference,character_name,contact,vehicle,vehicle_reg,service_type,preferred_at,description,status,proposed_at,scheduled_at,assigned_to,customer_message,created_at,updated_at,duration_minutes,reschedule_proposed_at,vehicle_id";
 
 var ST={authMode:"in",me:undefined,tab:"bookings",filter:null,list:[],staff:[],invites:[],settings:null,open:null,events:{},err:"",info:"",newCode:null,booting:false,armed:null,busy:false};
 
@@ -3060,7 +3113,7 @@ function tile(label,value,sub,href,icon){var inner='<i aria-hidden="true">'+(ico
 
 /* ======================= navigation ======================= */
 var GROUPS=[
- {id:"operations",label:"Operations",ico:"▤",items:[["#calendar","Calendar","calendar","Day, week and month schedule"],["#bookings","Bookings","bookings","Requests, approvals, assignments"],["#jobs","Mechanic Jobs","jobs","Start, submit and review work","job"],["#invoices","Invoices","invoices","Bill jobs and record payments","mgr"]]},
+ {id:"operations",label:"Operations",ico:"▤",items:[["#calendar","Calendar","calendar","Day, week and month schedule"],["#bookings","Bookings","bookings","Requests, approvals, assignments"],["#jobs","Mechanic Jobs","jobs","Start, submit and review work","job"],["#vehicles","Vehicles","vehicles","Records and service history","job"],["#invoices","Invoices","invoices","Bill jobs and record payments","mgr"]]},
  {id:"workshop",label:"Workshop",ico:"⚙",items:[["#parts","Parts Store","parts","Catalogue and stock"],["#handbook/library","Mechanic Handbook","handbook","Training library and procedures"],["#handbook","Employee Handbook","handbook","Rules and policies"]]},
  {id:"personnel",label:"Personnel",ico:"☺",items:[["#id","Employee ID","id","Your identification card"],["#loa","Leave of Absence","loa","Request and track leave"],["#profile","My Profile","profile","Your details and attendance","staff"]]},
  {id:"management",label:"Management",ico:"★",items:[["#mdash","Management Dashboard","mdash","Finance, workshop, people, alerts","mgr"],["#employees","Employee Management","employees","Directory, ranks, attendance","mgr"],["#recruitment","Recruitment","recruitment","Applications and interviews","rec"],["#manager/gallery","Gallery Management","manager","Website photographs","mgr"],["#manager/services","Services Management","manager","Service catalogue and prices","mgr"],["#manager/team","Team Management","manager","Public team section","mgr"],["#manager/website","Website Management","manager","Announcements and business details","mgr"],["#manager","Management Settings","manager","Staff, attendance, parts, settings","mgr"]]}];
@@ -3338,4 +3391,285 @@ buildNav(true);
 })();
 
 /*AGP5-END*/</script>
+<script>/*AGVEH-START*/
+/* ===== Atomic Garage staff portal: Vehicle records and service history =====
+   Directory, vehicle profiles, booking link panel and the mechanic worksheet "Vehicle Information" section.
+   Everything comes from Supabase (vehicle_* functions). Permissions are enforced by the database; hidden buttons are cosmetic. */
+(function(){
+"use strict";
+var X=window.AGX;if(!X||!window.V)return;
+var esc=X.esc,ST=X.ST,V=window.V;
+function q(s,r){return(r||document).querySelector(s)}
+function qa(s,r){return[].slice.call((r||document).querySelectorAll(s))}
+function active(){return X.hasSession()&&ST.me&&ST.me.active}
+function role(){return ST.me&&ST.me.role}
+function isM(){return active()&&role()==="manager"}
+function canV(){return active()&&(role()==="manager"||role()==="mechanic")}
+function okr(r){return!!r&&typeof r==="object"&&!Array.isArray(r)&&r.ok!==false}
+function call(n,a){return X.rpc(n,a).then(function(r){return okr(r)?r:(r&&typeof r==="object"&&!Array.isArray(r)&&r.ok===false?r:{ok:false,error:"unavailable",message:"This is not available right now."})},function(e){var m=(e&&e.message)||"";if(m==="auth"){try{X.authErr(e)}catch(x){}return{ok:false,error:"auth",message:"Your session has ended. Please sign in again."}}
+ var net=!m||/failed to fetch|networkerror|load failed|network request|timeout/i.test(m)||(e&&e.name==="TypeError");if(net)try{console.warn("[AG] "+n+" failed:",e)}catch(x){}
+ return{ok:false,error:net?"network":"api",message:net?"Could not reach the server. Check your connection and try again.":m}})}
+function whenReady(fn){if(!X.hasSession()){fn();return}var n=0,w=setInterval(function(){n++;if(ST.me!==undefined||n>80){clearInterval(w);fn()}},250);if(ST.me===undefined)try{X.boot()}catch(e){}}
+var MT=0;function ticket(){return++MT}
+function msg(r,d){return(r&&r.message)||d||"Something went wrong."}
+/* ---------- formatting ---------- */
+function dstr(k){if(!k)return"—";var d=new Date(String(k).length<=10?k+"T12:00:00Z":k);return isNaN(d)?"—":d.toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric",timeZone:"UTC"})}
+function money(n){n=Number(n||0);return"$"+n.toLocaleString("en-US",{minimumFractionDigits:0,maximumFractionDigits:2})}
+function mins(m){m=Math.round(m||0);var h=Math.floor(m/60);return h?h+"h "+(m%60<10?"0":"")+(m%60)+"m":m+"m"}
+function km(n){return n==null?"—":Number(n).toLocaleString("en-US")+" mi"}
+var SVCN={repairs:"Repairs",tuning:"Tuning",custom_builds:"Custom build",towing:"Towing",other:"Other"};
+var CAT={car:"Car",suv:"SUV",van:"Van",truck:"Truck",motorcycle:"Motorcycle",sports:"Sports car",classic:"Classic",other:"Other"};
+var WST={in_workshop:["In workshop","a"],awaiting_approval:["Awaiting approval","a"],booked:["Booked",""],idle:["Not in workshop",""]};
+var KIND={observation:"Observation",fault:"Fault found",recommendation:"Recommendation",modification:"Modification",general:"General note"};
+var PK={main:"Main photo",condition:"Condition",repair:"Repair",modification:"Modification",damage:"Damage",other:"Other"};
+var EVL={created:"Vehicle record created",imported:"Imported from booking history",updated:"Details updated",plate_changed:"Registration changed",owner_changed:"Ownership changed",contact_updated:"Owner contact updated",archived:"Archived",restored:"Restored",booking_linked:"Booking linked",booking_unlinked:"Booking moved to another vehicle",note_added:"Note added",note_done:"Marked done",note_dismissed:"Dismissed",note_open:"Reopened",photo_added:"Photograph added",photo_deleted:"Photograph deleted",main_photo_set:"Main photo changed",review_cleared:"Marked as reviewed",merged_in:"Another record merged in",merged_out:"Merged into another record"};
+function wpill(s){var w=WST[s]||WST.idle;return'<span class="pill'+(w[1]?" "+w[1]:"")+'">'+esc(w[0])+'</span>'}
+function plate(p){return'<span class="vh-plate" aria-label="Registration">'+esc(p||"—")+'</span>'}
+function title(v){return esc([v.manufacturer,v.model].filter(Boolean).join(" ")||"Vehicle")}
+var CAR='<svg viewBox="0 0 160 80" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><path d="M10 56 L22 36 Q28 24 46 24 L98 24 Q116 24 126 38 L142 46 Q152 48 152 56 L152 62 L10 62Z"/><circle cx="42" cy="64" r="11" fill="#111"/><circle cx="120" cy="64" r="11" fill="#111"/><path d="M50 26 L56 40 L124 40"/></svg>';
+/* ---------- photos (private bucket, signed URLs) ---------- */
+var URLS={};
+function signMany(paths){paths=(paths||[]).filter(function(p){return p&&!URLS[p]});if(!paths.length)return Promise.resolve();
+ return X.token().then(function(t){return fetch(X.base+"/storage/v1/object/sign/vehicle-photos",{method:"POST",headers:{apikey:X.key,Authorization:"Bearer "+t,"Content-Type":"application/json"},body:JSON.stringify({expiresIn:3600,paths:paths})})})
+  .then(function(r){return r.ok?r.json():[]}).then(function(a){(a||[]).forEach(function(x){if(x&&x.signedURL&&x.path)URLS[x.path]=X.base+"/storage/v1"+x.signedURL})}).catch(function(){})}
+function img(path,alt,cls){var u=URLS[path];return u?'<img class="'+(cls||"")+'" src="'+esc(u)+'" alt="'+esc(alt||"")+'" loading="lazy">':""}
+function prepPhoto(file){
+ if(["image/jpeg","image/png","image/webp"].indexOf(file.type)<0)return Promise.reject(new Error("Choose a JPG, PNG or WebP image."));
+ if(file.size>15*1024*1024)return Promise.reject(new Error("That file is too large (15 MB at most)."));
+ return createImageBitmap(file).then(function(bm){var sc=Math.min(1,1600/Math.max(bm.width,bm.height)),c=document.createElement("canvas");c.width=Math.max(1,Math.round(bm.width*sc));c.height=Math.max(1,Math.round(bm.height*sc));c.getContext("2d").drawImage(bm,0,0,c.width,c.height);
+  return new Promise(function(res,rej){var qv=.86;(function go(){c.toBlob(function(b){if(!b)return rej(new Error("Could not prepare that image."));if(b.size<=3*1024*1024||qv<.4)res(b);else{qv-=.15;go()}},"image/jpeg",qv)})()})},function(){throw new Error("That file could not be read as an image.")})}
+function putPhoto(path,blob){return X.token().then(function(t){return fetch(X.base+"/storage/v1/object/vehicle-photos/"+path,{method:"POST",headers:{apikey:X.key,Authorization:"Bearer "+t,"Content-Type":"image/jpeg","x-upsert":"false","cache-control":"3600"},body:blob})}).then(function(r){if(!r.ok)throw new Error("The photo could not be uploaded.")})}
+function delPhoto(path){if(!path)return Promise.resolve();return X.token().then(function(t){return fetch(X.base+"/storage/v1/object/vehicle-photos/"+path,{method:"DELETE",headers:{apikey:X.key,Authorization:"Bearer "+t}})}).catch(function(){})}
+function uploadPhoto(vid,file,kind,caption,bid){var path=vid+"/"+Date.now().toString(36)+Math.random().toString(36).slice(2,8)+".jpg";
+ return prepPhoto(file).then(function(b){return putPhoto(path,b)}).then(function(){return call("vehicle_photo_add",{p_id:vid,p:{path:path,kind:kind,caption:caption||null,booking_id:bid||null}})}).then(function(r){if(r.ok===false){delPhoto(path);throw new Error(msg(r))}return r})}
+function lightbox(path,cap){var u=URLS[path];if(!u)return;var o=document.createElement("div");o.className="vh-lb";o.setAttribute("role","dialog");o.setAttribute("aria-label","Photograph");o.innerHTML='<img src="'+esc(u)+'" alt="'+esc(cap||"Vehicle photograph")+'"><p>'+esc(cap||"")+'</p><button type="button" class="alt" aria-label="Close">Close</button>';
+ function close(){o.remove();document.removeEventListener("keydown",k)}function k(e){if(e.key==="Escape")close()}o.addEventListener("click",close);document.addEventListener("keydown",k);document.body.appendChild(o);o.querySelector("button").focus()}
+/* ---------- shared pieces ---------- */
+function head(icon,t,sub,right){return'<div class="p5-head"><div class="sec"><div class="ico">'+icon+'</div><div><h2>'+esc(t)+'</h2><small>'+esc(sub||"")+'</small></div></div>'+(right?'<div class="p5-right">'+right+'</div>':"")+'</div>'}
+function signCard(t){return'<div class="card">'+X.sec("▤",t,"")+'<p class="note">Sign in on the Bookings page with your staff account.</p><a class="btn" href="#bookings">Go to sign in</a></div>'}
+function noAccess(t){return'<div class="card">'+X.sec("⚒",t,"Managers and mechanics only")+'<p class="note">You do not have access to vehicle records.</p><a class="btn alt" href="#dashboard">Back to my dashboard</a></div>'}
+function failCard(m){return'<div class="card"><p class="note">'+esc(m||"Could not load vehicle records.")+'</p><button class="alt" data-vh="reload">Try again</button></div>'}
+function field(id,label,val,opts){opts=opts||{};return'<div><label for="'+id+'">'+esc(label)+'</label>'+(opts.area?'<textarea id="'+id+'" data-vf="'+id+'" rows="3" maxlength="'+(opts.max||2000)+'">'+esc(val||"")+'</textarea>':'<input id="'+id+'" data-vf="'+id+'" type="'+(opts.type||"text")+'" maxlength="'+(opts.max||80)+'" value="'+esc(val==null?"":val)+'"'+(opts.ph?' placeholder="'+esc(opts.ph)+'"':"")+(opts.max2?' max="'+opts.max2+'"':"")+'>')+'</div>'}
+function sel(id,label,opts,cur){return'<div><label for="'+id+'">'+esc(label)+'</label><select id="'+id+'" data-vf="'+id+'">'+opts.map(function(o){return'<option value="'+esc(o[0])+'"'+(String(o[0])===String(cur)?" selected":"")+'>'+esc(o[1])+'</option>'}).join("")+'</select></div>'}
+function catOpts(){return Object.keys(CAT).map(function(k){return[k,CAT[k]]})}
+var FV={};function fv(id,d){return FV[id]!=null?FV[id]:(d==null?"":d)}
+function gv(id){var e=document.getElementById(id);return e?e.value:""}
+/* one service-history entry, expandable. money: only managers receive prices from the database */
+function svcEntry(s,showMoney,open){var inv=s.invoice,cost=s.cost;
+ var parts=(s.parts&&s.parts.length)?'<table class="vh-mini"><tr><th>Part</th><th>Qty</th>'+(showMoney?'<th>Unit</th>':"")+'</tr>'+s.parts.map(function(p){return'<tr><td>'+esc(p.name)+'</td><td>'+p.quantity+'</td>'+(showMoney?'<td>'+money(p.unit_price)+'</td>':"")+'</tr>'}).join("")+'</table>':'<p class="note">No parts recorded.</p>';
+ var lab=(s.labour&&s.labour.length)?s.labour.map(function(l){return esc(l.user_name||"Mechanic")+" — "+mins(l.minutes)+(l.description?" ("+esc(l.description)+")":"")}).join("<br>"):"No labour recorded.";
+ var ent=(s.entries&&s.entries.length)?s.entries.map(function(e){return'<li><b>'+(e.kind==="work"?"Work performed":"Note")+'</b> '+esc(e.body)+'<small> — '+esc(e.author||"")+'</small></li>'}).join(""):"";
+ return'<details class="vh-svc"'+(open?" open":"")+'><summary><span class="vh-d">'+esc(dstr(s.closed_at||s.scheduled_at))+'</span><b>'+esc(SVCN[s.service_type]||s.service_type)+'</b><span class="vh-m">'+esc(s.reference)+' · '+esc(s.mechanic)+'</span>'+(showMoney&&cost?'<span class="vh-c">'+money(cost.amount)+'</span>':"")+'</summary>'+
+  '<div class="vh-sb"><dl class="vh-dl"><div><dt>Service date</dt><dd>'+esc(dstr(s.closed_at||s.scheduled_at))+'</dd></div><div><dt>Booking reference</dt><dd>'+esc(s.reference)+'</dd></div><div><dt>Job</dt><dd><a href="#jobs/'+esc(s.booking_id)+'">'+esc(s.reference)+' worksheet</a></dd></div><div><dt>Mechanic</dt><dd>'+esc(s.mechanic)+'</dd></div><div><dt>Customer at the time</dt><dd>'+esc(s.customer_name||"—")+'</dd></div>'+
+  '<div><dt>Invoice</dt><dd>'+(inv?esc(inv.number||"Draft")+' · '+esc(inv.status)+(showMoney&&inv.total!=null?' · '+money(inv.total):""):"None yet")+'</dd></div>'+(showMoney&&cost?'<div><dt>Total service cost</dt><dd><b>'+money(cost.amount)+'</b> <small>'+(cost.basis==="invoice"?"from the invoice":"parts only, labour not priced")+'</small></dd></div>':"")+'</dl>'+
+  (s.work_summary?'<h4>Work completed</h4><p class="vh-pre">'+esc(s.work_summary)+'</p>':"")+'<h4>Parts installed</h4>'+parts+'<h4>Labour recorded</h4><p>'+lab+'</p><p class="note">Total labour: '+mins(s.labour_minutes)+'</p>'+(ent?'<h4>Mechanic notes</h4><ul class="vh-ul">'+ent+'</ul>':"")+'</div></details>'}
+function noteRow(n,canSet,mine){var open=n.status==="open",k=n.kind;
+ return'<div class="row vh-note'+(open?"":" done")+'"><div style="flex:1"><span class="pill'+(k==="fault"?" bad":k==="recommendation"?" a":"")+'">'+esc(KIND[k]||k)+'</span>'+((k==="fault"||k==="recommendation")&&!open?' <span class="pill ok">'+(n.status==="done"?"Done":"Dismissed")+'</span>':"")+'<p class="vh-pre">'+esc(n.body)+'</p><small>'+esc(n.author_name||"")+' · '+esc(dstr(n.created_at))+(n.reference?' · '+esc(n.reference):"")+'</small></div>'+
+  ((k==="fault"||k==="recommendation")&&canSet?(open?'<div class="vh-act"><button class="alt sm" data-vh="note-set" data-id="'+n.id+'" data-s="done">Mark done</button><button class="alt sm" data-vh="note-set" data-id="'+n.id+'" data-s="dismissed">Dismiss</button></div>':'<button class="alt sm" data-vh="note-set" data-id="'+n.id+'" data-s="open">Reopen</button>'):"")+'</div>'}
+
+/* ======================= directory ======================= */
+var VH={q:"",manufacturer:"",model:"",plate:"",customer:"",status:"",category:"",review:false,archived:false,list:null,add:null,err:"",msg:"",unl:null,showUnl:false};
+function vhSub(){var h=(location.hash||"").slice(1).split("/");return{id:h[1]||"",tab:h[2]||""}}
+V.vehicles=function(){var t=ticket();setTimeout(function(){whenReady(function(){vhRoute(t)})},0);return'<div id="vh"></div>'};
+function vhRoute(t){var el=q("#vh");if(!el||t!==MT)return;
+ if(!X.hasSession()){el.innerHTML=signCard("Vehicles");return}
+ if(!canV()){el.innerHTML=noAccess("Vehicles");return}
+ var s=vhSub();if(s.id)vpLoad(s.id,s.tab,t);else vlLoad(t)}
+function filters(){var o={limit:300};["q","manufacturer","model","plate","customer","status","category"].forEach(function(k){if(VH[k])o[k]=VH[k]});if(VH.review)o.review=true;if(VH.archived)o.archived=true;return o}
+function vlLoad(t){var el=q("#vh");if(!VH.list)el.innerHTML='<div class="card"><div class="sk" style="height:240px"></div></div>';
+ var jobs=[call("vehicle_list",{p:filters()})];if(isM())jobs.push(call("vehicle_unlinked_bookings",{}));
+ Promise.all(jobs).then(function(r){if(t&&t!==MT||!q("#vh"))return;if(r[0].ok===false){q("#vh").innerHTML=failCard(msg(r[0]));return}
+  VH.list=r[0];VH.unl=r[1]&&r[1].ok!==false?r[1].rows:null;signMany(r[0].rows.map(function(v){return v.main_photo_path})).then(vlDraw)})}
+function vCard(v){var u=URLS[v.main_photo_path];
+ return'<a class="vh-card'+(v.archived?" arch":"")+'" href="#vehicles/'+esc(v.id)+'"><div class="vh-photo">'+(u?'<img src="'+esc(u)+'" alt="Photograph of '+esc([v.manufacturer,v.model].filter(Boolean).join(" "))+'" loading="lazy">':'<div class="vh-ph">'+CAR+'</div>')+'<span class="vh-ref">'+esc(v.ref)+'</span>'+(v.needs_review?'<span class="vh-flag" title="'+esc(v.review_reason||"Needs review")+'">Review</span>':"")+'</div>'+
+  '<div class="vh-info">'+plate(v.plate)+'<h3>'+title(v)+'</h3><p class="vh-sub">'+esc([v.colour,CAT[v.category]].filter(Boolean).join(" · "))+'</p><p class="vh-owner">'+esc(v.owner_name||"No owner recorded")+'</p>'+
+  '<div class="vh-meta">'+wpill(v.workshop_status)+'<span>'+v.services_completed+' service'+(v.services_completed==1?"":"s")+'</span><span>Last visit '+esc(v.last_visit?dstr(v.last_visit):"—")+'</span></div></div></a>'}
+function selOpts(id,label,items,cur,all){return'<div><label for="'+id+'">'+esc(label)+'</label><select id="'+id+'" data-vq="'+id.slice(3)+'"><option value="">'+all+'</option>'+items.map(function(x){var v=Array.isArray(x)?x[0]:x,l=Array.isArray(x)?x[1]:x;return'<option value="'+esc(v)+'"'+(v===cur?" selected":"")+'>'+esc(l)+'</option>'}).join("")+'</select></div>'}
+function addForm(){var A=VH.add;if(!A)return"";
+ return'<div class="card sp" id="vh-add">'+X.sec("+","Add a vehicle","Registration, owner and details")+(A.err?'<div class="jb-err" role="alert">'+esc(A.err)+(A.dup?' <a href="#vehicles/'+esc(A.dup.id)+'">Open '+esc(A.dup.ref)+'</a>':"")+'</div>':"")+
+  '<div class="g g3">'+field("va-plate","Registration plate",fv("va-plate"),{max:16})+field("va-make","Manufacturer",fv("va-make"),{max:40})+field("va-model","Model",fv("va-model"),{max:60})+field("va-col","Colour",fv("va-col"),{max:30})+sel("va-cat","Category",catOpts(),fv("va-cat","car"))+field("va-mile","Mileage (optional)",fv("va-mile"),{type:"number",max:8})+
+  field("va-on","Customer",fv("va-on"),{max:80})+field("va-oc","Customer contact",fv("va-oc"),{max:80})+field("va-first","First registered with Atomic Garage",fv("va-first"),{type:"date",max2:new Date().toISOString().slice(0,10)})+'</div>'+field("va-notes","General notes",fv("va-notes"),{area:1})+
+  (A.dup?'<div class="sp">'+field("va-why","Why is this a different vehicle? (required to create a second record with this registration)",fv("va-why"),{max:200})+'</div>':"")+
+  '<div class="p5-btns sp"><button data-vh="add-save"'+(A.busy?" disabled":"")+'>'+(A.dup?"Create anyway and flag for review":"Create vehicle")+'</button><button class="alt" data-vh="add-cancel">Cancel</button></div></div>'}
+function vlDraw(){var el=q("#vh");if(!el||!VH.list)return;var L=VH.list,rows=L.rows,unl=VH.unl||[];
+ var panelU=isM()&&unl.length?'<div class="card sp">'+X.sec("✉","Bookings waiting for a vehicle record",unl.length+" active booking"+(unl.length==1?"":"s")+" not linked yet")+unl.map(function(b){return'<div class="row"><div style="flex:1"><b>'+esc(b.reference)+' · '+esc(b.vehicle||"")+(b.vehicle_reg?" ("+esc(b.vehicle_reg)+")":"")+'</b><small>'+esc(b.character_name)+' · '+esc(SVCN[b.service_type]||b.service_type)+(b.has_match?' · possible match found':"")+'</small></div><button class="alt sm" data-vh="unl-open" data-id="'+esc(b.id)+'">'+(VH.showUnl===b.id?"Close":"Review")+'</button></div>'+(VH.showUnl===b.id?'<div class="vh-link" data-vh-link="'+esc(b.id)+'"></div>':"")}).join("")+'</div>':"";
+ el.innerHTML=head("▦","Vehicles","Every vehicle that has visited the workshop",(isM()?'<button data-vh="add-open">Add vehicle</button>':""))+(VH.msg?'<div class="bk-note good" role="status">'+esc(VH.msg)+'</div>':"")+(VH.err?'<div class="jb-err" role="alert">'+esc(VH.err)+'</div>':"")+
+  '<div class="g g3 p5-tiles">'+[["Vehicles",L.total,"matching the filters"],["Needs review",L.review_count,"flagged records"],["Unlinked bookings",L.unlinked_bookings,"active bookings without a vehicle record"]].map(function(t,i){return'<div class="card stat p5-tile"><h3>'+t[0]+'</h3><div class="big">'+t[1]+'</div><small>'+t[2]+'</small></div>'}).join("")+'</div>'+
+  addForm()+panelU+
+  '<div class="card sp"><div class="vh-filters"><div class="vh-fq"><label for="vq-q" class="sr">Search vehicles</label><input id="vq-q" type="search" data-vq="q" placeholder="Search registration, make, model, customer or reference" value="'+esc(VH.q)+'"></div>'+
+  selOpts("vq-manufacturer","Manufacturer",L.manufacturers,VH.manufacturer,"All manufacturers")+selOpts("vq-model","Model",L.models,VH.model,"All models")+'<div><label for="vq-plate">Registration</label><input id="vq-plate" data-vq="plate" value="'+esc(VH.plate)+'"></div><div><label for="vq-customer">Customer</label><input id="vq-customer" data-vq="customer" value="'+esc(VH.customer)+'"></div>'+
+  selOpts("vq-status","Workshop status",[["in_workshop","In workshop"],["awaiting_approval","Awaiting approval"],["booked","Booked"],["idle","Not in workshop"]],VH.status,"Any status")+selOpts("vq-category","Category",catOpts(),VH.category,"Any category")+
+  '<div class="vh-chk"><label class="p5-ck"><input type="checkbox" data-vq="review"'+(VH.review?" checked":"")+'> Needs review</label><label class="p5-ck"><input type="checkbox" data-vq="archived"'+(VH.archived?" checked":"")+'> Show archived</label></div></div>'+
+  (rows.length?'<div class="vh-grid">'+rows.map(vCard).join("")+'</div>':'<div class="empty">No vehicles match these filters.</div>')+'</div>';
+ qa("[data-vh-link]",el).forEach(function(c){lkEnsure(c.dataset.vhLink)});
+ if(VH._focus){var f=q("#"+VH._focus);if(f){f.focus();try{f.setSelectionRange(f.value.length,f.value.length)}catch(e){}}VH._focus=null}}
+
+/* ======================= profile ======================= */
+var VP={id:"",tab:"overview",d:null,edit:false,err:"",msg:"",busy:false,merge:null};
+var TABS=[["overview","Overview"],["service","Service History"],["repairs","Repairs"],["modifications","Modifications"],["bookings","Bookings"],["invoices","Invoices","mgr"],["photos","Photographs"],["recommendations","Recommendations"],["owners","Ownership History"],["activity","Activity Log"]];
+function vpLoad(id,tab,t){if(VP.id!==id){VP.d=null;VP.edit=false;VP.err=VP.msg="";VP.merge=null;FV={}}VP.id=id;VP.tab=TABS.some(function(x){return x[0]===tab})?tab:"overview";
+ var el=q("#vh");if(!VP.d)el.innerHTML='<div class="card"><div class="sk" style="height:300px"></div></div>';
+ call("vehicle_get",{p_id:id}).then(function(r){if(t&&t!==MT||!q("#vh"))return;if(r.ok===false){q("#vh").innerHTML='<p class="p5-back"><a href="#vehicles">← All vehicles</a></p>'+failCard(msg(r,"Vehicle not found."));return}
+  VP.d=r;signMany(r.photos.map(function(p){return p.path})).then(vpDraw)})}
+function vpReload(){return call("vehicle_get",{p_id:VP.id}).then(function(r){if(r.ok===false){VP.err=msg(r);return vpDraw()}VP.d=r;return signMany(r.photos.map(function(p){return p.path})).then(vpDraw)})}
+function openNotes(d,k){return d.notes.filter(function(n){return k.indexOf(n.kind)>=0&&n.status==="open"})}
+function vpDraw(){var el=q("#vh");if(!el||!VP.d)return;var d=VP.d,v=d.vehicle,mgr=d.can_manage,main=v.main_photo_path&&URLS[v.main_photo_path];
+ var openF=openNotes(d,["fault"]).length,openR=openNotes(d,["recommendation"]).length;
+ var hero='<div class="card vh-hero"><div class="vh-hphoto">'+(main?'<img src="'+esc(main)+'" alt="Main photograph of '+title(v)+'">':'<div class="vh-ph big">'+CAR+'<span>No photograph yet</span></div>')+'</div><div class="vh-hinfo"><small class="p5-kick">'+esc(v.ref)+' · '+esc(CAT[v.category]||v.category)+'</small><h1>'+title(v)+'</h1>'+plate(v.plate)+'<p class="vh-sub">'+esc([v.colour].filter(Boolean).join(""))+'</p>'+
+  '<div class="p5-pills">'+wpill(v.workshop_status)+(v.needs_review?'<span class="pill bad">Needs review</span>':"")+(v.archived?'<span class="pill">Archived</span>':"")+(openF?'<span class="pill bad">'+openF+' open fault'+(openF==1?"":"s")+'</span>':"")+(openR?'<span class="pill a">'+openR+' recommendation'+(openR==1?"":"s")+'</span>':"")+'</div>'+
+  '<dl class="vh-dl"><div><dt>Customer</dt><dd>'+esc(v.owner_name||"—")+'</dd></div><div><dt>Contact</dt><dd>'+esc(v.owner_contact||"—")+'</dd></div></dl></div></div>';
+ var tiles='<div class="g g4 p5-tiles sp">'+[["Completed services",v.services_completed,"closed and approved jobs"],["Last workshop visit",v.last_visit?dstr(v.last_visit):"—",v.bookings_count+" booking"+(v.bookings_count==1?"":"s")+" in total"],["Mileage",km(v.mileage),v.mileage_at?"recorded "+dstr(v.mileage_at):"not recorded"],["With Atomic Garage since",dstr(v.first_registered_at),"first registered"]].map(function(t){return'<div class="card stat p5-tile"><h3>'+t[0]+'</h3><div class="big vh-bigtxt">'+esc(String(t[1]))+'</div><small>'+t[2]+'</small></div>'}).join("")+'</div>';
+ var tabs='<div class="vh-tabs" role="tablist" aria-label="Vehicle sections">'+TABS.filter(function(t){return!t[2]||mgr}).map(function(t){return'<button type="button" role="tab" class="vh-tab'+(VP.tab===t[0]?" on":"")+'" aria-selected="'+(VP.tab===t[0])+'" data-vh="tab" data-k="'+t[0]+'">'+t[1]+'</button>'}).join("")+'</div>';
+ el.innerHTML='<p class="p5-back"><a href="#vehicles">← All vehicles</a></p>'+(d.merged_into?'<div class="bk-note" role="status">This record was merged into <a href="#vehicles/'+esc(d.merged_into.id)+'">'+esc(d.merged_into.ref)+'</a>. Its history now lives there.</div>':"")+(VP.msg?'<div class="bk-note good" role="status">'+esc(VP.msg)+'</div>':"")+(VP.err?'<div class="jb-err" role="alert">'+esc(VP.err)+'</div>':"")+hero+tiles+tabs+'<div class="vh-pane" role="tabpanel">'+tabBody(d,VP.tab)+'</div>'}
+function tabBody(d,t){var v=d.vehicle,mgr=d.can_manage;
+ if(t==="service")return svcTab(d,function(s){return true},"Service History","Completed jobs approved by management, newest first.");
+ if(t==="repairs")return svcTab(d,function(s){return["repairs","towing","other"].indexOf(s.service_type)>=0},"Repairs","Repair, towing and other completed jobs.")+'<div class="card sp">'+X.sec("⚠","Faults found","Recorded by mechanics and managers")+listNotes(d,["fault"])+'</div>';
+ if(t==="modifications")return svcTab(d,function(s){return["tuning","custom_builds"].indexOf(s.service_type)>=0},"Modifications","Tuning and custom build jobs.")+'<div class="card sp">'+X.sec("⚙","Modification notes","Fitted upgrades and changes")+listNotes(d,["modification"])+(mgr?noteForm("modification"):"")+'</div>';
+ if(t==="bookings")return'<div class="card">'+X.sec("▦","Bookings","Every booking linked to this vehicle")+(d.bookings.length?'<div class="tw"><table><tr><th>Reference</th><th>Service</th><th>Date</th><th>Mechanic</th><th>Status</th></tr>'+d.bookings.map(function(b){return'<tr><td><a href="#bookings">'+esc(b.reference)+'</a></td><td>'+esc(SVCN[b.service_type]||b.service_type)+'</td><td>'+esc(b.scheduled_at?X.ft(b.scheduled_at):b.preferred_at?X.ft(b.preferred_at):"—")+'</td><td>'+esc(b.mechanic||"—")+'</td><td><span class="pill">'+esc(String(b.status).replace(/_/g," "))+'</span></td></tr>'}).join("")+'</table></div>':'<div class="empty">No bookings are linked to this vehicle.</div>')+'</div>';
+ if(t==="invoices"&&mgr)return'<div class="card">'+X.sec("$","Invoices","Invoices raised for this vehicle")+(d.invoices&&d.invoices.length?'<div class="tw"><table><tr><th>Number</th><th>Booking</th><th>Status</th><th>Total</th><th>Paid</th><th>Balance</th></tr>'+d.invoices.map(function(i){return'<tr><td><a href="#invoices">'+esc(i.number||"Draft")+'</a></td><td>'+esc(i.booking_reference||"")+'</td><td><span class="pill">'+esc(i.status)+'</span></td><td>'+money(i.total)+'</td><td>'+money(i.paid_total)+'</td><td>'+money(i.balance)+'</td></tr>'}).join("")+'</table></div>':'<div class="empty">No invoices for this vehicle yet.</div>')+'</div>';
+ if(t==="photos")return photosTab(d);
+ if(t==="recommendations")return'<div class="card">'+X.sec("★","Recommendations and observations","Open items first")+listNotes(d,["recommendation","fault","observation","general"],true)+(mgr?noteForm("recommendation"):"")+'</div>';
+ if(t==="owners")return ownersTab(d);
+ if(t==="activity")return'<div class="card">'+X.sec("◷","Activity log","Everything that has changed on this record")+(d.events.length?'<ol class="vh-tl">'+d.events.map(function(e){return'<li><b>'+esc(EVL[e.action]||e.action)+'</b><small>'+esc(X.ft(e.at))+' · '+esc(e.actor_name||"System")+'</small>'+evDetail(e)+'</li>'}).join("")+'</ol>':'<div class="empty">No activity yet.</div>')+'</div>';
+ return overview(d)}
+function evDetail(e){var x=e.detail||{},p=[];if(x.booking)p.push("Booking "+x.booking);if(x.reason)p.push(x.reason);if(x.from&&x.to)p.push(x.from+" → "+x.to);if(x.note&&typeof x.note==="string")p.push(x.note);if(x.kind)p.push(KIND[x.kind]||x.kind);if(x.merged)p.push("Merged "+x.merged);if(x.into)p.push("Into "+x.into);if(x.customer_differs)p.push("Customer differs from owner on record");if(x.flagged&&x.reason)p.push("Flagged: "+x.reason);return p.length?'<span>'+esc(p.join(" · "))+'</span>':""}
+function svcTab(d,f,t,sub){var rows=d.services.filter(f),mgr=d.can_manage;
+ return'<div class="card">'+X.sec("⚙",t,sub)+(rows.length?'<div class="vh-svcs">'+rows.map(function(s,i){return svcEntry(s,mgr,i===0&&rows.length===1)}).join("")+'</div>':'<div class="empty">No completed jobs here yet. Entries appear automatically when management closes a mechanic’s job.</div>')+'</div>'}
+function listNotes(d,kinds,sort){var ns=d.notes.filter(function(n){return kinds.indexOf(n.kind)>=0});if(sort)ns=ns.slice().sort(function(a,b){return(a.status==="open"?0:1)-(b.status==="open"?0:1)});
+ return ns.length?ns.map(function(n){return noteRow(n,d.can_manage||true)}).join(""):'<div class="empty">Nothing recorded yet.</div>'}
+function noteForm(k){return'<h3 class="hd sp" style="font-size:22px">Add a note</h3><div class="g g3">'+sel("vn-kind","Type",Object.keys(KIND).map(function(x){return[x,KIND[x]]}),fv("vn-kind",k))+field("vn-mile","Mileage (optional)",fv("vn-mile"),{type:"number",max:8})+'</div>'+field("vn-body","Note",fv("vn-body"),{area:1,max:1000})+'<div class="p5-btns sp"><button data-vh="note-add">Add note</button></div>'}
+function photosTab(d){var mgr=d.can_manage;
+ return'<div class="card">'+X.sec("▣","Photographs","Stored privately for staff only")+(d.photos.length?'<div class="vh-pgrid">'+d.photos.map(function(p){return'<figure class="vh-fig"><button type="button" class="vh-pbtn" data-vh="lb" data-p="'+esc(p.path)+'" data-c="'+esc(p.caption||"")+'">'+(img(p.path,p.caption||"Vehicle photograph")||'<span class="vh-ph">'+CAR+'</span>')+'</button><figcaption><span class="pill">'+esc(PK[p.kind]||p.kind)+'</span>'+(p.is_main?' <span class="pill a">Main</span>':"")+'<p>'+esc(p.caption||"")+'</p><small>'+esc(p.uploader_name||"")+' · '+esc(dstr(p.created_at))+'</small><div class="vh-act">'+(mgr&&!p.is_main?'<button class="alt sm" data-vh="photo-main" data-id="'+p.id+'">Make main</button>':"")+'<button class="alt sm" data-vh="photo-del" data-id="'+p.id+'" aria-label="Delete photograph">Delete</button></div></figcaption></figure>'}).join("")+'</div>':'<div class="empty">No photographs yet.</div>')+
+  (mgr?'<h3 class="hd sp" style="font-size:22px">Add a photograph</h3><div class="g g3"><div><label for="vp-file">Photo (JPG, PNG or WebP)</label><input id="vp-file" type="file" accept="image/jpeg,image/png,image/webp"></div>'+sel("vp-kind","Type",Object.keys(PK).map(function(k){return[k,PK[k]]}),fv("vp-kind","condition"))+field("vp-cap","Caption",fv("vp-cap"),{max:200})+'</div><div class="p5-btns sp"><button data-vh="photo-add"'+(VP.busy?" disabled":"")+'>Upload photograph</button></div>':'<p class="note">Mechanics add photographs from the vehicle section of their job.</p>')+'</div>'}
+function ownersTab(d){var mgr=d.can_manage,v=d.vehicle;
+ return'<div class="card">'+X.sec("☺","Ownership history","Past services keep the customer they were done for")+(d.owners.length?'<div class="tw"><table><tr><th>Customer</th><th>Contact</th><th>From</th><th>To</th><th>Note</th></tr>'+d.owners.map(function(o){return'<tr><td><b>'+esc(o.customer_name)+'</b>'+(o.to_at?"":' <span class="pill ok">Current</span>')+'</td><td>'+esc(o.contact||"—")+'</td><td>'+esc(dstr(o.from_at))+'</td><td>'+esc(o.to_at?dstr(o.to_at):"Present")+'</td><td>'+esc(o.note||"")+'</td></tr>'}).join("")+'</table></div>':'<div class="empty">No owner recorded.</div>')+
+  (mgr?'<h3 class="hd sp" style="font-size:22px">Record an ownership or contact change</h3><div class="g g3">'+field("vo-name","Customer",fv("vo-name",v.owner_name||""),{max:80})+field("vo-contact","Contact",fv("vo-contact",v.owner_contact||""),{max:80})+field("vo-note","Note (optional)",fv("vo-note"),{max:300})+'</div><div class="p5-btns sp"><button data-vh="owner-save">Save</button></div><p class="note">Keeping the same name only updates the contact details. A different name starts a new owner entry and the previous owner stays in this history.</p>':"")+'</div>'+
+  '<div class="card sp">'+X.sec("▤","Registration history","Earlier plates stay searchable")+'<div class="tw"><table><tr><th>Plate</th><th>From</th><th>To</th><th>Reason</th></tr>'+d.plates.map(function(p){return'<tr><td>'+plate(p.plate)+(p.to_at?"":' <span class="pill ok">Current</span>')+'</td><td>'+esc(dstr(p.from_at))+'</td><td>'+esc(p.to_at?dstr(p.to_at):"Present")+'</td><td>'+esc(p.reason||"")+'</td></tr>'}).join("")+'</table></div>'+
+  (mgr?'<h3 class="hd sp" style="font-size:22px">Change the registration</h3><div class="g g3">'+field("vr-plate","New registration plate",fv("vr-plate"),{max:16})+field("vr-why","Reason",fv("vr-why"),{max:200})+'</div><div class="p5-btns sp"><button class="alt" data-vh="plate-save">Change registration</button></div>':"")+'</div>'}
+function overview(d){var v=d.vehicle,mgr=d.can_manage,last=d.services[0],ob=d.notes.filter(function(n){return n.kind==="observation"})[0];
+ var rev=v.needs_review&&mgr?'<div class="card sp vh-review"><b>Needs review</b><p>'+esc(v.review_reason||"This record was flagged.")+'</p>'+(VP.merge?mergeForm(d):'<div class="p5-btns"><button class="alt" data-vh="review-clear">Mark as reviewed</button><button class="alt" data-vh="merge-open">Merge into another record…</button></div>')+'</div>':"";
+ var cond='<div class="card">'+X.sec("★","Current condition","From mechanics’ records")+'<div class="p5-mini">'+[["Workshop status",(WST[v.workshop_status]||WST.idle)[0]],["Open faults",openNotes(d,["fault"]).length],["Open recommendations",openNotes(d,["recommendation"]).length],["Photographs",d.photos.length]].map(function(m){return'<div class="p5-m"><b>'+esc(String(m[1]))+'</b><span>'+esc(m[0])+'</span></div>'}).join("")+'</div>'+
+  (openNotes(d,["fault","recommendation"]).length?'<h4>Needs attention</h4>'+openNotes(d,["fault","recommendation"]).slice(0,4).map(function(n){return noteRow(n,true)}).join(""):'<p class="note">No open faults or recommendations.</p>')+(ob?'<h4>Latest observation</h4>'+noteRow(ob,false):"")+'</div>';
+ var prev='<div class="card">'+X.sec("◷","Previous workshop activity","Latest services")+(d.services.length?d.services.slice(0,3).map(function(s){return svcEntry(s,mgr,false)}).join("")+'<p class="sp"><button class="alt sm" data-vh="tab" data-k="service">Full service history</button></p>':'<div class="empty">No completed services yet.</div>')+'</div>';
+ var det='<div class="card sp">'+X.sec("☰","Vehicle details","")+(VP.edit&&mgr?editForm(v):'<dl class="vh-dl big"><div><dt>Reference</dt><dd>'+esc(v.ref)+'</dd></div><div><dt>Registration</dt><dd>'+plate(v.plate)+'</dd></div><div><dt>Manufacturer</dt><dd>'+esc(v.manufacturer||"—")+'</dd></div><div><dt>Model</dt><dd>'+esc(v.model||"—")+'</dd></div><div><dt>Colour</dt><dd>'+esc(v.colour||"—")+'</dd></div><div><dt>Category</dt><dd>'+esc(CAT[v.category]||v.category)+'</dd></div><div><dt>Mileage</dt><dd>'+km(v.mileage)+'</dd></div><div><dt>First registered with Atomic Garage</dt><dd>'+esc(dstr(v.first_registered_at))+'</dd></div></dl>'+(v.notes?'<h4>General notes</h4><p class="vh-pre">'+esc(v.notes)+'</p>':"")+
+  (mgr?'<div class="p5-btns sp"><button class="alt" data-vh="edit-open">Edit details</button>'+(v.archived?'<button class="alt" data-vh="archive" data-a="0">Restore record</button>':'<button class="alt" data-vh="archive" data-a="1">Archive record</button>')+'</div>':""))+'</div>';
+ return rev+'<div class="g g2">'+cond+prev+'</div>'+det}
+function editForm(v){return'<div class="g g3">'+field("ve-make","Manufacturer",fv("ve-make",v.manufacturer||""),{max:40})+field("ve-model","Model",fv("ve-model",v.model||""),{max:60})+field("ve-col","Colour",fv("ve-col",v.colour||""),{max:30})+sel("ve-cat","Category",catOpts(),fv("ve-cat",v.category))+field("ve-mile","Mileage",fv("ve-mile",v.mileage==null?"":v.mileage),{type:"number",max:8})+field("ve-first","First registered with Atomic Garage",fv("ve-first",v.first_registered_at),{type:"date",max2:new Date().toISOString().slice(0,10)})+'</div>'+field("ve-notes","General notes",fv("ve-notes",v.notes||""),{area:1})+'<div class="p5-btns sp"><button data-vh="edit-save">Save details</button><button class="alt" data-vh="edit-cancel">Cancel</button></div>'}
+function mergeForm(d){var opts=(VH.all||[]).filter(function(x){return x.id!==d.vehicle.id});
+ return'<div class="g g3"><div><label for="vm-to">Merge this record into</label><select id="vm-to" data-vf="vm-to"><option value="">Choose a vehicle…</option>'+opts.map(function(x){return'<option value="'+esc(x.id)+'"'+(fv("vm-to")===x.id?" selected":"")+'>'+esc(x.ref+" · "+x.plate+" · "+[x.manufacturer,x.model].filter(Boolean).join(" ")+(x.owner_name?" · "+x.owner_name:""))+'</option>'}).join("")+'</select></div>'+field("vm-why","Reason (required)",fv("vm-why"),{max:200})+'</div><p class="note">All bookings, notes, photographs and history move to the record you choose. This record is archived and stays visible in the activity log.</p><div class="p5-btns"><button data-vh="merge-do">Merge records</button><button class="alt" data-vh="merge-cancel">Cancel</button></div>'}
+
+/* ======================= link panel (booking detail, worksheet, directory) ======================= */
+var LK={};
+function lkState(b){return LK[b]||(LK[b]={sug:null,err:"",msg:"",busy:false,create:false,change:false,dup:null,at:0})}
+function lkEnsure(b,force){var s=lkState(b);if(s.sug&&!force&&Date.now()-s.at<30000){lkDraw(b);return}
+ call("vehicle_suggest",{p_booking:b}).then(function(r){if(r.ok===false){s.err=msg(r);s.sug=null;s.fail=true}else{s.sug=r;s.err="";s.fail=false}s.at=Date.now();
+  var paths=[];if(r.ok!==false){(r.candidates||[]).concat(r.linked?[r.linked]:[]).forEach(function(c){if(c.main_photo_path)paths.push(c.main_photo_path)})}signMany(paths).then(function(){lkDraw(b)})})}
+function miniV(v){var u=URLS[v.main_photo_path];return'<div class="vh-mv"><div class="vh-mphoto">'+(u?'<img src="'+esc(u)+'" alt="">':CAR)+'</div><div>'+plate(v.plate)+' <b>'+title(v)+'</b><small>'+esc(v.ref)+(v.colour?" · "+esc(v.colour):"")+' · '+esc(v.owner_name||"No owner")+' · '+v.services_completed+' completed service'+(v.services_completed==1?"":"s")+(v.last_visit?' · last visit '+esc(dstr(v.last_visit)):"")+'</small></div></div>'}
+function recent(list){return list&&list.length?'<ul class="vh-ul vh-prev">'+list.map(function(s){return'<li><b>'+esc(dstr(s.closed_at||s.scheduled_at))+'</b> '+esc(SVCN[s.service_type]||s.service_type)+' · '+esc(s.reference)+' · '+esc(s.mechanic)+(s.work_summary?'<br><small>'+esc(String(s.work_summary).slice(0,140))+'</small>':"")+'</li>'}).join("")+'</ul>':'<p class="note">No previous completed visits.</p>'}
+function lkHtml(bid){var s=lkState(bid),S=s.sug;if(!S)return s.err?'<p class="note">'+(s.fail?"Vehicle records are not available right now.":esc(s.err))+'</p>':'<div class="sk" style="height:60px"></div>';
+ var b=S.booking,h='';
+ if(s.msg)h+='<div class="bk-note good" role="status">'+esc(s.msg)+'</div>';if(s.err)h+='<div class="jb-err" role="alert">'+esc(s.err)+(s.dup?' <a href="#vehicles/'+esc(s.dup.id)+'">Open '+esc(s.dup.ref)+'</a>':"")+'</div>';
+ if(S.linked&&!s.change){h+=miniV(S.linked)+'<h4>Previous workshop visits</h4>'+recent(S.linked.recent)+'<div class="p5-btns"><a class="btn alt sm" href="#vehicles/'+esc(S.linked.id)+'">Open vehicle record</a>'+(isM()?'<button class="alt sm" data-vhl="change" data-b="'+esc(bid)+'">Link to a different vehicle</button>':"")+'</div>';return h}
+ if(S.linked&&s.change)h+='<p class="note">Currently linked to <b>'+esc(S.linked.ref)+'</b>. Choose another record and say why.</p>'+field("lk-why-"+bid,"Reason for moving this booking",fv("lk-why-"+bid),{max:200});
+ else h+='<p class="note">No vehicle record is linked to this booking yet. '+(S.candidates.length?"Possible matches are shown below. Nothing is linked or merged automatically.":"No existing record looks like this vehicle.")+'</p>';
+ h+=(S.candidates||[]).map(function(c){return'<div class="vh-cand">'+miniV(c)+'<div class="p5-pills">'+(c.reasons||[]).map(function(r){return'<span class="pill a">'+esc(r)+'</span>'}).join("")+'</div><h4>Previous visits</h4>'+recent(c.recent)+'<div class="p5-btns"><button data-vhl="link" data-b="'+esc(bid)+'" data-v="'+esc(c.id)+'"'+(s.busy?" disabled":"")+'>Link this vehicle</button><a class="btn alt sm" href="#vehicles/'+esc(c.id)+'">View record</a></div></div>'}).join("");
+ if(!s.create)h+='<div class="p5-btns"><button class="alt" data-vhl="create-open" data-b="'+esc(bid)+'">'+(S.candidates.length?"None of these — create a new vehicle record":"Create a new vehicle record")+'</button></div>';
+ else{var k="lc-"+bid+"-";h+='<div class="vh-create"><h4>New vehicle record</h4><div class="g g3">'+field(k+"plate","Registration plate",fv(k+"plate",b.reg||""),{max:16})+field(k+"make","Manufacturer",fv(k+"make",b.suggested_make||""),{max:40})+field(k+"model","Model",fv(k+"model",b.suggested_model||""),{max:60})+field(k+"col","Colour",fv(k+"col"),{max:30})+sel(k+"cat","Category",catOpts(),fv(k+"cat","car"))+field(k+"mile","Mileage (optional)",fv(k+"mile"),{type:"number",max:8})+field(k+"on","Customer",fv(k+"on",b.customer||""),{max:80})+field(k+"oc","Contact",fv(k+"oc",b.contact||""),{max:80})+'</div>'+
+  (s.dup?'<div class="sp">'+field(k+"why","Why is this a different vehicle? (required to create a second record with this registration)",fv(k+"why"),{max:200})+'</div>':"")+'<div class="p5-btns sp"><button data-vhl="create" data-b="'+esc(bid)+'"'+(s.busy?" disabled":"")+'>'+(s.dup?"Create anyway and flag for review":"Create and link")+'</button><button class="alt" data-vhl="create-cancel" data-b="'+esc(bid)+'">Cancel</button></div></div>'}
+ if(S.linked&&s.change)h+='<div class="p5-btns"><button class="alt" data-vhl="change-cancel" data-b="'+esc(bid)+'">Keep the current link</button></div>';
+ return h}
+function lkDraw(bid){qa('[data-vh-link="'+bid+'"]').forEach(function(c){c.innerHTML=lkHtml(bid)})}
+function lkDo(bid,fn,args,done){var s=lkState(bid);if(s.busy)return;s.busy=true;s.err=s.msg="";lkDraw(bid);
+ call(fn,args).then(function(r){s.busy=false;if(r.ok===false){s.err=msg(r);s.dup=r.error==="duplicate"&&r.existing?r.existing:null;if(r.error==="duplicate")s.dup=r.existing||true;lkDraw(bid);return}
+  s.dup=null;s.create=false;s.change=false;s.msg=done(r);delete FV["lk-why-"+bid];lkEnsure(bid,true);if(VH.list&&q("#vh .vh-grid")){VH.list=null;vlLoad(MT)}})}
+function lkClick(a,b,btn){var s=lkState(b);
+ if(a==="link")lkDo(b,"vehicle_link_booking",{p_booking:b,p_vehicle:btn.dataset.v,p_note:gv("lk-why-"+b)||null},function(r){return r.customer_differs?"Linked. The customer on this booking is different from the owner on the vehicle record ("+(r.owner_name||"none")+"). Ask a manager to record an ownership change if the vehicle has a new owner.":"Booking linked to the vehicle record."});
+ else if(a==="create-open"){s.create=true;lkDraw(b)}else if(a==="create-cancel"){s.create=false;s.dup=null;lkDraw(b)}
+ else if(a==="change"){s.change=true;lkDraw(b)}else if(a==="change-cancel"){s.change=false;lkDraw(b)}
+ else if(a==="create"){var k="lc-"+b+"-";lkDo(b,"vehicle_create_from_booking",{p_booking:b,p:{plate:gv(k+"plate"),manufacturer:gv(k+"make"),model:gv(k+"model"),colour:gv(k+"col"),category:gv(k+"cat")||"car",mileage:gv(k+"mile")||null,owner_name:gv(k+"on"),owner_contact:gv(k+"oc"),duplicate_reason:gv(k+"why")||null}},function(r){return"Vehicle record "+r.ref+" created and linked."+(r.flagged?" It was flagged for management review.":"")})}}
+
+/* ======================= worksheet: Vehicle Information ======================= */
+var WS={};
+function wsState(b){return WS[b]||(WS[b]={info:null,err:"",msg:"",busy:false,at:0,f:{}})}
+function jobClosed(){return!!(q("#jb .jb-st.closed")||q("#jb .jb-st.cancelled"))}
+function wsEnsure(b,force){var s=wsState(b);if(s.info&&!force&&Date.now()-s.at<30000){wsDraw(b);return}
+ call("vehicle_job_info",{p_booking:b}).then(function(r){s.at=Date.now();if(r.ok===false){s.info=null;s.err=msg(r);s.fail=true;wsDraw(b);return}s.info=r;s.err="";s.fail=false;
+  if(r.linked){signMany((r.photos||[]).map(function(p){return p.path})).then(function(){wsDraw(b)})}else{wsDraw(b);lkEnsure(b,true)}})}
+function wsHtml(b){var s=wsState(b),I=s.info;if(s.fail)return"";if(!I)return X.sec("▦","Vehicle information","Loading…")+'<div class="sk" style="height:80px"></div>';
+ if(!I.linked)return X.sec("▦","Vehicle information","No vehicle record linked to this job yet")+'<div class="vh-link" data-vh-link="'+esc(b)+'">'+lkHtml(b)+'</div>';
+ var v=I.vehicle,ro=jobClosed(),flt=(I.notes||[]).filter(function(n){return(n.kind==="fault"||n.kind==="recommendation")&&n.status==="open"}),obs=(I.notes||[]).filter(function(n){return n.kind==="observation"||n.kind==="modification"});
+ function list(a,e){return a&&a.length?a.map(function(x){return svcEntry(x,I.can_manage,false)}).join(""):'<p class="note">'+e+'</p>'}
+ var h=X.sec("▦","Vehicle information","History for "+[v.manufacturer,v.model].filter(Boolean).join(" ")+" · "+v.plate)+
+  '<div class="vh-wshead">'+plate(v.plate)+'<div><b>'+title(v)+'</b><small>'+esc(v.ref)+(v.colour?" · "+esc(v.colour):"")+" · "+esc(CAT[v.category]||v.category)+'</small></div><a class="btn alt sm" href="#vehicles/'+esc(v.id)+'">Open full record</a></div>'+
+  '<dl class="vh-dl"><div><dt>Customer</dt><dd>'+esc(v.owner_name||"—")+'</dd></div><div><dt>Contact</dt><dd>'+esc(v.owner_contact||"—")+'</dd></div><div><dt>Mileage</dt><dd>'+km(v.mileage)+'</dd></div><div><dt>Completed services</dt><dd>'+v.services_completed+'</dd></div><div><dt>Last workshop visit</dt><dd>'+esc(v.last_visit?dstr(v.last_visit):"—")+'</dd></div><div><dt>With Atomic Garage since</dt><dd>'+esc(dstr(v.first_registered_at))+'</dd></div></dl>'+
+  (v.notes?'<p class="note vh-pre">'+esc(v.notes)+'</p>':"")+
+  '<h4>Previously identified faults and recommendations</h4>'+(flt.length?flt.map(function(n){return noteRow(n,true)}).join(""):'<p class="note">None open.</p>')+
+  '<div class="g g2 sp"><div><h4>Previous repairs</h4>'+list(I.previous_repairs,"No previous repairs on record.")+'</div><div><h4>Previous modifications</h4>'+list(I.previous_modifications,"No modifications on record.")+'</div></div>'+
+  '<h4>Relevant service history</h4>'+list(I.services,"No completed services yet.")+
+  '<h4>Observations</h4>'+(obs.length?obs.map(function(n){return noteRow(n,false)}).join(""):'<p class="note">No observations recorded.</p>')+
+  '<h4>Photographs</h4>'+((I.photos||[]).length?'<div class="vh-pstrip">'+I.photos.map(function(p){return'<button type="button" class="vh-pbtn sm" data-vh="lb" data-p="'+esc(p.path)+'" data-c="'+esc(p.caption||"")+'" aria-label="'+esc(p.caption||"Vehicle photograph")+'">'+(img(p.path,p.caption||"")||'<span class="vh-ph">'+CAR+'</span>')+'</button>'}).join("")+'</div>':'<p class="note">No photographs yet.</p>');
+ if(ro)return h+'<p class="note sp">This job is closed, so new observations cannot be added here.</p>';
+ return h+(s.err?'<div class="jb-err" role="alert">'+esc(s.err)+'</div>':"")+(s.msg?'<div class="bk-note good" role="status">'+esc(s.msg)+'</div>':"")+
+  '<h4>Record what you found</h4><div class="g g3">'+sel("wn-kind-"+b,"Type",[["observation","Observation"],["fault","Fault found"],["recommendation","Recommend future work"]],s.f.kind||"observation")+field("wn-mile-"+b,"Mileage (optional)",s.f.mile||"",{type:"number",max:8})+'</div>'+field("wn-body-"+b,"Details",s.f.body||"",{area:1,max:1000})+'<div class="p5-btns sp"><button data-vhw="note" data-b="'+esc(b)+'" data-v="'+esc(v.id)+'"'+(s.busy?" disabled":"")+'>Add to vehicle record</button></div>'+
+  '<h4>Add a photograph</h4><div class="g g3"><div><label for="wp-file-'+b+'">Photo (JPG, PNG or WebP)</label><input id="wp-file-'+b+'" type="file" accept="image/jpeg,image/png,image/webp"></div>'+sel("wp-kind-"+b,"Type",Object.keys(PK).filter(function(k){return k!=="main"}).map(function(k){return[k,PK[k]]}),s.f.pkind||"condition")+field("wp-cap-"+b,"Caption",s.f.cap||"",{max:200})+'</div><div class="p5-btns sp"><button class="alt" data-vhw="photo" data-b="'+esc(b)+'" data-v="'+esc(v.id)+'"'+(s.busy?" disabled":"")+'>Upload photograph</button></div>'}
+function wsDraw(b){var c=q('[data-vh-ws="'+b+'"]');if(!c)return;var s=wsState(b);if(s.fail){c.remove();return}c.innerHTML=wsHtml(b);if(!s.info||!s.info.linked)lkDraw(b)}
+function wsKeep(b){var s=wsState(b);["kind","mile","body","cap","pkind"].forEach(function(k){});var g=function(id){var e=document.getElementById(id);return e?e.value:null};
+ var a=g("wn-kind-"+b);if(a!=null)s.f.kind=a;a=g("wn-mile-"+b);if(a!=null)s.f.mile=a;a=g("wn-body-"+b);if(a!=null)s.f.body=a;a=g("wp-cap-"+b);if(a!=null)s.f.cap=a;a=g("wp-kind-"+b);if(a!=null)s.f.pkind=a}
+function wsClick(a,b,btn){var s=wsState(b);if(s.busy)return;wsKeep(b);var vid=btn.dataset.v;
+ if(a==="note"){if(!(s.f.body||"").trim()){s.err="Write the note first.";return wsDraw(b)}s.busy=true;s.err=s.msg="";wsDraw(b);
+  call("vehicle_note_add",{p_id:vid,p:{kind:s.f.kind||"observation",body:s.f.body,mileage:s.f.mile||null,booking_id:b}}).then(function(r){s.busy=false;if(r.ok===false){s.err=msg(r);return wsDraw(b)}s.f.body="";s.f.mile="";s.msg="Added to the vehicle record.";wsEnsure(b,true)})}
+ else if(a==="photo"){var f=document.getElementById("wp-file-"+b),file=f&&f.files&&f.files[0];if(!file){s.err="Choose a photo first.";return wsDraw(b)}s.busy=true;s.err=s.msg="";wsDraw(b);
+  uploadPhoto(vid,file,s.f.pkind||"condition",s.f.cap,b).then(function(){s.f.cap="";s.msg="Photograph added.";s.busy=false;wsEnsure(b,true)},function(e){s.busy=false;s.err=e.message||"Could not upload the photo.";wsDraw(b)})}}
+
+/* ======================= placing the panels into existing pages ======================= */
+var tm=0;function sched(){clearTimeout(tm);tm=setTimeout(inject,60)}
+function inject(){if(!canV())return;var h=(location.hash||"").slice(1).split("/");
+ if(h[0]==="bookings"||h[0]==="calendar"||!h[0]){var d=q(".bk-detail");var bid=ST.open;if(d&&bid&&!d.querySelector("[data-vh-link]")&&ST.dtab!=="invoices"){var sec=d.querySelector(".bk-sec");var html='<section class="bk-sec vh-sec"><h3 class="hd bk-h3">Vehicle record</h3><div class="vh-link" data-vh-link="'+esc(bid)+'"></div></section>';if(sec)sec.insertAdjacentHTML("afterend",html);else d.insertAdjacentHTML("beforeend",html);lkEnsure(bid)}}
+ if(h[0]==="jobs"&&h[1]&&q("#jb .jb-head")&&!q("[data-vh-ws]")){var card=q("#jb .jb-head").closest(".card");if(card){card.insertAdjacentHTML("afterend",'<div class="card sp vh-ws" data-vh-ws="'+esc(h[1])+'"></div>');wsEnsure(h[1])}}}
+try{new MutationObserver(sched).observe(document.body,{childList:true,subtree:true})}catch(e){}
+window.addEventListener("hashchange",sched);
+
+/* ======================= events ======================= */
+document.addEventListener("click",function(e){var l=e.target.closest&&e.target.closest("[data-vhl]");if(l&&!l.disabled){lkClick(l.dataset.vhl,l.dataset.b,l);return}
+ var w=e.target.closest&&e.target.closest("[data-vhw]");if(w&&!w.disabled){wsClick(w.dataset.vhw,w.dataset.b,w);return}
+ var b=e.target.closest&&e.target.closest("[data-vh]");if(!b||b.disabled)return;var a=b.dataset.vh,id=b.dataset.id,k=b.dataset.k;
+ if(a==="reload")route();
+ else if(a==="lb")lightbox(b.dataset.p,b.dataset.c);
+ else if(a==="add-open"){VH.add={err:"",dup:null,busy:false};FV={};vlDraw()}
+ else if(a==="add-cancel"){VH.add=null;vlDraw()}
+ else if(a==="add-save"){var A=VH.add;if(A.busy)return;A.busy=true;A.err="";var why=gv("va-why");vlDraw();
+  call("vehicle_save",{p_id:null,p:{plate:FV["va-plate"],manufacturer:FV["va-make"],model:FV["va-model"],colour:FV["va-col"],category:FV["va-cat"]||"car",mileage:FV["va-mile"]||null,owner_name:FV["va-on"],owner_contact:FV["va-oc"],first_registered_at:FV["va-first"]||null,notes:FV["va-notes"],duplicate_reason:FV["va-why"]||why||null}}).then(function(r){A.busy=false;
+   if(r.ok===false){A.err=msg(r);A.dup=r.error==="duplicate"?(r.existing||{id:"",ref:""}):null;if(A.dup&&!A.dup.id)A.dup=null;if(r.error==="duplicate"&&!A.dup)A.dup={id:"",ref:""};return vlDraw()}
+   VH.add=null;FV={};VH.msg="Vehicle "+r.ref+" created."+(r.flagged?" It was flagged for review.":"");VH.list=null;vlLoad(MT)})}
+ else if(a==="unl-open"){VH.showUnl=VH.showUnl===id?false:id;vlDraw()}
+ else if(a==="tab"){VP.tab=k;history.replaceState(null,"","#vehicles/"+VP.id+(k==="overview"?"":"/"+k));vpDraw()}
+ else if(a==="edit-open"){VP.edit=true;VP.err=VP.msg="";vpDraw()}
+ else if(a==="edit-cancel"){VP.edit=false;["ve-make","ve-model","ve-col","ve-cat","ve-mile","ve-first","ve-notes"].forEach(function(x){delete FV[x]});vpDraw()}
+ else if(a==="edit-save"){vpDo("vehicle_save",{p_id:VP.id,p:{manufacturer:gv("ve-make"),model:gv("ve-model"),colour:gv("ve-col"),category:gv("ve-cat"),mileage:gv("ve-mile")||null,first_registered_at:gv("ve-first"),notes:gv("ve-notes")}},"Details saved.",function(){VP.edit=false;["ve-make","ve-model","ve-col","ve-cat","ve-mile","ve-first","ve-notes"].forEach(function(x){delete FV[x]})})}
+ else if(a==="archive"){var ar=b.dataset.a==="1",why2=ar?window.prompt("Why is this vehicle being archived?"):"";if(ar&&!why2)return;vpDo("vehicle_archive",{p_id:VP.id,p_archived:ar,p_reason:why2||null},ar?"Vehicle archived.":"Vehicle restored.")}
+ else if(a==="review-clear")vpDo("vehicle_review_clear",{p_id:VP.id,p_note:null},"Marked as reviewed.");
+ else if(a==="merge-open"){call("vehicle_list",{p:{limit:300}}).then(function(r){VH.all=r.rows||[];VP.merge=true;vpDraw()})}
+ else if(a==="merge-cancel"){VP.merge=null;vpDraw()}
+ else if(a==="merge-do"){var to=gv("vm-to"),rs=gv("vm-why");if(!to){VP.err="Choose the record to merge into.";return vpDraw()}if(!window.confirm("Merge this record into the selected vehicle? This cannot be undone."))return;
+  vpDo("vehicle_merge",{p_keep:to,p_remove:VP.id,p_reason:rs},"Records merged.",function(){location.hash="#vehicles/"+to})}
+ else if(a==="note-set")vpOrWs("vehicle_note_set",{p_note:+id,p_status:b.dataset.s},"Updated.");
+ else if(a==="note-add"){vpDo("vehicle_note_add",{p_id:VP.id,p:{kind:gv("vn-kind"),body:gv("vn-body"),mileage:gv("vn-mile")||null}},"Note added.",function(){delete FV["vn-body"];delete FV["vn-mile"]})}
+ else if(a==="owner-save"){vpDo("vehicle_transfer_owner",{p_id:VP.id,p:{customer_name:gv("vo-name"),contact:gv("vo-contact"),note:gv("vo-note")}},"Saved. The previous details stay in the history.",function(){delete FV["vo-note"]})}
+ else if(a==="plate-save"){vpDo("vehicle_change_plate",{p_id:VP.id,p_plate:gv("vr-plate"),p_reason:gv("vr-why")},"Registration changed. The old plate stays searchable.",function(){delete FV["vr-plate"];delete FV["vr-why"]})}
+ else if(a==="photo-main")vpDo("vehicle_photo_set_main",{p_photo:+id},"Main photo changed.");
+ else if(a==="photo-del"){if(!window.confirm("Delete this photograph?"))return;call("vehicle_photo_delete",{p_photo:+id}).then(function(r){if(r.ok===false){VP.err=msg(r);return vpDraw()}delPhoto(r.path);VP.msg="Photograph deleted.";VP.err="";vpReload()})}
+ else if(a==="photo-add"){var f=document.getElementById("vp-file"),file=f&&f.files&&f.files[0];if(!file){VP.err="Choose a photo first.";return vpDraw()}VP.busy=true;VP.err=VP.msg="";vpDraw();
+  uploadPhoto(VP.id,file,gv("vp-kind")||"condition",gv("vp-cap"),null).then(function(){VP.msg="Photograph added.";delete FV["vp-cap"]},function(x){VP.err=x.message||"Could not upload the photo."}).then(function(){VP.busy=false;vpReload()})}});
+function vpDo(fn,args,ok,after){if(VP.busy)return;VP.busy=true;VP.err=VP.msg="";call(fn,args).then(function(r){VP.busy=false;if(r.ok===false){VP.err=msg(r);return vpDraw()}VP.msg=ok;if(after)after();return vpReload()})}
+function vpOrWs(fn,args,ok){var inWs=q("[data-vh-ws]")&&!q("#vh");call(fn,args).then(function(r){if(inWs){qa("[data-vh-ws]").forEach(function(c){wsEnsure(c.dataset.vhWs,true)});return}if(r.ok===false){VP.err=msg(r);return vpDraw()}VP.msg=ok;vpReload()})}
+document.addEventListener("input",function(e){var t=e.target;if(!t)return;
+ if(t.dataset&&t.dataset.vf)FV[t.dataset.vf]=t.value;
+ if(t.dataset&&t.dataset.vq){var k=t.dataset.vq;if(t.type==="checkbox"){VH[k]=t.checked;VH.list=null;vlLoad(MT);return}VH[k]=t.value;if(k==="manufacturer")VH.model="";if(t.tagName==="SELECT"){VH.list=null;vlLoad(MT);return}VH._focus=t.id;clearTimeout(VH._t);VH._t=setTimeout(function(){vlLoad(MT)},300)}});
+document.addEventListener("change",function(e){var t=e.target;if(t&&t.dataset&&t.dataset.vf)FV[t.dataset.vf]=t.value});
+window.P6={inject:inject};
+/* the first route() ran before this module registered: re-dispatch for the page it owns */
+(function(){var h=(location.hash||"").slice(1).split("/")[0];if(h==="vehicles")setTimeout(function(){try{window.dispatchEvent(new Event("hashchange"))}catch(e){}},0);sched()})();
+})();
+
+/*AGVEH-END*/</script>
 </body></html>
