@@ -38,12 +38,13 @@
       </ul>
       <ul class="nav-side">
         <li class="dd" id="reqDd">
-          <button class="nl dd-btn" id="reqBtn" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="reqMenu" data-group="track application">
+          <button class="nl dd-btn" id="reqBtn" type="button" aria-expanded="false" aria-haspopup="true" aria-controls="reqMenu" data-group="track history application">
             <span>My Requests</span>
             <svg class="dd-caret" viewBox="0 0 12 12" width="10" height="10" aria-hidden="true"><path d="M2 4.2l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
           <ul class="dd-menu" id="reqMenu" aria-label="My Requests" hidden>
             <li><a href="#track" data-r="track"><span class="dd-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4M9 15l2 2 4-4"/></svg></span><span class="dd-txt"><b>Track Booking</b><small>Check the status of a service request</small></span></a></li>
+            <li><a href="#history" data-r="history"><span class="dd-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 15l1.6-4.4A2 2 0 018.5 9h7a2 2 0 011.9 1.6L19 15"/><rect x="3.5" y="15" width="17" height="4" rx="1.5"/><circle cx="7.5" cy="17" r=".6"/><circle cx="16.5" cy="17" r=".6"/></svg></span><span class="dd-txt"><b>Vehicle Service History</b><small>See the completed work on your vehicle</small></span></a></li>
             <li><a href="#application" data-r="application"><span class="dd-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9z"/><circle cx="12" cy="13" r="2"/><path d="M8.5 18c.5-1.7 1.9-2.5 3.5-2.5s3 .8 3.5 2.5"/></svg></span><span class="dd-txt"><b>Track Application</b><small>Check the status of a careers application</small></span></a></li>
           </ul>
         </li>
@@ -67,7 +68,7 @@
       <a href="#services">Services</a><a href="#parts">Parts</a><a href="#gallery">Gallery</a><a href="#careers">Careers</a><a href="#contact">Contact</a>
     </nav>
     <nav class="f-col" aria-label="Footer: my requests"><h4>My requests</h4>
-      <a href="#book">Book a service</a><a href="#track">Track booking</a><a href="#application">Track application</a><a href="staff/" data-staff>Staff login</a>
+      <a href="#book">Book a service</a><a href="#track">Track booking</a><a href="#history">Vehicle service history</a><a href="#application">Track application</a><a href="staff/" data-staff>Staff login</a>
     </nav>
     <div class="f-col f-info" id="ftInfo" aria-label="Garage details"></div>
   </div>
@@ -977,7 +978,7 @@ function pageTrack(q){
     if(!r||!t){ out.textContent=""; out.appendChild(el("p",{class:"notice bad",text:"Enter both your reference and access code."})); return; }
     out.textContent=""; out.appendChild(el("div",{class:"skel"}));
     rpc("track_booking",{p_ref:r,p_token:t}).then(function(b){
-      if(b&&b.ok){ render(b); LS.set("ag_booking_"+b.reference,t);
+      if(b&&b.ok){ render(b); out.appendChild(el("p",{class:"sp"},[el("a",{class:"btn alt",href:"#history?ref="+encodeURIComponent(b.reference)+"&code="+encodeURIComponent(t),text:"View vehicle service history"})])); LS.set("ag_booking_"+b.reference,t);
         var mm=[];try{mm=JSON.parse(LS.get("ag_mine")||"[]")}catch(e){} if(mm.indexOf(b.reference)<0){mm.push(b.reference);LS.set("ag_mine",JSON.stringify(mm));} }
       else { out.textContent=""; out.appendChild(el("p",{class:"notice bad",text:(b&&b.error==="rate_limited"&&b.message)?b.message:"No booking matches that reference and access code. Check both and try again."})); }
     }).catch(function(){ out.textContent=""; out.appendChild(el("p",{class:"notice bad",text:"Couldn't reach the booking service. Please try again."})); });
@@ -991,6 +992,57 @@ function pageTrack(q){
   return f;
 }
 
+
+/* ---------- vehicle service history (customer view, reference + access code) ---------- */
+function pageHistory(q){
+  var f=document.createDocumentFragment();
+  f.appendChild(head("Vehicle service history","Enter the reference and private access code from one of your bookings to see the completed work on that vehicle."));
+  if(!configured()){ f.appendChild(el("p",{class:"notice bad",text:"This isn't available yet."})); return f; }
+  var out=el("div",{class:"sp",role:"region","aria-live":"polite"});
+  var ref=el("input",{id:"h-ref",maxlength:"20",autocomplete:"off",placeholder:"AG-XXXXXX",value:q.ref||"",style:"text-transform:uppercase"});
+  var code=el("input",{id:"h-code",maxlength:"80",autocomplete:"off",type:"password",value:q.code||""});
+  var form=el("form",{novalidate:true},[
+    el("div",{class:"row2"},[el("div",null,[el("label",{for:"h-ref",text:"Booking reference"}),ref]),el("div",null,[el("label",{for:"h-code",text:"Private access code"}),code])]),
+    el("div",{class:"sp"},[el("button",{class:"btn",type:"submit",text:"Show service history"})])]);
+  f.appendChild(el("div",{class:"card"},[form])); f.appendChild(out);
+  var mine=[]; try{mine=JSON.parse(LS.get("ag_mine")||"[]")}catch(e){}
+  if(mine.length){
+    var m=el("div",{class:"sp"},[el("p",{class:"muted",text:"Bookings saved in this browser"})]);
+    mine.forEach(function(r){ m.appendChild(el("div",{class:"mine"},[el("strong",{text:r}),el("span",null,[el("button",{class:"btn sm",type:"button",text:"Open",onclick:function(){ref.value=r;code.value=LS.get("ag_booking_"+r)||"";load();}})])])); });
+    f.appendChild(m);
+  }
+  function render(r){
+    out.textContent="";
+    if(!r.linked){
+      out.appendChild(el("div",{class:"card"},[el("h3",{text:"No service history yet",style:"font-size:26px;margin-bottom:8px"}),
+        el("p",{class:"muted",text:"This booking ("+r.booking.reference+") has not been matched to a vehicle record yet. That happens when the garage reviews your booking; completed work then appears here."})]));
+      return;
+    }
+    var v=r.vehicle,title=[v.manufacturer,v.model].filter(Boolean).join(" ")||"Your vehicle";
+    out.appendChild(el("div",{class:"card"},[el("h3",{text:title,style:"font-size:30px;margin-bottom:4px"}),el("p",{class:"muted",text:[v.plate,v.colour].filter(Boolean).join(" · ")})]));
+    if(!r.services.length){ out.appendChild(el("p",{class:"notice sp",text:"No completed work is recorded for this vehicle yet. Finished jobs appear here once the garage has approved them."})); return; }
+    r.services.forEach(function(s){
+      var dl=el("dl");function add(k,v2){if(v2){dl.appendChild(el("dt",{text:k}));dl.appendChild(el("dd",{text:v2}))}}
+      add("Booking",s.reference);add("Mechanic",s.mechanic);
+      if(s.parts&&s.parts.length)add("Parts fitted",s.parts.map(function(p){return p.name+(p.quantity>1?" × "+p.quantity:"")}).join(", "));
+      if(s.invoice)add("Invoice",s.invoice.number+(s.invoice.status==="paid"?" (paid)":""));
+      out.appendChild(el("div",{class:"card sp"},[el("h3",{text:(SVC[s.service_type]||s.service_type)+" · "+fmt(s.date),style:"font-size:24px;margin-bottom:6px"}),s.work_summary?el("p",{text:s.work_summary}):null,dl]));
+    });
+    out.appendChild(el("p",{class:"muted sp",text:"Only work done for your character is listed. Prices are on your invoices, which you can open from Track Booking."}));
+  }
+  function load(){
+    var r=ref.value.trim(),t=code.value.trim();
+    if(!r||!t){ out.textContent="";out.appendChild(el("p",{class:"notice bad",text:"Enter both your reference and access code."}));return; }
+    out.textContent="";out.appendChild(el("div",{class:"skel"}));
+    rpc("track_vehicle_history",{p_ref:r,p_token:t}).then(function(b){
+      if(b&&b.ok)render(b);
+      else{out.textContent="";out.appendChild(el("p",{class:"notice bad",text:(b&&b.error==="rate_limited"&&b.message)?b.message:"No booking matches that reference and access code. Check both and try again."}));}
+    }).catch(function(){out.textContent="";out.appendChild(el("p",{class:"notice bad",text:"Couldn't reach the service. Please try again."}));});
+  }
+  form.addEventListener("submit",function(e){e.preventDefault();load();});
+  if(q.ref&&q.code){ try{history.replaceState(null,"",location.pathname+location.search+"#history");}catch(e){} load(); }
+  return f;
+}
 /* ---------- router ---------- */
 /* ---------- careers and recruitment portal ---------- */
 var APP_ST={new:"Pending",reviewing:"Under Review",interview:"Interview",accepted:"Accepted",rejected:"Rejected"};
@@ -1440,14 +1492,14 @@ function pageParts(){
     wrap.appendChild(g)}).catch(function(){wrap.innerHTML="";wrap.appendChild(el("p",{class:"notice",text:"Parts could not be loaded. Please try again later."}))});
   return f;
 }
-var PAGES={home:pageHome,team:pageTeam,services:pageServices,parts:pageParts,careers:pageCareers,application:pageAppTrack,gallery:pageGallery,book:pageBook,contact:pageContact,track:pageTrack};
-var TITLES={home:"Atomic Garage",team:"Meet the Team",services:"Our Services",parts:"Parts",careers:"Careers",application:"Application Status",gallery:"Gallery",book:"Book a Service",contact:"Contact",track:"Track Booking"};
+var PAGES={home:pageHome,team:pageTeam,services:pageServices,parts:pageParts,careers:pageCareers,application:pageAppTrack,gallery:pageGallery,book:pageBook,contact:pageContact,track:pageTrack,history:pageHistory};
+var TITLES={home:"Atomic Garage",team:"Meet the Team",services:"Our Services",parts:"Parts",careers:"Careers",application:"Application Status",gallery:"Gallery",book:"Book a Service",contact:"Contact",track:"Track Booking",history:"Vehicle Service History"};
 function route(){
   var h=location.hash.replace(/^#/,"")||"home";
   var parts=h.split("?"), r=parts[0], q={};
   (parts[1]||"").split("&").forEach(function(kv){ if(!kv) return; var i=kv.indexOf("="); try{ q[decodeURIComponent(kv.slice(0,i<0?kv.length:i))]=i<0?"":decodeURIComponent(kv.slice(i+1)); }catch(e){} });
   if(!PAGES[r]) r="home";
-  closeLb(); main.textContent=""; main.className="pg-"+r+((r==="book"||r==="track"||r==="application")?" narrow":""); main.appendChild(PAGES[r](q));
+  closeLb(); main.textContent=""; main.className="pg-"+r+((r==="book"||r==="track"||r==="application"||r==="history")?" narrow":""); main.appendChild(PAGES[r](q));
   document.title=(r==="home"?"Atomic Garage — Repairs, Tuning, Custom Builds & Towing":TITLES[r]+" — Atomic Garage");
   var navR=(r==="parts")?"services":r;   /* Parts has no top-level link: it lives under Services */
   document.querySelectorAll("#nav [data-r]").forEach(function(a){ if(a.dataset.r===navR) a.setAttribute("aria-current","page"); else a.removeAttribute("aria-current"); });
