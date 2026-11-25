@@ -3623,9 +3623,18 @@ function wsClick(a,b,btn){var s=wsState(b);if(s.busy)return;wsKeep(b);var vid=bt
 
 /* ======================= placing the panels into existing pages ======================= */
 var tm=0;function sched(){clearTimeout(tm);tm=setTimeout(inject,60)}
-function inject(){if(!canV())return;var h=(location.hash||"").slice(1).split("/");
+function inject(){if(!canV())return;injectStats();var h=(location.hash||"").slice(1).split("/");
  if(h[0]==="bookings"||h[0]==="calendar"||!h[0]){var d=q(".bk-detail");var bid=ST.open;if(d&&bid&&!d.querySelector("[data-vh-link]")&&ST.dtab!=="invoices"){var sec=d.querySelector(".bk-sec");var html='<section class="bk-sec vh-sec"><h3 class="hd bk-h3">Vehicle record</h3><div class="vh-link" data-vh-link="'+esc(bid)+'"></div></section>';if(sec)sec.insertAdjacentHTML("afterend",html);else d.insertAdjacentHTML("beforeend",html);lkEnsure(bid)}}
  if(h[0]==="jobs"&&h[1]&&q("#jb .jb-head")&&!q("[data-vh-ws]")){var card=q("#jb .jb-head").closest(".card");if(card){card.insertAdjacentHTML("afterend",'<div class="card sp vh-ws" data-vh-ws="'+esc(h[1])+'"></div>');wsEnsure(h[1])}}}
+/* ---------- management dashboard: vehicle statistics ---------- */
+var STT={at:0,d:null,busy:false};
+function statsHtml(d){var tiles=[["Vehicles on record",d.total,"active records","#vehicles"],["In the workshop",d.in_workshop,"in progress or awaiting approval","#vehicles"],["Serviced this month",d.serviced_month,"vehicles with approved work","#vehicles"],["New this month",d.new_month,"records created","#vehicles"],["Repeat customers",d.repeat,"vehicles serviced 2+ times","#vehicles"],["Open faults",d.open_faults,"found, not yet resolved","#vehicles"],["Open recommendations",d.open_recommendations,"future work suggested","#vehicles"],["Needs review",d.needs_review+d.unlinked_bookings,d.needs_review+" flagged · "+d.unlinked_bookings+" unlinked bookings","#vehicles"]];
+ return'<div class="card sp" id="vh-stats">'+X.sec("▦","Vehicles","Records and service activity")+'<div class="g g4 p5-tiles">'+tiles.map(function(t){return'<a class="card stat p5-tile" href="'+t[3]+'"><h3>'+esc(t[0])+'</h3><div class="big">'+esc(String(t[1]))+'</div><small>'+esc(t[2])+'</small></a>'}).join("")+'</div>'+
+  (d.top_makes&&d.top_makes.length?'<p class="note sp">Most common manufacturers: '+d.top_makes.map(function(m){return esc(m.name)+" ("+m.count+")"}).join(", ")+'</p>':"")+'</div>'}
+function injectStats(){if(!isM())return;var md=q("#p5-md");if(!md||q("#vh-stats"))return;
+ var put=function(d){if(!q("#vh-stats")&&q("#p5-md"))q("#p5-md").insertAdjacentHTML("beforeend",statsHtml(d))};
+ if(STT.d&&Date.now()-STT.at<30000){put(STT.d);return}if(STT.busy)return;STT.busy=true;
+ call("vehicle_stats",{}).then(function(r){STT.busy=false;if(r.ok===false)return;STT.d=r;STT.at=Date.now();put(r)})}
 try{new MutationObserver(sched).observe(document.body,{childList:true,subtree:true})}catch(e){}
 window.addEventListener("hashchange",sched);
 
